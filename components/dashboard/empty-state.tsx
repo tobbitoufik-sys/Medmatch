@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Route } from "next";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,7 +13,7 @@ export function EmptyState({
   title: string;
   description: string;
   cta?: string;
-  href?: string;
+  href?: Route;
 }) {
   return (
     <Card>
