@@ -7,7 +7,7 @@ export const siteConfig = {
     "Premium recruitment platform connecting doctors with hospitals and clinics."
 };
 
-export const navLinks = [
+export const navLinks: { href: Route; label: string }[] = [
   { href: "/", label: "Home" },
   { href: "/how-it-works", label: "How it works" },
   { href: "/for-doctors", label: "For doctors" },
