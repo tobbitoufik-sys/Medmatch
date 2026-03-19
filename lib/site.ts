@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import type { UserRole } from "@/types";
 
 export const siteConfig = {
@@ -16,7 +17,7 @@ export const navLinks = [
   { href: "/contact", label: "Contact" }
 ];
 
-export const dashboardNav: Record<UserRole, { href: string; label: string }[]> = {
+export const dashboardNav: Record<UserRole, { href: Route; label: string }[]> = {
   doctor: [
     { href: "/dashboard/doctor", label: "Overview" },
     { href: "/dashboard/doctor/profile", label: "Profile" },
