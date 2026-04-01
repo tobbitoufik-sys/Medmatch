@@ -1,26 +1,26 @@
 import { cookies } from "next/headers";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { getSupabasePublishableKey, getSupabaseUrl } from "@/lib/supabase/config";
 
 export async function createServerSupabaseClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const url = getSupabaseUrl();
+  const key = getSupabasePublishableKey();
 
-  if (!url || !key) {
-    throw new Error("Supabase environment variables are missing.");
-  }
-
-  const cookieStore = await cookies();
-
-  return createServerClient(url, key, {
+  return createServerClient(url!, key!, {
     cookies: {
-      get(name: string) {
-        return cookieStore.get(name)?.value;
+      async getAll() {
+        return (await cookies()).getAll();
       },
-      set(name: string, value: string, options: CookieOptions) {
-        cookieStore.set({ name, value, ...options });
-      },
-      remove(name: string, options: CookieOptions) {
-        cookieStore.set({ name, value: "", ...options });
+      async setAll(cookiesToSet: Array<{ name: string; value: string; options: CookieOptions }>) {
+        try {
+          const cookieStore = await cookies();
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set({ name, value, ...options });
+          });
+        } catch {
+          // Server Components can read cookies but cannot write them.
+          // Middleware refreshes the session when cookie writes are needed.
+        }
       }
     }
   });

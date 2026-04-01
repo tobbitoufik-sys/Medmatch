@@ -10,21 +10,20 @@ export default async function AdminProfilesPage() {
     <DashboardShell
       role="admin"
       title="Profiles"
-      description="Review doctor and facility profiles, especially public visibility, completion and verification."
+      description="Review doctor and facility profiles, especially public visibility and core professional data."
     >
       <div className="space-y-8">
         <div>
           <h2 className="mb-4 text-xl font-semibold">Doctor profiles</h2>
           <Table>
-            <THead><TR><TH>Name</TH><TH>Specialty</TH><TH>Completion</TH><TH>Visibility</TH><TH>Verification</TH></TR></THead>
+            <THead><TR><TH>Headline</TH><TH>Specialty</TH><TH>Contract</TH><TH>Visibility</TH></TR></THead>
             <TBody>
               {doctors.map((doctor) => (
                 <TR key={doctor.id}>
-                  <TD>{doctor.title} {doctor.first_name} {doctor.last_name}</TD>
+                  <TD>{doctor.headline}</TD>
                   <TD>{doctor.specialty}</TD>
-                  <TD>{doctor.profile_completion}%</TD>
+                  <TD>{doctor.desired_contract_type}</TD>
                   <TD>{doctor.is_public ? "Public" : "Private"}</TD>
-                  <TD>{doctor.verified ? <Badge>Verified</Badge> : "Pending"}</TD>
                 </TR>
               ))}
             </TBody>

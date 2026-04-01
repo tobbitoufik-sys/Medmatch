@@ -11,7 +11,7 @@ export default async function AdminDashboardPage() {
     getContactRequests()
   ]);
 
-  const incompleteProfiles = doctors.filter((doctor) => doctor.profile_completion < 80).length;
+  const publicDoctorProfiles = doctors.filter((doctor) => doctor.is_public).length;
 
   return (
     <DashboardShell
@@ -26,7 +26,7 @@ export default async function AdminDashboardPage() {
         <StatCard title="Offers" value={String(offers.length)} hint="Published opportunities." />
         <StatCard title="Contacts" value={String(contacts.length)} hint="Contact requests recorded." />
       </div>
-      <StatCard title="Incomplete doctor profiles" value={String(incompleteProfiles)} hint="Profiles below the 80% completion threshold." />
+      <StatCard title="Public doctor profiles" value={String(publicDoctorProfiles)} hint="Profiles visible in the public doctor directory." />
     </DashboardShell>
   );
 }

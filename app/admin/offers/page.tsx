@@ -2,6 +2,7 @@ import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { Badge } from "@/components/ui/badge";
 import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/table";
 import { getJobOffers } from "@/lib/data/repository";
+import { getJobOfferContractTypeLabel } from "@/lib/job-offers";
 
 export default async function AdminOffersPage() {
   const offers = await getJobOffers();
@@ -28,7 +29,7 @@ export default async function AdminOffersPage() {
               <TD>{offer.title}</TD>
               <TD>{offer.facility?.facility_name || "Facility"}</TD>
               <TD>{offer.city}, {offer.country}</TD>
-              <TD>{offer.contract_type}</TD>
+              <TD>{getJobOfferContractTypeLabel(offer.contract_type)}</TD>
               <TD><Badge>{offer.status}</Badge></TD>
             </TR>
           ))}

@@ -1,14 +1,34 @@
+import { FacilityOfferCard } from "@/components/dashboard/facility-offer-card";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { JobOfferForm } from "@/components/forms/job-offer-form";
-import { getCurrentUser, getFacilityByUserId, getJobOffers } from "@/lib/data/repository";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
+import type { JobOffer } from "@/types";
 
 export default async function FacilityOffersPage() {
-  const user = await getCurrentUser("facility");
-  const profile = user ? await getFacilityByUserId(user.id) : null;
-  const offers = await getJobOffers();
-  const myOffers = offers.filter((offer) => offer.facility_id === profile?.id);
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+  let myOffers: JobOffer[] = [];
+
+  if (user) {
+    const { data: facility } = await supabase
+      .from("facility_profiles")
+      .select("id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (facility) {
+      const { data } = await supabase
+        .from("job_offers")
+        .select("*")
+        .eq("facility_id", facility.id)
+        .order("created_at", { ascending: false });
+
+      myOffers = (data as JobOffer[]) ?? [];
+    }
+  }
 
   return (
     <DashboardShell
@@ -27,15 +47,7 @@ export default async function FacilityOffersPage() {
           <CardHeader><CardTitle>Your current offers</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             {myOffers.map((offer) => (
-              <div key={offer.id} className="rounded-2xl border p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="font-semibold">{offer.title}</p>
-                    <p className="text-sm text-muted-foreground">{offer.city}, {offer.country}</p>
-                  </div>
-                  <Badge>{offer.status}</Badge>
-                </div>
-              </div>
+              <FacilityOfferCard key={offer.id} offer={offer} />
             ))}
             {!myOffers.length ? <p className="text-sm text-muted-foreground">No offers yet. Create your first role to start receiving interest.</p> : null}
           </CardContent>

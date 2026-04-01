@@ -5,6 +5,11 @@ import { Field } from "@/components/forms/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
+import {
+  jobOfferContractTypes,
+  jobOfferContractTypeLabels,
+  normalizeJobOfferContractType
+} from "@/lib/job-offers";
 
 export function JobOfferForm({ offer }: { offer?: JobOffer }) {
   return (
@@ -15,7 +20,19 @@ export function JobOfferForm({ offer }: { offer?: JobOffer }) {
         <Field label="Specialty"><Input name="specialty" defaultValue={offer?.specialty} required /></Field>
         <Field label="City"><Input name="city" defaultValue={offer?.city} required /></Field>
         <Field label="Country"><Input name="country" defaultValue={offer?.country} required /></Field>
-        <Field label="Contract type"><Input name="contract_type" defaultValue={offer?.contract_type} required /></Field>
+        <Field label="Contract type">
+          <Select
+            name="contract_type"
+            defaultValue={normalizeJobOfferContractType(offer?.contract_type)}
+            required
+          >
+            {jobOfferContractTypes.map((contractType) => (
+              <option key={contractType} value={contractType}>
+                {jobOfferContractTypeLabels[contractType]}
+              </option>
+            ))}
+          </Select>
+        </Field>
         <Field label="Salary range (optional)"><Input name="salary_range_optional" defaultValue={offer?.salary_range_optional || ""} /></Field>
         <Field label="Status">
           <Select name="status" defaultValue={offer?.status || "draft"}>

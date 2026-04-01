@@ -5,6 +5,7 @@ import { Filters } from "@/components/marketing/filters";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/dashboard/empty-state";
+import { getJobOfferContractTypeLabel } from "@/lib/job-offers";
 
 export default async function OpportunitiesPage({
   searchParams
@@ -36,7 +37,7 @@ export default async function OpportunitiesPage({
               { name: "specialty", label: "Specialty", placeholder: "Cardiology" },
               { name: "city", label: "City", placeholder: "Dubai" },
               { name: "country", label: "Country", placeholder: "United Arab Emirates" },
-              { name: "contract_type", label: "Contract", placeholder: "Permanent" }
+              { name: "contract_type", label: "Contract", placeholder: "unbefristet" }
             ]}
           />
         </div>
@@ -52,7 +53,7 @@ export default async function OpportunitiesPage({
                         {offer.facility?.facility_name || "Healthcare facility"} • {offer.city}, {offer.country}
                       </CardDescription>
                     </div>
-                    <Badge>{offer.contract_type}</Badge>
+                    <Badge>{getJobOfferContractTypeLabel(offer.contract_type)}</Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">

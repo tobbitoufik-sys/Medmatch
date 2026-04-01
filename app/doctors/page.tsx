@@ -51,21 +51,18 @@ export default async function DoctorsPage({
                 <CardHeader>
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                      <CardTitle>
-                        {doctor.title} {doctor.first_name} {doctor.last_name}
-                      </CardTitle>
+                      <CardTitle>{doctor.headline}</CardTitle>
                       <CardDescription>
                         {doctor.specialty} • {doctor.city}, {doctor.country}
                       </CardDescription>
                     </div>
-                    {doctor.verified ? <Badge>Verified</Badge> : null}
+                    <Badge>{doctor.availability}</Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-muted-foreground">{doctor.bio}</p>
                   <div className="flex flex-wrap gap-2">
-                    <Badge className="bg-primary/10 text-primary">{doctor.contract_type}</Badge>
-                    <Badge>{doctor.availability}</Badge>
+                    <Badge className="bg-primary/10 text-primary">{doctor.desired_contract_type}</Badge>
                     {doctor.languages.map((language) => (
                       <Badge key={language}>{language}</Badge>
                     ))}

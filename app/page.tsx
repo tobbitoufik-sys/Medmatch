@@ -9,6 +9,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { getJobOfferContractTypeLabel } from "@/lib/job-offers";
 import { formatDate } from "@/lib/utils";
 
 export default async function HomePage() {
@@ -128,7 +129,7 @@ export default async function HomePage() {
                       {offer.facility?.facility_name || "Healthcare facility"} • {offer.city}, {offer.country}
                     </CardDescription>
                   </div>
-                  <Badge>{offer.contract_type}</Badge>
+                  <Badge>{getJobOfferContractTypeLabel(offer.contract_type)}</Badge>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">

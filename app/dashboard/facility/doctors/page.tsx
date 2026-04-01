@@ -18,10 +18,10 @@ export default async function FacilityDoctorsPage() {
           <Card key={doctor.id}>
             <CardHeader>
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <CardTitle>{doctor.title} {doctor.first_name} {doctor.last_name}</CardTitle>
+                <CardTitle>{doctor.headline}</CardTitle>
                 <div className="flex gap-2">
                   <Badge>{doctor.specialty}</Badge>
-                  {doctor.verified ? <Badge className="bg-primary/10 text-primary">Verified</Badge> : null}
+                  <Badge className="bg-primary/10 text-primary">{doctor.desired_contract_type}</Badge>
                 </div>
               </div>
             </CardHeader>

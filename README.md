@@ -49,7 +49,7 @@ cp .env.example .env.local
 4. In the Supabase dashboard, open `Project Settings` then `API`.
 5. Copy these values:
    - `Project URL`
-   - `anon public key`
+   - `publishable key`
    - `service_role key`
 
 ## 4. Add your Supabase keys
@@ -60,7 +60,7 @@ Open the file `.env.local` and replace the placeholder values:
 NEXT_PUBLIC_APP_NAME=MedMatch
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
 

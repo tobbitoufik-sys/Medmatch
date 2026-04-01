@@ -22,20 +22,20 @@ export const dashboardNav: Record<UserRole, { href: Route; label: string }[]> = 
     { href: "/dashboard/doctor", label: "Overview" },
     { href: "/dashboard/doctor/profile", label: "Profile" },
     { href: "/dashboard/doctor/opportunities", label: "Opportunities" },
-    { href: "/dashboard/doctor/contacts", label: "Contacts" }
+    { href: "/dashboard/doctor/contacts", label: "Inbox" }
   ],
   facility: [
     { href: "/dashboard/facility", label: "Overview" },
     { href: "/dashboard/facility/profile", label: "Profile" },
     { href: "/dashboard/facility/offers", label: "Offers" },
     { href: "/dashboard/facility/doctors", label: "Find doctors" },
-    { href: "/dashboard/facility/contacts", label: "Contacts" }
+    { href: "/dashboard/facility/contacts", label: "Inbox" }
   ],
   admin: [
     { href: "/admin", label: "Overview" },
     { href: "/admin/users", label: "Users" },
     { href: "/admin/profiles", label: "Profiles" },
     { href: "/admin/offers", label: "Offers" },
-    { href: "/admin/contacts", label: "Contacts" }
+    { href: "/admin/contacts", label: "Inbox" }
   ]
 };
