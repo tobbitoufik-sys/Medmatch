@@ -3,14 +3,38 @@ import type { ReactElement } from "react";
 
 import { ClinicEdgePdfDocument } from "@/components/cv/pdf/ClinicEdgePdfDocument";
 import type { CvPdfData } from "@/components/cv/pdf/buildCvPdfData";
-import { ModernPdfDocument } from "@/components/cv/pdf/ModernPdfDocument";
+import { PdfTemplateDocument } from "@/components/cv/pdf/PdfPrimitives";
+import {
+  clinicEdgePdfTemplateConfig,
+  medmatchPremiumPdfTemplateConfig,
+  modernPdfTemplateConfig,
+  slateProfilePdfTemplateConfig,
+  softTimelinePdfTemplateConfig
+} from "@/components/cv/pdf/pdfTemplateConfig";
 
-export type PdfCvTemplateKey = "modern" | "clinicEdge";
+export type PdfCvTemplateKey =
+  | "modern"
+  | "medmatchPremium"
+  | "clinicEdge"
+  | "softTimeline"
+  | "slateProfile";
 
 export function resolvePdfCvTemplate(
   template?: string | string[] | null
 ): PdfCvTemplateKey {
   const value = Array.isArray(template) ? template[0] : template;
+
+  if (value === "medmatchPremium") {
+    return "medmatchPremium";
+  }
+
+  if (value === "softTimeline") {
+    return "softTimeline";
+  }
+
+  if (value === "slateProfile") {
+    return "slateProfile";
+  }
 
   return value === "clinicEdge" ? "clinicEdge" : "modern";
 }
@@ -26,5 +50,17 @@ export function CvDocument({
     return <ClinicEdgePdfDocument data={data} />;
   }
 
-  return <ModernPdfDocument data={data} />;
+  if (template === "medmatchPremium") {
+    return <PdfTemplateDocument data={data} config={medmatchPremiumPdfTemplateConfig} />;
+  }
+
+  if (template === "softTimeline") {
+    return <PdfTemplateDocument data={data} config={softTimelinePdfTemplateConfig} />;
+  }
+
+  if (template === "slateProfile") {
+    return <PdfTemplateDocument data={data} config={slateProfilePdfTemplateConfig} />;
+  }
+
+  return <PdfTemplateDocument data={data} config={modernPdfTemplateConfig} />;
 }

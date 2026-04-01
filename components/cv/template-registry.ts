@@ -1,5 +1,6 @@
 export const CV_TEMPLATE_OPTIONS = [
   { key: "modern", label: "Modern" },
+  { key: "medmatchPremium", label: "MedMatch Premium" },
   { key: "clinicEdge", label: "Clinic Edge" },
   { key: "softTimeline", label: "Soft Timeline" },
   { key: "slateProfile", label: "Slate Profile" },
