@@ -37,7 +37,10 @@ export default async function DoctorCvPdfPreviewPage({
     email: user.email,
     supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL
   });
-  const pdfData = buildCvPdfData(cvModel);
+  const pdfData = buildCvPdfData(
+    cvModel,
+    layout?.section_order as string[] | null | undefined
+  );
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#edf2f7_0%,#f8fafc_18%,#eef4f7_100%)]">

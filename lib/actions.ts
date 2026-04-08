@@ -1,5 +1,6 @@
 "use server";
 
+import { renderToBuffer } from "@react-pdf/renderer";
 import type { Route } from "next";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -12,6 +13,7 @@ import {
   applicationStatusTransitions,
   getFacilityWorkflowStatus
 } from "@/lib/applications";
+import { getCurrentDoctorProfile, getCurrentUser } from "@/lib/data/repository";
 import {
   doctorLanguageCefrOptions,
   doctorLanguageLabelOptions,
@@ -30,10 +32,40 @@ import {
 } from "@/lib/validations/profiles";
 import { signInSchema, signUpSchema } from "@/lib/validations/auth";
 import { renderCanonicalCvPhoto } from "@/lib/photo/render-canonical-cv-photo";
+import { generateDoctorCoverLetter, type DoctorCoverLetterManualContext } from "@/lib/ai/cover-letter";
+import {
+  generateDoctorApplicationEmail,
+  type DoctorApplicationEmailManualContext
+} from "@/lib/ai/application-email";
+import { createDoctorGmailDraft } from "@/lib/gmail/doctor-gmail";
+import { CoverLetterPdfDocument } from "@/components/doctor/cover-letter-pdf-document";
+import { buildDoctorCvModel } from "@/lib/cv/build-doctor-cv-model";
+import { buildCvPdfData } from "@/components/cv/pdf/buildCvPdfData";
+import { CvDocument, resolvePdfCvTemplate } from "@/components/cv/pdf/CvDocument";
+import { getCurrentDoctorCvLayout } from "@/lib/data/repository";
 
 type ActionState = {
   success: boolean;
   message: string;
+};
+
+export type CoverLetterGenerationResult = {
+  success: boolean;
+  message: string;
+  generatedLetter: string;
+};
+
+export type ApplicationEmailGenerationResult = {
+  success: boolean;
+  message: string;
+  subject: string;
+  body: string;
+};
+
+export type GmailDraftCreationResult = {
+  success: boolean;
+  message: string;
+  draftUrl?: string;
 };
 
 type DoctorExperienceInput = {
@@ -545,6 +577,20 @@ export async function signInAction(_: ActionState, formData: FormData) {
     return { success: false, message: error.message };
   }
 
+  const user = await getCurrentUser();
+
+  if (user?.role === "doctor") {
+    redirect("/dashboard/doctor");
+  }
+
+  if (user?.role === "facility") {
+    redirect("/dashboard/facility");
+  }
+
+  if (user?.role === "admin") {
+    redirect("/admin");
+  }
+
   redirect("/dashboard");
 }
 
@@ -985,6 +1031,9 @@ export async function saveDoctorCvLayoutAction(input: {
   }
 
   revalidatePath("/dashboard/doctor/cv");
+  revalidatePath("/dashboard/doctor/cv/pdf-preview");
+  revalidatePath("/dashboard/doctor/cv/export");
+  revalidatePath("/dashboard/doctor/cv/export/pdf");
   return { success: true, message: "CV layout saved." };
 }
 
@@ -1102,6 +1151,247 @@ export async function saveDoctorCvPhotoPresentationAction(input: {
     message: "Fotoausschnitt gespeichert.",
     photoPresentation: persistedPhotoPresentation
   };
+}
+
+function parseOptionalCoverLetterField(value: string | null | undefined) {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : undefined;
+}
+
+export async function generateDoctorCoverLetterAction(
+  input: DoctorCoverLetterManualContext
+): Promise<CoverLetterGenerationResult> {
+  const user = await getCurrentUser("doctor");
+
+  if (!user || user.role !== "doctor") {
+    return {
+      success: false,
+      message: "Sie muessen als Arzt angemeldet sein, um ein Motivationsschreiben zu erstellen.",
+      generatedLetter: ""
+    };
+  }
+
+  const profile = await getCurrentDoctorProfile();
+
+  if (!profile) {
+    return {
+      success: false,
+      message: "Bitte vervollstaendigen Sie zuerst Ihr Profil, bevor Sie ein Motivationsschreiben erstellen.",
+      generatedLetter: ""
+    };
+  }
+
+  try {
+    const generatedLetter = await generateDoctorCoverLetter({
+      profile,
+      manualContext: {
+        hospitalName: parseOptionalCoverLetterField(input.hospitalName),
+        roleTitle: parseOptionalCoverLetterField(input.roleTitle),
+        clinicAddress: parseOptionalCoverLetterField(input.clinicAddress),
+        contactPerson: parseOptionalCoverLetterField(input.contactPerson),
+        salutation:
+          input.salutation === "frau" || input.salutation === "herr"
+            ? input.salutation
+            : "unknown",
+        motivationNotes: parseOptionalCoverLetterField(input.motivationNotes)
+      }
+    });
+
+    return {
+      success: true,
+      message: "Motivationsschreiben erfolgreich erstellt.",
+      generatedLetter
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Das Motivationsschreiben konnte nicht erstellt werden.",
+      generatedLetter: ""
+    };
+  }
+}
+
+export async function generateDoctorApplicationEmailAction(
+  input: DoctorApplicationEmailManualContext
+): Promise<ApplicationEmailGenerationResult> {
+  const user = await getCurrentUser("doctor");
+
+  if (!user || user.role !== "doctor") {
+    return {
+      success: false,
+      message: "Sie muessen als Arzt angemeldet sein, um eine Bewerbungs-E-Mail zu erstellen.",
+      subject: "",
+      body: ""
+    };
+  }
+
+  const profile = await getCurrentDoctorProfile();
+
+  if (!profile) {
+    return {
+      success: false,
+      message: "Bitte vervollstaendigen Sie zuerst Ihr Profil, bevor Sie eine Bewerbungs-E-Mail erstellen.",
+      subject: "",
+      body: ""
+    };
+  }
+
+  try {
+    const generatedEmail = await generateDoctorApplicationEmail({
+      profile,
+      manualContext: {
+        hospitalName: parseOptionalCoverLetterField(input.hospitalName),
+        roleTitle: parseOptionalCoverLetterField(input.roleTitle),
+        clinicAddress: parseOptionalCoverLetterField(input.clinicAddress),
+        contactPerson: parseOptionalCoverLetterField(input.contactPerson),
+        salutation:
+          input.salutation === "frau" || input.salutation === "herr"
+            ? input.salutation
+            : "unknown",
+        motivationNotes: parseOptionalCoverLetterField(input.motivationNotes)
+      }
+    });
+
+    return {
+      success: true,
+      message: "Bewerbungs-E-Mail erfolgreich erstellt.",
+      subject: generatedEmail.subject,
+      body: generatedEmail.body
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Die Bewerbungs-E-Mail konnte nicht erstellt werden.",
+      subject: "",
+      body: ""
+    };
+  }
+}
+
+export async function createDoctorApplicationEmailDraftAction(input: {
+  subject: string;
+  body: string;
+  motivationLetter?: string;
+  recipientEmail?: string;
+}): Promise<GmailDraftCreationResult> {
+  const user = await getCurrentUser("doctor");
+
+  if (!user || user.role !== "doctor") {
+    return {
+      success: false,
+      message: "Sie muessen als Arzt angemeldet sein, um einen Gmail-Entwurf zu erstellen."
+    };
+  }
+
+  const subject = parseOptionalCoverLetterField(input.subject);
+  const body = parseOptionalCoverLetterField(input.body);
+  const motivationLetter = parseOptionalCoverLetterField(input.motivationLetter);
+  const recipientEmail = parseOptionalCoverLetterField(input.recipientEmail);
+
+  if (!subject || !body) {
+    return {
+      success: false,
+      message: "Bitte erstellen oder bearbeiten Sie zuerst Betreff und E-Mail-Text."
+    };
+  }
+
+  if (!motivationLetter) {
+    return {
+      success: false,
+      message: "Bitte erstellen Sie zuerst Ihr Motivationsschreiben erneut, bevor Sie einen Gmail-Entwurf mit Anhaengen erzeugen."
+    };
+  }
+
+  if (recipientEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipientEmail)) {
+    return {
+      success: false,
+      message: "Bitte geben Sie eine gueltige Empfaenger-E-Mail-Adresse ein."
+    };
+  }
+
+  try {
+    const profile = await getCurrentDoctorProfile();
+
+    if (!profile) {
+      return {
+        success: false,
+        message: "Bitte vervollstaendigen Sie zuerst Ihr Profil, bevor Sie einen Gmail-Entwurf erstellen."
+      };
+    }
+
+    const selectedTemplate = resolvePdfCvTemplate(null);
+    const layout = await getCurrentDoctorCvLayout(selectedTemplate);
+    const cvModel = buildDoctorCvModel({
+      profile,
+      photoPresentation: layout?.photo_presentation,
+      fallbackName: user.full_name,
+      email: user.email,
+      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL
+    });
+    const cvPdfData = buildCvPdfData(
+      cvModel,
+      layout?.section_order as string[] | null | undefined
+    );
+    const cvPdfBuffer = await renderToBuffer(
+      CvDocument({
+        data: cvPdfData,
+        template: selectedTemplate
+      })
+    );
+    const motivationLetterPdfBuffer = await renderToBuffer(
+      CoverLetterPdfDocument({
+        letter: motivationLetter
+      })
+    );
+    const filenameBase = [profile.first_name, profile.last_name]
+      .filter(Boolean)
+      .join("_")
+      .replace(/\s+/g, "_")
+      .replace(/[^\wÄÖÜäöüß-]/g, "") || "Dokument";
+
+    const draft = await createDoctorGmailDraft({
+      doctorUserId: user.id,
+      recipientEmail,
+      subject,
+      body,
+      attachments: [
+        {
+          filename: `Lebenslauf_${filenameBase}.pdf`,
+          contentType: "application/pdf",
+          data: Buffer.from(cvPdfBuffer)
+        },
+        {
+          filename: `Motivationsschreiben_${filenameBase}.pdf`,
+          contentType: "application/pdf",
+          data: Buffer.from(motivationLetterPdfBuffer)
+        }
+      ]
+    });
+
+    const composeTarget = draft.messageId ?? draft.draftId;
+
+    return {
+      success: true,
+      message: "Gmail-Entwurf erstellt",
+      draftUrl: composeTarget
+        ? `https://mail.google.com/mail/u/0/#drafts?compose=${encodeURIComponent(composeTarget)}`
+        : undefined
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Der Gmail-Entwurf konnte nicht erstellt werden."
+    };
+  }
 }
 
 export async function updateFacilityProfileAction(_: ActionState, formData: FormData) {

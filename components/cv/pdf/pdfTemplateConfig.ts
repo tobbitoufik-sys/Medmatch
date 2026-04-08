@@ -345,16 +345,16 @@ export const softTimelinePdfTemplateConfig: PdfTemplateConfig = {
   leftColumnSections: ["contact", "languages"],
   rightColumnSections: ["workExperience", "education", "fortbildungen", "additionalSections"],
   page: {
-    backgroundColor: "#F3F3F1"
+    backgroundColor: "#EEF2F1"
   },
   shell: {
     margin: 0,
     radius: 0,
     backgroundColor: "#F3F3F1",
-    borderColor: "#F3F3F1"
+    borderColor: "#EEF2F1"
   },
   sidebar: {
-    backgroundColor: "#F3F3F1",
+    backgroundColor: "#EEF2F1",
     paddingHorizontal: 22,
     paddingTop: 24,
     paddingBottom: 26,

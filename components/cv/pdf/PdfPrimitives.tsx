@@ -215,6 +215,79 @@ function isSlateProfile(config: PdfTemplateConfig) {
   return config.variant === "slateProfile";
 }
 
+function getPdfSignatureDateLabel() {
+  return new Intl.DateTimeFormat("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    timeZone: "Europe/Berlin"
+  }).format(new Date());
+}
+
+function derivePdfSignatureCity(contactItems: string[]) {
+  for (const rawItem of contactItems) {
+    const item = rawItem.trim();
+
+    if (!item || item.includes("@") || /\d/.test(item)) {
+      continue;
+    }
+
+    const [candidate] = item.split(",");
+    const city = candidate?.trim();
+
+    if (city && /^[A-Za-zÄÖÜäöüß\s-]+$/.test(city)) {
+      return city;
+    }
+  }
+
+  return null;
+}
+
+function PdfSignatureFooter({ data }: { data: CvPdfData }) {
+  const city = derivePdfSignatureCity(data.contact);
+  const dateLabel = getPdfSignatureDateLabel();
+  const placeDateLabel = city ? `${city}, den ${dateLabel}` : `den ${dateLabel}`;
+
+  return (
+    <View
+      style={{
+        marginTop: 28,
+        paddingTop: 18,
+        width: 210
+      }}
+      wrap={false}
+    >
+      <Text
+        style={{
+          fontSize: 9.8,
+          lineHeight: 1.4,
+          color: "#4F4F4F",
+          marginBottom: 24
+        }}
+      >
+        {placeDateLabel}
+      </Text>
+      <View
+        style={{
+          width: 150,
+          borderTopWidth: 1,
+          borderTopColor: "#9CA3AF",
+          marginBottom: 5
+        }}
+      />
+      <Text
+        style={{
+          fontSize: 8.8,
+          lineHeight: 1.35,
+          color: "#6F6F6F"
+        }}
+      >
+        Unterschrift
+      </Text>
+    </View>
+  );
+}
+
 export function PdfPhotoBlock({
   config,
   initials,
@@ -286,24 +359,48 @@ function PdfSoftTimelineTop({
   return (
     <View
       style={{
+        position: "relative",
         flexDirection: "row",
         borderBottomWidth: 1,
         borderBottomColor: "#D9D9D6",
-        marginBottom: 20,
-        paddingBottom: 20
+        marginBottom: 26,
+        paddingBottom: 26,
+        paddingTop: 8
       }}
     >
       <View
         style={{
-          width: "28%",
-          backgroundColor: "#DCEBEC",
-          borderTopRightRadius: 28,
-          borderBottomRightRadius: 28,
-          paddingVertical: 24,
-          paddingHorizontal: 20,
+          position: "absolute",
+          top: 6,
+          left: -18,
+          width: 290,
+          height: 238,
+          borderTopRightRadius: 120,
+          borderBottomRightRadius: 120,
+          backgroundColor: "#DCEBEC"
+        }}
+      />
+      <View
+        style={{
+          position: "absolute",
+          top: -6,
+          right: -26,
+          width: 420,
+          height: 208,
+          borderTopLeftRadius: 160,
+          borderBottomLeftRadius: 160,
+          backgroundColor: "#E8F1F1"
+        }}
+      />
+      <View
+        style={{
+          width: "30%",
+          paddingTop: 24,
+          paddingBottom: 18,
+          paddingHorizontal: 14,
           alignItems: "center",
           justifyContent: "center",
-          minHeight: 180
+          minHeight: 214
         }}
       >
         <PdfPhotoBlock
@@ -316,47 +413,107 @@ function PdfSoftTimelineTop({
       </View>
       <View
         style={{
-          width: "72%",
-          paddingLeft: 26,
-          paddingTop: 10
+          width: "70%",
+          paddingLeft: 34,
+          paddingTop: 18,
+          paddingRight: 18
         }}
       >
         <Text
           style={{
-            fontSize: 24,
+            fontSize: 9.4,
+            textTransform: "uppercase",
+            letterSpacing: 2.2,
+            color: "#7A8A8B",
+            marginBottom: 10
+          }}
+        >
+          Lebenslauf
+        </Text>
+        <Text
+          style={{
+            fontSize: 31,
             fontWeight: 700,
             color: "#222222",
-            lineHeight: 1.08,
-            marginBottom: 6
+            lineHeight: 1.1,
+            marginBottom: 8,
+            maxWidth: 380
           }}
         >
           {data.identity.fullName}
         </Text>
         {data.identity.subtitle ? (
-          <Text
+          <View
             style={{
-              fontSize: 11,
-              color: "#4F4F4F",
-              lineHeight: 1.4,
-              marginBottom: 12
+              alignSelf: "flex-start",
+              borderRadius: 999,
+              backgroundColor: "#F4F7F6",
+              paddingHorizontal: 12,
+              paddingVertical: 5,
+              marginBottom: 16
             }}
           >
-            {normalizePdfText(data.identity.subtitle)}
-          </Text>
+            <Text
+              style={{
+                fontSize: 10,
+                color: "#4F4F4F",
+                lineHeight: 1.3
+              }}
+            >
+              {normalizePdfText(data.identity.subtitle)}
+            </Text>
+          </View>
         ) : null}
-        {data.contact.length ? (
-          <View style={{ flexDirection: "column", gap: 4 }}>
-            {data.contact.map((item) => (
-              <Text
-                key={item}
+        <View
+          style={{
+            width: 72,
+            height: 4,
+            borderRadius: 999,
+            backgroundColor: "#8FC7D2",
+            marginBottom: 14
+          }}
+        />
+        {buildSoftTimelineContactRows(data.contact).length ? (
+          <View
+            style={{
+              flexDirection: "column",
+              gap: 5,
+              maxWidth: 300
+            }}
+          >
+            {buildSoftTimelineContactRows(data.contact).map((item) => (
+              <View
+                key={`${item.kind}-${item.value}`}
                 style={{
-                  fontSize: 9.8,
-                  lineHeight: 1.45,
-                  color: "#4F4F4F"
+                  alignSelf: "flex-start",
+                  minWidth: 250,
+                  borderRadius: 8,
+                  backgroundColor: "rgba(255,255,255,0.38)",
+                  paddingHorizontal: 10,
+                  paddingVertical: 6,
+                  borderWidth: 1,
+                  borderColor: "#DCEBEC"
                 }}
               >
-                {normalizePdfText(item)}
-              </Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 8
+                  }}
+                >
+                  <PdfSoftTimelineContactIcon kind={item.kind} />
+                  <Text
+                    style={{
+                      fontSize: 9.1,
+                      lineHeight: 1.28,
+                      color: "#435463"
+                    }}
+                  >
+                    {normalizePdfText(item.value)}
+                  </Text>
+                </View>
+              </View>
             ))}
           </View>
         ) : null}
@@ -505,42 +662,215 @@ function PdfTimelineSectionBlock({
 
   return (
     <View style={{ marginTop: 14 }}>
-      <View
-        style={{
-          marginBottom: 10,
-          borderTopWidth: 1,
-          borderTopColor: "#D9D9D6",
-          paddingTop: 12
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 10,
-            fontWeight: 700,
-            letterSpacing: 0.9,
-            textTransform: "uppercase",
-            color: "#222222"
-          }}
-        >
-          {title}
-        </Text>
+      <View wrap={false}>
         <View
           style={{
-            width: 40,
-            height: 3,
-            borderRadius: 999,
-            backgroundColor: "#8FC7D2",
-            marginTop: 6
+            marginBottom: 10,
+            borderTopWidth: 1,
+            borderTopColor: "#D9D9D6",
+            paddingTop: 12
           }}
-        />
+        >
+          <Text
+            style={{
+              fontSize: 10,
+              fontWeight: 700,
+              letterSpacing: 0.9,
+              textTransform: "uppercase",
+              color: "#222222"
+            }}
+          >
+            {title}
+          </Text>
+          <View
+            style={{
+              width: 40,
+              height: 3,
+              borderRadius: 999,
+              backgroundColor: "#8FC7D2",
+              marginTop: 6
+            }}
+          />
+        </View>
+        <PdfTimelineEntryRow entry={entries[0]} />
       </View>
       <View>
-        {entries.map((entry) => (
+        {entries.slice(1).map((entry) => (
           <PdfTimelineEntryRow key={entry.id} entry={entry} />
         ))}
       </View>
     </View>
   );
+}
+
+function buildSoftTimelineLanguageEntries(items: string[]): CvPdfEntry[] {
+  return items.map((item, index) => ({
+    id: `language-${index}`,
+    title: item
+  }));
+}
+
+function renderOrderedPdfSectionNode({
+  config,
+  data,
+  sectionKey
+}: {
+  config: PdfTemplateConfig;
+  data: CvPdfData;
+  sectionKey: CvPdfMainSectionOrderKey;
+}) {
+  const shouldKeepSoftTimelineSectionTogether =
+    isSoftTimeline(config) &&
+    (sectionKey === "languages" ||
+      sectionKey === "fortbildungen" ||
+      sectionKey === "additionalSections" ||
+      sectionKey === "customBlock");
+
+  if (sectionKey === "customBlock") {
+    if (!data.customBlock) {
+      return null;
+    }
+
+    const block = <PdfCustomBlock config={config} block={data.customBlock} />;
+    return shouldKeepSoftTimelineSectionTogether ? <View wrap={false}>{block}</View> : block;
+  }
+
+  if (sectionKey === "languages") {
+    if (!isSoftTimeline(config)) {
+      return null;
+    }
+
+    const sectionNode = data.languages.length ? (
+      <PdfSectionBlock
+        config={config}
+        title="Sprachen"
+        entries={buildSoftTimelineLanguageEntries(data.languages)}
+        compact={false}
+      />
+    ) : null;
+
+    return sectionNode && shouldKeepSoftTimelineSectionTogether ? (
+      <View wrap={false}>{sectionNode}</View>
+    ) : (
+      sectionNode
+    );
+  }
+
+  const section = getMainSectionEntries(data, sectionKey);
+
+  const sectionNode = (
+    <PdfSectionBlock
+      config={config}
+      title={section.title}
+      entries={section.entries}
+      compact={false}
+    />
+  );
+
+  return shouldKeepSoftTimelineSectionTogether ? (
+    <View wrap={false}>{sectionNode}</View>
+  ) : (
+    sectionNode
+  );
+}
+
+function renderSlateOrderedPdfSectionNode({
+  data,
+  sectionKey
+}: {
+  data: CvPdfData;
+  sectionKey: CvPdfMainSectionOrderKey;
+}) {
+  if (sectionKey === "workExperience") {
+    return <PdfSlateSection title="Berufserfahrung" entries={data.workExperience} />;
+  }
+
+  if (sectionKey === "education") {
+    return <PdfSlateSection title="Ausbildung" entries={data.education} />;
+  }
+
+  if (sectionKey === "fortbildungen") {
+    return <PdfSlateSection title="Fortbildungen" entries={data.fortbildungen} />;
+  }
+
+  if (sectionKey === "languages") {
+    return data.languages.length ? (
+      <View wrap={false}>
+        <PdfSlateSectionHeading title="Kenntnisse und Interessen" />
+        <View style={{ flexDirection: "row" }} wrap={false}>
+          <View style={{ width: 160, paddingRight: 14 }}>
+            <Text
+              style={{
+                fontSize: 9.7,
+                lineHeight: 1.5,
+                color: "#4F4F4F"
+              }}
+            >
+              Fremdsprachen
+            </Text>
+          </View>
+          <View style={{ flex: 1 }}>
+            {data.languages.map((item) => (
+              <Text
+                key={item}
+                style={{
+                  fontSize: 9.7,
+                  lineHeight: 1.5,
+                  color: "#4F4F4F"
+                }}
+              >
+                {normalizePdfText(item)}
+              </Text>
+            ))}
+          </View>
+        </View>
+      </View>
+    ) : null;
+  }
+
+  if (sectionKey === "additionalSections") {
+    return data.additionalSections.length ? (
+      <View>
+        {data.additionalSections.map((section) => (
+          <View key={section.id}>
+            <PdfSlateFreeTitle title={section.title} />
+            <View>
+              {section.bullets?.map((bullet) => (
+                <Text
+                  key={`${section.id}-${bullet}`}
+                  style={{
+                    fontSize: 9.6,
+                    lineHeight: 1.42,
+                    color: "#4F4F4F",
+                    marginTop: 3
+                  }}
+                >
+                  - {normalizePdfText(bullet)}
+                </Text>
+              ))}
+            </View>
+          </View>
+        ))}
+      </View>
+    ) : null;
+  }
+
+  if (sectionKey === "customBlock") {
+    return data.customBlock ? (
+      <View>
+        {data.customBlock.title ? (
+          <PdfSlateFreeTitle title={data.customBlock.title} />
+        ) : null}
+        <View style={{ marginTop: data.customBlock.title ? 0 : 18 }}>
+          {data.customBlock.entries.map((entry) => (
+            <PdfSlateEntryRow key={entry.id} entry={entry} />
+          ))}
+        </View>
+      </View>
+    ) : null;
+  }
+
+  return null;
 }
 
 function PdfSlateSectionHeading({ title }: { title: string }) {
@@ -622,26 +952,27 @@ function PdfSlateSectionHeading({ title }: { title: string }) {
     );
 
   return (
-    <View style={{ marginTop: 18, marginBottom: 10 }}>
+    <View style={{ marginTop: 20, marginBottom: 12 }}>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         <View
           style={{
-            width: 22,
-            height: 22,
+            width: 24,
+            height: 24,
             borderRadius: 999,
             backgroundColor: "#111827",
             alignItems: "center",
             justifyContent: "center",
-            marginRight: 10
+            marginRight: 11
           }}
         >
           {badgeIcon}
         </View>
         <Text
           style={{
-            fontSize: 11.2,
+            fontSize: 11.4,
             fontWeight: 700,
-            color: "#222222"
+            color: "#222222",
+            lineHeight: 1.2
           }}
         >
           {title}
@@ -649,8 +980,8 @@ function PdfSlateSectionHeading({ title }: { title: string }) {
       </View>
       <View
         style={{
-          marginTop: 8,
-          marginLeft: 32,
+          marginTop: 9,
+          marginLeft: 35,
           height: 1,
           backgroundColor: "#CFCFCA"
         }}
@@ -661,13 +992,13 @@ function PdfSlateSectionHeading({ title }: { title: string }) {
 
 function PdfSlateEntryRow({ entry }: { entry: CvPdfEntry }) {
   return (
-    <View style={{ flexDirection: "row", marginBottom: 12 }} wrap={false}>
-      <View style={{ width: 108, paddingRight: 14 }}>
+    <View style={{ flexDirection: "row", marginBottom: 14 }} wrap={false}>
+      <View style={{ width: 114, paddingRight: 16 }}>
         {entry.sinceLabel || entry.dateLabel ? (
           <Text
             style={{
-              fontSize: 9.5,
-              lineHeight: 1.35,
+              fontSize: 9.4,
+              lineHeight: 1.4,
               color: "#6F6F6F"
             }}
           >
@@ -680,7 +1011,7 @@ function PdfSlateEntryRow({ entry }: { entry: CvPdfEntry }) {
           style={{
             fontSize: 11,
             fontWeight: 700,
-            lineHeight: 1.3,
+            lineHeight: 1.26,
             color: "#222222"
           }}
         >
@@ -692,9 +1023,9 @@ function PdfSlateEntryRow({ entry }: { entry: CvPdfEntry }) {
               <Text
                 style={{
                   fontSize: 10,
-                  lineHeight: 1.38,
+                  lineHeight: 1.42,
                   color: "#4F4F4F",
-                  marginTop: 2
+                  marginTop: 3
                 }}
               >
                 {normalizePdfText(entry.issuerLine)}
@@ -707,9 +1038,9 @@ function PdfSlateEntryRow({ entry }: { entry: CvPdfEntry }) {
               <Text
                 style={{
                   fontSize: 10,
-                  lineHeight: 1.38,
+                  lineHeight: 1.42,
                   color: "#4F4F4F",
-                  marginTop: 2
+                  marginTop: 3
                 }}
               >
                 {normalizePdfText(entry.subtitle)}
@@ -719,9 +1050,9 @@ function PdfSlateEntryRow({ entry }: { entry: CvPdfEntry }) {
               <Text
                 style={{
                   fontSize: 9.7,
-                  lineHeight: 1.34,
+                  lineHeight: 1.38,
                   color: "#6F6F6F",
-                  marginTop: 2
+                  marginTop: 2.5
                 }}
               >
                 {normalizePdfText(entry.meta)}
@@ -730,7 +1061,7 @@ function PdfSlateEntryRow({ entry }: { entry: CvPdfEntry }) {
           </>
         )}
         {entry.bullets?.length ? (
-          <View style={{ paddingTop: 4 }}>
+          <View style={{ paddingTop: 5 }}>
             {entry.bullets.map((bullet) => (
               <Text
                 key={`${entry.id}-${bullet}`}
@@ -738,7 +1069,7 @@ function PdfSlateEntryRow({ entry }: { entry: CvPdfEntry }) {
                   fontSize: 9.6,
                   lineHeight: 1.42,
                   color: "#4F4F4F",
-                  marginTop: 3
+                  marginTop: 3.5
                 }}
               >
                 - {normalizePdfText(bullet)}
@@ -776,19 +1107,20 @@ function PdfSlateSection({
 
 function PdfSlateFreeTitle({ title }: { title: string }) {
   return (
-    <View style={{ marginTop: 18, marginBottom: 8 }}>
+    <View style={{ marginTop: 20, marginBottom: 10 }}>
       <Text
         style={{
-          fontSize: 11,
+          fontSize: 11.2,
           fontWeight: 700,
-          color: "#222222"
+          color: "#222222",
+          lineHeight: 1.2
         }}
       >
         {normalizePdfText(title)}
       </Text>
       <View
         style={{
-          marginTop: 7,
+          marginTop: 8,
           height: 1,
           backgroundColor: "#CFCFCA"
         }}
@@ -797,11 +1129,12 @@ function PdfSlateFreeTitle({ title }: { title: string }) {
   );
 }
 
-function PdfSlateContactIcon({ item }: { item: string }) {
-  const normalized = item.toLowerCase();
-  const isEmail = normalized.includes("@");
-  const isPhone = /^\+?[\d\s()/.-]+$/.test(item.trim()) || normalized.includes("tel");
-  const isAddress =
+function PdfSlateContactIcon({ type }: { type: "phone" | "email" | "address" }) {
+  const isEmail = type === "email";
+  const isPhone = type === "phone";
+  const isAddress = type === "address";
+  const isLocation = false;
+  /*
     /\d/.test(item) &&
     /(str|straße|strasse|weg|platz|allee|gasse|haus)/i.test(item);
   const isLocation =
@@ -812,26 +1145,27 @@ function PdfSlateContactIcon({ item }: { item: string }) {
       normalized
     );
 
-  if (isEmail) {
+  */
+  if (type === "email") {
     return (
-      <View style={{ width: 14, height: 10, alignItems: "center", justifyContent: "center" }}>
+      <View style={{ width: 14, height: 14, alignItems: "center", justifyContent: "center" }}>
         <View
           style={{
             width: 12,
-            height: 8,
-            borderWidth: 1,
+            height: 8.5,
+            borderWidth: 1.1,
             borderColor: "#6F6F6F",
-            borderRadius: 1
+            borderRadius: 1.2
           }}
         />
         <View
           style={{
             position: "absolute",
-            top: 2,
-            width: 8,
-            height: 8,
-            borderLeftWidth: 1,
-            borderTopWidth: 1,
+            top: 4.1,
+            width: 7.2,
+            height: 7.2,
+            borderLeftWidth: 1.1,
+            borderTopWidth: 1.1,
             borderColor: "#6F6F6F",
             transform: "rotate(45deg)"
           }}
@@ -840,20 +1174,48 @@ function PdfSlateContactIcon({ item }: { item: string }) {
     );
   }
 
-  if (isPhone) {
+  if (type === "phone") {
     return (
       <View style={{ width: 14, height: 14, alignItems: "center", justifyContent: "center" }}>
         <View
           style={{
-            width: 7,
-            height: 10,
-            borderLeftWidth: 1.2,
-            borderRightWidth: 1.2,
-            borderTopWidth: 1.2,
+            width: 7.6,
+            height: 4.6,
+            borderLeftWidth: 1.3,
+            borderTopWidth: 1.3,
+            borderBottomWidth: 1.3,
             borderColor: "#6F6F6F",
             borderTopLeftRadius: 5,
-            borderTopRightRadius: 5,
-            transform: "rotate(35deg)"
+            borderBottomLeftRadius: 5,
+            transform: "rotate(-35deg)"
+          }}
+        />
+        <View
+          style={{
+            position: "absolute",
+            top: 3.1,
+            left: 7.9,
+            width: 2.6,
+            height: 4,
+            borderRightWidth: 1.3,
+            borderBottomWidth: 1.3,
+            borderColor: "#6F6F6F",
+            borderBottomRightRadius: 4,
+            transform: "rotate(-35deg)"
+          }}
+        />
+        <View
+          style={{
+            position: "absolute",
+            bottom: 3.1,
+            left: 3.2,
+            width: 2.6,
+            height: 4,
+            borderLeftWidth: 1.3,
+            borderTopWidth: 1.3,
+            borderColor: "#6F6F6F",
+            borderTopLeftRadius: 4,
+            transform: "rotate(-35deg)"
           }}
         />
       </View>
@@ -865,23 +1227,22 @@ function PdfSlateContactIcon({ item }: { item: string }) {
       <View style={{ width: 14, height: 14, alignItems: "center", justifyContent: "center" }}>
         <View
           style={{
-            width: 10,
-            height: 7,
-            borderWidth: 1,
+            width: 7.4,
+            height: 7.4,
+            borderWidth: 1.1,
             borderColor: "#6F6F6F",
-            borderTopWidth: 0
+            borderRadius: 999,
+            borderBottomLeftRadius: 999,
+            transform: "rotate(45deg)"
           }}
         />
         <View
           style={{
             position: "absolute",
-            top: 2,
-            width: 8,
-            height: 8,
-            borderLeftWidth: 1,
-            borderTopWidth: 1,
-            borderColor: "#6F6F6F",
-            transform: "rotate(45deg)"
+            width: 2.3,
+            height: 2.3,
+            borderRadius: 999,
+            backgroundColor: "#6F6F6F"
           }}
         />
       </View>
@@ -956,14 +1317,14 @@ function buildSlateContactRows(contactItems: string[]) {
       !/\d/.test(item)
   );
 
-  const rows: Array<{ key: string; iconKey: string; value: string }> = [];
+  const rows: Array<{ key: string; label: string; value: string }> = [];
 
   if (phone) {
-    rows.push({ key: `phone-${phone}`, iconKey: phone, value: phone });
+    rows.push({ key: `phone-${phone}`, label: "Telefon", value: phone });
   }
 
   if (email) {
-    rows.push({ key: `email-${email}`, iconKey: email, value: email });
+    rows.push({ key: `email-${email}`, label: "E-Mail", value: email });
   }
 
   if (addressLine || locationLine) {
@@ -985,13 +1346,162 @@ function buildSlateContactRows(contactItems: string[]) {
     if (combinedAddress) {
       rows.push({
         key: `address-${combinedAddress}`,
-        iconKey: streetPart ?? postalPart ?? cityPart ?? "address",
+        label: "Adresse",
         value: combinedAddress
       });
     }
   }
 
   return rows;
+}
+
+function buildSoftTimelineContactRows(contactItems: string[]) {
+  const phone = contactItems.find(
+    (item) => /^\+?[\d\s()/.-]+$/.test(item.trim()) || item.toLowerCase().includes("tel")
+  );
+  const email = contactItems.find((item) => item.includes("@"));
+  const addressLine = contactItems.find(
+    (item) =>
+      /\d/.test(item) && /(str|straße|strasse|weg|platz|allee|gasse|haus)/i.test(item)
+  );
+  const locationLine = contactItems.find(
+    (item) =>
+      item !== phone &&
+      item !== email &&
+      item !== addressLine &&
+      item.trim().length > 0
+  );
+
+  const rows: Array<{ kind: "phone" | "email" | "address"; value: string }> = [];
+
+  if (phone) rows.push({ kind: "phone", value: phone });
+  if (email) rows.push({ kind: "email", value: email });
+
+  if (addressLine || locationLine) {
+    const addressParts = (addressLine ?? "")
+      .split(",")
+      .map((part) => part.trim())
+      .filter(Boolean);
+    const streetPart = addressParts[0] ?? null;
+    const postalPart = addressParts[1] ?? null;
+    const cityPart = locationLine
+      ? locationLine
+          .split(",")
+          .map((part) => part.trim())
+          .filter(Boolean)
+          .find((part) => !/deutschland|germany/i.test(part)) ?? null
+      : null;
+
+    const combinedAddress = [streetPart, postalPart, cityPart]
+      .filter((part): part is string => Boolean(part))
+      .join(", ");
+
+    if (combinedAddress) {
+      rows.push({ kind: "address", value: combinedAddress });
+    }
+  }
+
+  return rows;
+}
+
+function PdfSoftTimelineContactIcon({
+  kind
+}: {
+  kind: "phone" | "email" | "address";
+}) {
+  if (kind === "phone") {
+    return (
+      <View
+        style={{
+          width: 14,
+          height: 14,
+          alignItems: "center",
+          justifyContent: "center"
+        }}
+      >
+        <View
+          style={{
+            width: 8,
+            height: 8,
+            borderWidth: 1.6,
+            borderColor: "#7BAFBB",
+            borderTopLeftRadius: 4,
+            borderBottomRightRadius: 4,
+            transform: "rotate(45deg)"
+          }}
+        />
+      </View>
+    );
+  }
+
+  if (kind === "email") {
+    return (
+      <View
+        style={{
+          width: 14,
+          height: 14,
+          borderWidth: 1.4,
+          borderColor: "#7BAFBB",
+          borderRadius: 3,
+          position: "relative",
+          justifyContent: "center"
+        }}
+      >
+        <View
+          style={{
+            position: "absolute",
+            top: 3,
+            left: 1,
+            right: 1,
+            height: 1.4,
+            backgroundColor: "#7BAFBB",
+            transform: "rotate(24deg)"
+          }}
+        />
+        <View
+          style={{
+            position: "absolute",
+            top: 3,
+            left: 1,
+            right: 1,
+            height: 1.4,
+            backgroundColor: "#7BAFBB",
+            transform: "rotate(-24deg)"
+          }}
+        />
+      </View>
+    );
+  }
+
+  return (
+    <View
+      style={{
+        width: 14,
+        height: 16,
+        alignItems: "center"
+      }}
+    >
+      <View
+        style={{
+          width: 9,
+          height: 9,
+          borderWidth: 1.4,
+          borderColor: "#7BAFBB",
+          borderRadius: 999
+        }}
+      />
+      <View
+        style={{
+          width: 2,
+          height: 5,
+          marginTop: -1,
+          backgroundColor: "#7BAFBB",
+          borderBottomLeftRadius: 2,
+          borderBottomRightRadius: 2
+        }}
+      />
+    </View>
+  );
 }
 
 export function PdfCompactSection({
@@ -1066,11 +1576,105 @@ export function PdfEntryRow({
   entry: CvPdfEntry;
 }) {
   const isMedicalLicense = entry.itemType === "medical_license";
+  const dateLabel = isMedicalLicense ? entry.sinceLabel : entry.dateLabel;
 
+  if (isSoftTimeline(config)) {
+    const markerColor = config.theme.accentBarColor ?? "#8FC7D2";
+
+    return (
+      <View
+        style={[styles.entry, { marginBottom: 14 }]}
+        wrap={false}
+      >
+        <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
+          <View style={{ width: config.dateColumnWidth, paddingRight: 10 }}>
+            {dateLabel ? (
+              <Text
+                style={{
+                  fontSize: 9.5,
+                  lineHeight: 1.35,
+                  color: config.theme.entryDateColor
+                }}
+              >
+                {normalizePdfText(dateLabel)}
+              </Text>
+            ) : null}
+          </View>
+          <View
+            style={{
+              width: 18,
+              marginRight: 12,
+              minHeight: 22,
+              alignItems: "center",
+              paddingTop: 2
+            }}
+          >
+            <View
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: 999,
+                backgroundColor: markerColor
+              }}
+            />
+            <View
+              style={{
+                width: 2,
+                flexGrow: 1,
+                minHeight: 12,
+                marginTop: 2,
+                backgroundColor: markerColor
+              }}
+            />
+          </View>
+          <View style={{ flex: 1, minWidth: 0 }}>
+            <Text style={[styles.entryTitle, { color: config.theme.entryTitleColor }]}>
+              {normalizePdfText(entry.title)}
+            </Text>
+            {isMedicalLicense ? (
+              <>
+                {entry.issuerLine ? (
+                  <Text style={[styles.entrySubtitle, { color: config.theme.entrySubtitleColor }]}>
+                    {normalizePdfText(entry.issuerLine)}
+                  </Text>
+                ) : null}
+              </>
+            ) : (
+              <>
+                {entry.subtitle ? (
+                  <Text style={[styles.entrySubtitle, { color: config.theme.entrySubtitleColor }]}>
+                    {normalizePdfText(entry.subtitle)}
+                  </Text>
+                ) : null}
+                {entry.meta ? (
+                  <Text style={[styles.entryMeta, { color: config.theme.entryMetaColor }]}>
+                    {normalizePdfText(entry.meta)}
+                  </Text>
+                ) : null}
+              </>
+            )}
+            {entry.bullets?.length ? (
+              <View style={styles.bulletList}>
+                {entry.bullets.map((bullet) => (
+                  <Text
+                    key={`${entry.id}-${bullet}`}
+                    style={[styles.bullet, { color: config.theme.bulletColor }]}
+                  >
+                    - {normalizePdfText(bullet)}
+                  </Text>
+                ))}
+              </View>
+            ) : null}
+          </View>
+        </View>
+      </View>
+    );
+  }
+  
   return (
-    <View
-      style={[styles.entry, { marginBottom: getDensityValue(config, 10, 12) }]}
-      wrap={false}
+      <View
+        style={[styles.entry, { marginBottom: getDensityValue(config, 10, 12) }]}
+        wrap={false}
       >
         <View style={styles.entryHeader}>
           <View style={styles.entryLeft}>
@@ -1078,10 +1682,10 @@ export function PdfEntryRow({
               {normalizePdfText(entry.title)}
             </Text>
           </View>
-        <PdfDateColumn
-          config={config}
-          dateLabel={isMedicalLicense ? entry.sinceLabel : entry.dateLabel}
-        />
+          <PdfDateColumn
+            config={config}
+            dateLabel={dateLabel}
+          />
       </View>
 
       {(entry.subtitle || entry.meta || entry.bullets?.length || entry.issuerLine || entry.sinceLabel) ? (
@@ -1140,17 +1744,24 @@ export function PdfSectionBlock({
   if (!entries.length) {
     return null;
   }
-
-  const sectionDividerStyle = config.sections.topBorderColor
+  
+  const sectionDividerStyle = isSoftTimeline(config)
     ? {
         borderTopWidth: 1,
-        borderTopColor: config.sections.topBorderColor,
-        paddingTop: getDensityValue(config, 12, 13)
+        borderTopColor: "#D9D9D6",
+        paddingTop: 12
       }
-    : {};
+    : config.sections.topBorderColor
+      ? {
+          borderTopWidth: 1,
+          borderTopColor: config.sections.topBorderColor,
+          paddingTop: getDensityValue(config, 12, 13)
+        }
+      : {};
 
   return (
     <View
+      minPresenceAhead={isSoftTimeline(config) ? 220 : undefined}
       style={[
         sectionDividerStyle,
         {
@@ -1158,26 +1769,36 @@ export function PdfSectionBlock({
             ? getDensityValue(config, 12, 13)
             : getDensityValue(config, 13, 15)
         }
-      ]}
+        ]}
     >
       <View wrap={false}>
-          <Text
-            style={[
-              styles.sectionTitle,
-              {
-                fontSize: config.sections.titleSize,
-                letterSpacing: config.sections.titleLetterSpacing,
-                color: config.theme.sectionTitleColor
-              }
-            ]}
-          >
+        <Text
+          style={[
+            styles.sectionTitle,
+            {
+              fontSize: config.sections.titleSize,
+              letterSpacing: config.sections.titleLetterSpacing,
+              color: config.theme.sectionTitleColor
+            }
+          ]}
+        >
           {title}
         </Text>
-        {entries.length ? (
-          <View style={styles.entries}>
-            <PdfEntryRow config={config} entry={entries[0]} />
-          </View>
+        {isSoftTimeline(config) ? (
+          <View
+            style={{
+              width: 40,
+              height: 3,
+              borderRadius: 999,
+              backgroundColor: config.theme.accentBarColor ?? "#8FC7D2",
+              marginTop: -2,
+              marginBottom: 10
+            }}
+          />
         ) : null}
+        <View style={styles.entries}>
+          <PdfEntryRow config={config} entry={entries[0]} />
+        </View>
       </View>
       {entries.length > 1 ? (
         <View style={styles.entries}>
@@ -1200,30 +1821,44 @@ export function PdfCustomBlock({
   if (!block.entries.length && !block.title) {
     return null;
   }
-
+  
   return (
-    <View
-      style={{
-        marginTop: getDensityValue(config, 13, 15)
-      }}
-    >
-      {block.title ? (
-          <Text
-            style={[
-              styles.sectionTitle,
-              {
-                fontSize: config.sections.titleSize,
-                letterSpacing: config.sections.titleLetterSpacing,
-                color: config.theme.sectionTitleColor
-              }
-            ]}
-          >
-            {normalizePdfText(block.title)}
-          </Text>
-      ) : null}
-      <View style={styles.entries}>
-        {block.entries.map((entry) => (
-          <PdfEntryRow key={entry.id} config={config} entry={entry} />
+      <View
+        style={{
+          marginTop: getDensityValue(config, 13, 15)
+        }}
+      >
+        {block.title ? (
+          <>
+            <Text
+              style={[
+                styles.sectionTitle,
+                {
+                  fontSize: config.sections.titleSize,
+                  letterSpacing: config.sections.titleLetterSpacing,
+                  color: config.theme.sectionTitleColor
+                }
+              ]}
+            >
+              {normalizePdfText(block.title)}
+            </Text>
+            {isSoftTimeline(config) ? (
+              <View
+                style={{
+                  width: 40,
+                  height: 3,
+                  borderRadius: 999,
+                  backgroundColor: config.theme.accentBarColor ?? "#8FC7D2",
+                  marginTop: -2,
+                  marginBottom: 10
+                }}
+              />
+            ) : null}
+          </>
+        ) : null}
+        <View style={styles.entries}>
+          {block.entries.map((entry) => (
+            <PdfEntryRow key={entry.id} config={config} entry={entry} />
         ))}
       </View>
     </View>
@@ -1376,28 +2011,27 @@ export function PdfPageShell({
   data: CvPdfData;
 }) {
   if (isSlateProfile(config)) {
-    const orderedKeys =
-      data.mainSectionOrder ?? (config.rightColumnSections as CvPdfMainSectionOrderKey[]);
+    const orderedKeys = data.mainSectionOrder;
 
     return (
       <Page size="A4" style={[styles.page, { backgroundColor: "#F3F3F1" }]}>
         <View
           style={{
             margin: 18,
-            paddingHorizontal: 8,
-            paddingTop: 6,
-            paddingBottom: 20,
+            paddingHorizontal: 10,
+            paddingTop: 8,
+            paddingBottom: 22,
             backgroundColor: "#F3F3F1"
           }}
         >
-          <View style={{ position: "relative", marginBottom: 20, minHeight: 150 }}>
+          <View style={{ position: "relative", marginBottom: 24, minHeight: 158 }}>
             <View
               style={{
                 position: "absolute",
-                top: -14,
-                right: -8,
-                width: 210,
-                height: 118,
+                top: -16,
+                right: -10,
+                width: 214,
+                height: 122,
                 backgroundColor: "#E8E8E6",
                 transform: "rotate(-18deg)"
               }}
@@ -1409,14 +2043,14 @@ export function PdfPageShell({
                 alignItems: "flex-start"
               }}
             >
-              <View style={{ width: "66%", paddingTop: 10, paddingLeft: 8 }}>
+              <View style={{ width: "66%", paddingTop: 12, paddingLeft: 8 }}>
                 <Text
                   style={{
                     fontSize: 12,
                     textTransform: "uppercase",
                     color: "#222222",
                     fontWeight: 700,
-                    marginBottom: 2
+                    marginBottom: 3
                   }}
                 >
                   Lebenslauf
@@ -1425,25 +2059,41 @@ export function PdfPageShell({
                   style={{
                     fontSize: 26,
                     fontWeight: 700,
-                    lineHeight: 1.06,
+                    lineHeight: 1.08,
                     color: "#222222",
-                    marginBottom: 10
+                    marginBottom: 12
                   }}
                 >
                   {data.identity.fullName}
                 </Text>
                 {data.contact.length ? (
-                  <View style={{ flexDirection: "column", gap: 5 }}>
+                  <View style={{ flexDirection: "column", gap: 6 }}>
                     {buildSlateContactRows(data.contact).map((row) => (
-                      <View key={row.key} style={{ flexDirection: "row", alignItems: "flex-start" }}>
-                        <View style={{ width: 14, height: 14, marginTop: 1, marginRight: 8 }}>
-                          <PdfSlateContactIcon item={row.iconKey} />
+                      <View
+                        key={row.key}
+                        style={{ flexDirection: "row", alignItems: "flex-start", minHeight: 18 }}
+                      >
+                        <View
+                          style={{
+                            width: 54,
+                            marginRight: 9,
+                          }}
+                        >
+                          <Text
+                            style={{
+                              fontSize: 8.9,
+                              lineHeight: 1.46,
+                              color: "#6F6F6F"
+                            }}
+                          >
+                            {row.label}
+                          </Text>
                         </View>
                         <Text
                           style={{
                             flex: 1,
                             fontSize: 9.7,
-                            lineHeight: 1.42,
+                            lineHeight: 1.46,
                             color: "#4F4F4F"
                           }}
                         >
@@ -1454,7 +2104,7 @@ export function PdfPageShell({
                   </View>
                 ) : null}
               </View>
-              <View style={{ width: "26%", alignItems: "center", paddingTop: 2, paddingRight: 6 }}>
+              <View style={{ width: "26%", alignItems: "center", paddingTop: 0, paddingRight: 8 }}>
                 <PdfPhotoBlock
                   config={config}
                   initials={data.identity.initials}
@@ -1467,111 +2117,18 @@ export function PdfPageShell({
           </View>
 
           {orderedKeys.map((sectionKey) => {
-            if (sectionKey === "workExperience") {
-              return (
-                <PdfSlateSection
-                  key={sectionKey}
-                  title="Berufserfahrung"
-                  entries={data.workExperience}
-                />
-              );
-            }
-
-            if (sectionKey === "education") {
-              return (
-                <PdfSlateSection
-                  key={sectionKey}
-                  title="Ausbildung"
-                  entries={data.education}
-                />
-              );
-            }
-
-            if (sectionKey === "additionalSections") {
-              return data.additionalSections.length ? (
-                <View key={sectionKey}>
-                  {data.additionalSections.map((section) => (
-                    <View key={section.id}>
-                      <PdfSlateFreeTitle title={section.title} />
-                      <View>
-                        {section.bullets?.map((bullet) => (
-                          <Text
-                            key={`${section.id}-${bullet}`}
-                            style={{
-                              fontSize: 9.6,
-                              lineHeight: 1.42,
-                              color: "#4F4F4F",
-                              marginTop: 3
-                            }}
-                          >
-                            - {normalizePdfText(bullet)}
-                          </Text>
-                        ))}
-                      </View>
-                    </View>
-                  ))}
-                </View>
-              ) : null;
-            }
-
-            if (sectionKey === "customBlock") {
-              return data.customBlock ? (
-                <View key={sectionKey}>
-                  {data.customBlock.title ? (
-                    <PdfSlateFreeTitle title={data.customBlock.title} />
-                  ) : null}
-                  <View style={{ marginTop: data.customBlock.title ? 0 : 18 }}>
-                    {data.customBlock.entries.map((entry) => (
-                      <PdfSlateEntryRow key={entry.id} entry={entry} />
-                    ))}
-                  </View>
-                </View>
-              ) : null;
-            }
-
-            return null;
+            const sectionNode = renderSlateOrderedPdfSectionNode({ data, sectionKey });
+            return sectionNode ? <View key={sectionKey}>{sectionNode}</View> : null;
           })}
 
-          {data.languages.length ? (
-            <View wrap={false}>
-              <PdfSlateSectionHeading title="Kenntnisse und Interessen" />
-              <View style={{ flexDirection: "row" }} wrap={false}>
-                <View style={{ width: 160, paddingRight: 14 }}>
-                  <Text
-                    style={{
-                      fontSize: 9.7,
-                      lineHeight: 1.5,
-                      color: "#4F4F4F"
-                    }}
-                  >
-                    Fremdsprachen
-                  </Text>
-                </View>
-                <View style={{ flex: 1 }}>
-                  {data.languages.map((item) => (
-                    <Text
-                      key={item}
-                      style={{
-                        fontSize: 9.7,
-                        lineHeight: 1.5,
-                        color: "#4F4F4F"
-                      }}
-                    >
-                      {normalizePdfText(item)}
-                    </Text>
-                  ))}
-                </View>
-              </View>
-            </View>
-          ) : null}
+          <PdfSignatureFooter data={data} />
         </View>
       </Page>
     );
   }
 
   if (isSoftTimeline(config)) {
-    const orderedKeys =
-      data.mainSectionOrder ?? (config.rightColumnSections as CvPdfMainSectionOrderKey[]);
+    const orderedKeys = data.mainSectionOrder;
 
     return (
       <Page
@@ -1590,50 +2147,16 @@ export function PdfPageShell({
           <PdfSoftTimelineTop config={config} data={data} />
 
           {orderedKeys.map((sectionKey) => {
-            if (sectionKey === "workExperience") {
-              return (
-                <PdfTimelineSectionBlock
-                  key={sectionKey}
-                  title="Berufserfahrung"
-                  entries={data.workExperience}
-                />
-              );
-            }
+            const sectionNode = renderOrderedPdfSectionNode({
+              config,
+              data,
+              sectionKey
+            });
 
-            if (sectionKey === "education") {
-              return (
-                <PdfTimelineSectionBlock
-                  key={sectionKey}
-                  title="Ausbildung"
-                  entries={data.education}
-                />
-              );
-            }
-
-            if (sectionKey === "customBlock") {
-              return data.customBlock ? (
-                <PdfCustomBlock key={sectionKey} config={config} block={data.customBlock} />
-              ) : null;
-            }
-
-            const section = getMainSectionEntries(data, sectionKey);
-
-            return (
-              <PdfSectionBlock
-                key={sectionKey}
-                config={config}
-                title={section.title}
-                entries={section.entries}
-                compact={false}
-              />
-            );
+            return sectionNode ? <View key={sectionKey}>{sectionNode}</View> : null;
           })}
 
-          {data.languages.length ? (
-            <View style={{ marginTop: 14 }}>
-              <PdfCompactSection config={config} title="Sprachen" items={data.languages} />
-            </View>
-          ) : null}
+          <PdfSignatureFooter data={data} />
         </View>
       </Page>
     );
@@ -1667,26 +2190,17 @@ export function PdfPageShell({
           }}
         >
           <PdfHeaderBlock config={config} data={data} />
-          {(data.mainSectionOrder ??
-            (config.rightColumnSections as CvPdfMainSectionOrderKey[])).map((sectionKey) => {
-            if (sectionKey === "customBlock") {
-              return data.customBlock ? (
-                <PdfCustomBlock key={sectionKey} config={config} block={data.customBlock} />
-              ) : null;
-            }
+          {data.mainSectionOrder.map((sectionKey) => {
+            const sectionNode = renderOrderedPdfSectionNode({
+              config,
+              data,
+              sectionKey
+            });
 
-            const section = getMainSectionEntries(data, sectionKey);
-
-            return (
-              <PdfSectionBlock
-                key={sectionKey}
-                config={config}
-                title={section.title}
-                entries={section.entries}
-                compact={false}
-              />
-            );
+            return sectionNode ? <View key={sectionKey}>{sectionNode}</View> : null;
           })}
+
+          <PdfSignatureFooter data={data} />
         </View>
       </View>
     </Page>

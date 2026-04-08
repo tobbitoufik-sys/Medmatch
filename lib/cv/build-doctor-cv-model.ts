@@ -162,17 +162,8 @@ function buildEducation(
 }
 
 function buildQualifications(profile: DoctorProfile | null): CvQualificationItem[] {
-  const items: CvQualificationItem[] = [];
-
-  if (cleanText(profile?.current_position)) {
-    items.push({
-      id: "current-position",
-      label: cleanText(profile?.current_position) || "Aktuelle Position",
-      detail: cleanText(profile?.specialty)
-    });
-  }
-
-  return items;
+  void profile;
+  return [];
 }
 
 function buildTrainings(trainings: NonNullable<DoctorProfile["trainings"]>): CvTrainingItem[] {
@@ -339,9 +330,7 @@ export function buildDoctorCvModel({
   return {
     header: {
       full_name: fullName,
-      subtitle:
-        joinUniqueParts([cleanText(profile?.specialty), cleanText(profile?.current_position)], " | ") ||
-        null,
+      subtitle: null,
       photo_url: preparedPhotoUrl ?? rawPhotoUrl,
       prepared_photo_url: preparedPhotoUrl,
       initials: getInitials(fullName),

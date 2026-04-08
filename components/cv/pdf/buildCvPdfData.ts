@@ -22,6 +22,7 @@ export type CvPdfEntry = {
 export type CvPdfMainSectionOrderKey =
   | "workExperience"
   | "education"
+  | "languages"
   | "fortbildungen"
   | "additionalSections"
   | "customBlock";
@@ -225,6 +226,7 @@ function buildPdfMainSectionOrder(params: {
   sectionOrder?: string[] | null;
   hasWorkExperience: boolean;
   hasEducation: boolean;
+  hasLanguages: boolean;
   hasFortbildungen: boolean;
   hasAdditionalSections: boolean;
   hasCustomBlock: boolean;
@@ -232,6 +234,7 @@ function buildPdfMainSectionOrder(params: {
   const mapping: Partial<Record<CvSectionKey | "custom_block", CvPdfMainSectionOrderKey>> = {
     work_experience: "workExperience",
     education: "education",
+    languages: "languages",
     trainings: "fortbildungen",
     additional_sections: "additionalSections",
     custom_block: "customBlock"
@@ -241,6 +244,7 @@ function buildPdfMainSectionOrder(params: {
 
   if (params.hasWorkExperience) available.add("workExperience");
   if (params.hasEducation) available.add("education");
+  if (params.hasLanguages) available.add("languages");
   if (params.hasFortbildungen) available.add("fortbildungen");
   if (params.hasAdditionalSections) available.add("additionalSections");
   if (params.hasCustomBlock) available.add("customBlock");
@@ -256,6 +260,7 @@ function buildPdfMainSectionOrder(params: {
   for (const key of [
     "workExperience",
     "education",
+    "languages",
     "fortbildungen",
     "additionalSections",
     "customBlock"
@@ -309,6 +314,7 @@ export function buildCvPdfData(
       sectionOrder,
       hasWorkExperience: cvModel.workExperience.length > 0,
       hasEducation: cvModel.education.length > 0,
+      hasLanguages: cvModel.languages.length > 0,
       hasFortbildungen: cvModel.trainings.length > 0,
       hasAdditionalSections: cvModel.additionalSections.length > 0,
       hasCustomBlock: !!customBlock && (!!customBlock.title || customBlock.entries.length > 0)

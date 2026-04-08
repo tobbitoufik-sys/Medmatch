@@ -921,7 +921,26 @@ export function CvEditorClientShell({
                   </section>
                 );
               })}
-
+              <section className="rounded-[1.75rem] border border-slate-200 bg-[linear-gradient(135deg,#f8fbfd_0%,#eef5f8_100%)] p-6 shadow-sm">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+                      Naechster Schritt
+                    </p>
+                    <h3 className="text-lg font-semibold text-slate-900">
+                      Motivationsschreiben aus Ihrem Profil erstellen
+                    </h3>
+                    <p className="text-sm text-slate-600">
+                      Nutzen Sie Ihren fertigen Lebenslauf als Grundlage fuer ein professionelles deutsches Motivationsschreiben.
+                    </p>
+                  </div>
+                  <Button asChild className="h-11 rounded-xl sm:shrink-0">
+                    <Link href="/dashboard/doctor/cover-letter">
+                      Motivationsschreiben mit KI erstellen
+                    </Link>
+                  </Button>
+                </div>
+              </section>
             </div>
           </div>
         </div>
