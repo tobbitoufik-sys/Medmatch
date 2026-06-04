@@ -6,6 +6,7 @@ import {
   Text,
   View
 } from "@react-pdf/renderer";
+import type { ReactNode } from "react";
 
 import type {
   CvPdfData,
@@ -207,6 +208,28 @@ function getMainColumnWidth(sidebarWidth: string) {
   return `${100 - parsedWidth}%`;
 }
 
+function getAdaptiveSidebarNameSize(config: PdfTemplateConfig, fullName: string, baseSize: number) {
+  if (config.templateTitle !== "MedMatch Premium") {
+    return baseSize;
+  }
+
+  const normalizedLength = fullName.replace(/\s+/g, " ").trim().length;
+
+  if (normalizedLength >= 28) {
+    return baseSize - 3;
+  }
+
+  if (normalizedLength >= 22) {
+    return baseSize - 2;
+  }
+
+  if (normalizedLength >= 18) {
+    return baseSize - 1;
+  }
+
+  return baseSize;
+}
+
 function isSoftTimeline(config: PdfTemplateConfig) {
   return config.variant === "softTimeline";
 }
@@ -253,6 +276,7 @@ function PdfSignatureFooter({ data }: { data: CvPdfData }) {
       style={{
         marginTop: 28,
         paddingTop: 18,
+        paddingBottom: 20,
         width: 210
       }}
       wrap={false}
@@ -710,6 +734,47 @@ function buildSoftTimelineLanguageEntries(items: string[]): CvPdfEntry[] {
   }));
 }
 
+type PdfCompositionRole = "normal" | "keepWithHeader" | "atomic" | "final";
+
+function getPdfCompositionProps(
+  config: PdfTemplateConfig,
+  role: PdfCompositionRole
+): {
+  wrap?: boolean;
+  minPresenceAhead?: number;
+} {
+  if (!isSoftTimeline(config)) {
+    return {};
+  }
+
+  if (role === "keepWithHeader") {
+    return { minPresenceAhead: 220 };
+  }
+
+  if (role === "atomic") {
+    return { wrap: false };
+  }
+
+  if (role === "final") {
+    return { wrap: false, minPresenceAhead: 320 };
+  }
+
+  return {};
+}
+
+function PdfCompositionBlock({
+  config,
+  role,
+  children
+}: {
+  config: PdfTemplateConfig;
+  role: PdfCompositionRole;
+  children: ReactNode;
+}) {
+  const compositionProps = getPdfCompositionProps(config, role);
+  return <View {...compositionProps}>{children}</View>;
+}
+
 function renderOrderedPdfSectionNode({
   config,
   data,
@@ -719,12 +784,14 @@ function renderOrderedPdfSectionNode({
   data: CvPdfData;
   sectionKey: CvPdfMainSectionOrderKey;
 }) {
-  const shouldKeepSoftTimelineSectionTogether =
+  const compositionRole: PdfCompositionRole =
     isSoftTimeline(config) &&
     (sectionKey === "languages" ||
       sectionKey === "fortbildungen" ||
       sectionKey === "additionalSections" ||
-      sectionKey === "customBlock");
+      sectionKey === "customBlock")
+      ? "atomic"
+      : "normal";
 
   if (sectionKey === "customBlock") {
     if (!data.customBlock) {
@@ -732,7 +799,11 @@ function renderOrderedPdfSectionNode({
     }
 
     const block = <PdfCustomBlock config={config} block={data.customBlock} />;
-    return shouldKeepSoftTimelineSectionTogether ? <View wrap={false}>{block}</View> : block;
+    return compositionRole === "normal" ? block : (
+      <PdfCompositionBlock config={config} role={compositionRole}>
+        {block}
+      </PdfCompositionBlock>
+    );
   }
 
   if (sectionKey === "languages") {
@@ -749,11 +820,11 @@ function renderOrderedPdfSectionNode({
       />
     ) : null;
 
-    return sectionNode && shouldKeepSoftTimelineSectionTogether ? (
-      <View wrap={false}>{sectionNode}</View>
-    ) : (
-      sectionNode
-    );
+    return sectionNode && compositionRole !== "normal" ? (
+      <PdfCompositionBlock config={config} role={compositionRole}>
+        {sectionNode}
+      </PdfCompositionBlock>
+    ) : sectionNode;
   }
 
   const section = getMainSectionEntries(data, sectionKey);
@@ -767,11 +838,11 @@ function renderOrderedPdfSectionNode({
     />
   );
 
-  return shouldKeepSoftTimelineSectionTogether ? (
-    <View wrap={false}>{sectionNode}</View>
-  ) : (
-    sectionNode
-  );
+  return compositionRole !== "normal" ? (
+    <PdfCompositionBlock config={config} role={compositionRole}>
+      {sectionNode}
+    </PdfCompositionBlock>
+  ) : sectionNode;
 }
 
 function renderSlateOrderedPdfSectionNode({
@@ -1409,98 +1480,20 @@ function PdfSoftTimelineContactIcon({
 }: {
   kind: "phone" | "email" | "address";
 }) {
-  if (kind === "phone") {
-    return (
-      <View
-        style={{
-          width: 14,
-          height: 14,
-          alignItems: "center",
-          justifyContent: "center"
-        }}
-      >
-        <View
-          style={{
-            width: 8,
-            height: 8,
-            borderWidth: 1.6,
-            borderColor: "#7BAFBB",
-            borderTopLeftRadius: 4,
-            borderBottomRightRadius: 4,
-            transform: "rotate(45deg)"
-          }}
-        />
-      </View>
-    );
-  }
-
-  if (kind === "email") {
-    return (
-      <View
-        style={{
-          width: 14,
-          height: 14,
-          borderWidth: 1.4,
-          borderColor: "#7BAFBB",
-          borderRadius: 3,
-          position: "relative",
-          justifyContent: "center"
-        }}
-      >
-        <View
-          style={{
-            position: "absolute",
-            top: 3,
-            left: 1,
-            right: 1,
-            height: 1.4,
-            backgroundColor: "#7BAFBB",
-            transform: "rotate(24deg)"
-          }}
-        />
-        <View
-          style={{
-            position: "absolute",
-            top: 3,
-            left: 1,
-            right: 1,
-            height: 1.4,
-            backgroundColor: "#7BAFBB",
-            transform: "rotate(-24deg)"
-          }}
-        />
-      </View>
-    );
-  }
+  const label =
+    kind === "phone" ? "Telefon:" : kind === "email" ? "E-Mail:" : "Adresse:";
 
   return (
-    <View
+    <Text
       style={{
-        width: 14,
-        height: 16,
-        alignItems: "center"
+        minWidth: 42,
+        fontSize: 8.8,
+        fontWeight: 600,
+        color: "#7BAFBB"
       }}
     >
-      <View
-        style={{
-          width: 9,
-          height: 9,
-          borderWidth: 1.4,
-          borderColor: "#7BAFBB",
-          borderRadius: 999
-        }}
-      />
-      <View
-        style={{
-          width: 2,
-          height: 5,
-          marginTop: -1,
-          backgroundColor: "#7BAFBB",
-          borderBottomLeftRadius: 2,
-          borderBottomRightRadius: 2
-        }}
-      />
-    </View>
+      {label}
+    </Text>
   );
 }
 
@@ -1760,54 +1753,55 @@ export function PdfSectionBlock({
       : {};
 
   return (
-    <View
-      minPresenceAhead={isSoftTimeline(config) ? 220 : undefined}
-      style={[
-        sectionDividerStyle,
-        {
-          marginTop: compact
-            ? getDensityValue(config, 12, 13)
-            : getDensityValue(config, 13, 15)
-        }
-        ]}
-    >
-      <View wrap={false}>
-        <Text
-          style={[
-            styles.sectionTitle,
-            {
-              fontSize: config.sections.titleSize,
-              letterSpacing: config.sections.titleLetterSpacing,
-              color: config.theme.sectionTitleColor
-            }
+    <PdfCompositionBlock config={config} role="keepWithHeader">
+      <View
+        style={[
+          sectionDividerStyle,
+          {
+            marginTop: compact
+              ? getDensityValue(config, 12, 13)
+              : getDensityValue(config, 13, 15)
+          }
           ]}
-        >
-          {title}
-        </Text>
-        {isSoftTimeline(config) ? (
-          <View
-            style={{
-              width: 40,
-              height: 3,
-              borderRadius: 999,
-              backgroundColor: config.theme.accentBarColor ?? "#8FC7D2",
-              marginTop: -2,
-              marginBottom: 10
-            }}
-          />
+      >
+        <View wrap={false}>
+          <Text
+            style={[
+              styles.sectionTitle,
+              {
+                fontSize: config.sections.titleSize,
+                letterSpacing: config.sections.titleLetterSpacing,
+                color: config.theme.sectionTitleColor
+              }
+            ]}
+          >
+            {title}
+          </Text>
+          {isSoftTimeline(config) ? (
+            <View
+              style={{
+                width: 40,
+                height: 3,
+                borderRadius: 999,
+                backgroundColor: config.theme.accentBarColor ?? "#8FC7D2",
+                marginTop: -2,
+                marginBottom: 10
+              }}
+            />
+          ) : null}
+          <View style={styles.entries}>
+            <PdfEntryRow config={config} entry={entries[0]} />
+          </View>
+        </View>
+        {entries.length > 1 ? (
+          <View style={styles.entries}>
+            {entries.slice(1).map((entry) => (
+              <PdfEntryRow key={entry.id} config={config} entry={entry} />
+            ))}
+          </View>
         ) : null}
-        <View style={styles.entries}>
-          <PdfEntryRow config={config} entry={entries[0]} />
-        </View>
       </View>
-      {entries.length > 1 ? (
-        <View style={styles.entries}>
-          {entries.slice(1).map((entry) => (
-            <PdfEntryRow key={entry.id} config={config} entry={entry} />
-          ))}
-        </View>
-      ) : null}
-    </View>
+    </PdfCompositionBlock>
   );
 }
 
@@ -1931,6 +1925,9 @@ export function PdfSidebarLayout({
   data: CvPdfData;
 }) {
   const identityConfig = config.sidebar.identity;
+  const adaptiveSidebarNameSize = identityConfig
+    ? getAdaptiveSidebarNameSize(config, data.identity.fullName, identityConfig.nameSize)
+    : null;
 
   return (
     <View
@@ -1960,7 +1957,7 @@ export function PdfSidebarLayout({
                 style={[
                   styles.sidebarName,
                   {
-                    fontSize: identityConfig.nameSize,
+                    fontSize: adaptiveSidebarNameSize ?? identityConfig.nameSize,
                     color: config.theme.sidebarNameColor
                   }
                 ]}
@@ -2020,7 +2017,7 @@ export function PdfPageShell({
             margin: 18,
             paddingHorizontal: 10,
             paddingTop: 8,
-            paddingBottom: 22,
+            paddingBottom: 30,
             backgroundColor: "#F3F3F1"
           }}
         >
@@ -2129,6 +2126,15 @@ export function PdfPageShell({
 
   if (isSoftTimeline(config)) {
     const orderedKeys = data.mainSectionOrder;
+    const trailingSectionKey = orderedKeys.length ? orderedKeys[orderedKeys.length - 1] : null;
+    const leadingSectionKeys = trailingSectionKey ? orderedKeys.slice(0, -1) : [];
+    const trailingSectionNode = trailingSectionKey
+      ? renderOrderedPdfSectionNode({
+          config,
+          data,
+          sectionKey: trailingSectionKey
+        })
+      : null;
 
     return (
       <Page
@@ -2140,13 +2146,13 @@ export function PdfPageShell({
             margin: 18,
             paddingHorizontal: 18,
             paddingTop: 18,
-            paddingBottom: 22,
+            paddingBottom: 30,
             backgroundColor: "#F3F3F1"
           }}
         >
           <PdfSoftTimelineTop config={config} data={data} />
 
-          {orderedKeys.map((sectionKey) => {
+          {leadingSectionKeys.map((sectionKey) => {
             const sectionNode = renderOrderedPdfSectionNode({
               config,
               data,
@@ -2156,7 +2162,10 @@ export function PdfPageShell({
             return sectionNode ? <View key={sectionKey}>{sectionNode}</View> : null;
           })}
 
-          <PdfSignatureFooter data={data} />
+          <PdfCompositionBlock config={config} role="final">
+            {trailingSectionNode ? <View>{trailingSectionNode}</View> : null}
+            <PdfSignatureFooter data={data} />
+          </PdfCompositionBlock>
         </View>
       </Page>
     );

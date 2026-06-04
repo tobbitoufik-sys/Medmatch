@@ -13,7 +13,7 @@ export default async function DoctorProfilePage() {
       title="Profil"
       description="Pflegen Sie Ihr Profil wie einen strukturierten Lebenslauf und halten Sie alle beruflichen Angaben aktuell."
     >
-      <Card>
+        <Card>
         <CardHeader><CardTitle>Profil bearbeiten</CardTitle></CardHeader>
         <CardContent>
           <DoctorProfileForm profile={profile} email={user?.email ?? ""} />

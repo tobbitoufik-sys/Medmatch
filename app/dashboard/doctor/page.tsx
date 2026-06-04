@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Route } from "next";
+import { FileBadge2, Mail, NotepadText } from "lucide-react";
 
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { StatCard } from "@/components/dashboard/stat-card";
@@ -16,6 +17,8 @@ import { getDoctorPublishedOffers } from "@/lib/data/doctor-opportunities";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { DoctorProfile } from "@/types";
 import { calculateDoctorProfileCompletion, getCurrentUser } from "@/lib/data/repository";
+
+export const dynamic = "force-dynamic";
 
 function formatDate(value: string | null | undefined) {
   if (!value) return "Nicht verfügbar";
@@ -184,28 +187,92 @@ export default async function DoctorDashboardPage() {
 
       <Link
         href="/dashboard/doctor/cv"
-        className="group block rounded-3xl border border-blue-100 bg-gradient-to-r from-sky-50 to-blue-100/80 p-6 transition-all hover:-translate-y-0.5 hover:from-sky-100 hover:to-blue-100 hover:shadow-sm"
+        className="group block rounded-3xl border border-sky-100/80 bg-gradient-to-r from-slate-50 via-sky-50/60 to-blue-100/50 p-6 transition-all hover:-translate-y-0.5 hover:shadow-sm"
       >
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-2">
-            <div className="inline-flex items-center rounded-full border border-blue-200 bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-blue-700">
-              CV-Builder
+        <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
+          <div className="space-y-4 xl:flex-1">
+            <div className="inline-flex items-center rounded-full border border-sky-200/80 bg-white/85 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-blue-700">
+              Bewerbungs-Workflow
             </div>
-            <div className="space-y-1">
-              <p className="text-xl font-semibold tracking-tight text-slate-900">Lebenslauf erstellen</p>
+            <div className="space-y-2">
+              <p className="text-xl font-semibold tracking-tight text-slate-900">Bewerbung vorbereiten</p>
               <p className="text-sm text-slate-600">
-                Erstellen Sie Ihren medizinischen Lebenslauf aus Ihren Profildaten.
+                Erstellen Sie Ihre Bewerbung Schritt für Schritt mit CV, Motivationsschreiben und Bewerbungs-E-Mail auf Basis Ihrer Profildaten.
               </p>
             </div>
+            <div className="rounded-3xl border border-white/80 bg-white/65 px-4 py-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] backdrop-blur-sm">
+              <div className="grid gap-6 md:grid-cols-3 md:gap-4">
+                <div className="relative">
+                  <div className="absolute left-[calc(50%+2.4rem)] top-[2.15rem] hidden h-px w-[calc(100%-4.8rem)] bg-gradient-to-r from-sky-100 via-slate-200/80 to-transparent md:block" />
+                  <div className="relative flex flex-col items-center text-center">
+                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white/95 shadow-[0_8px_22px_rgba(15,23,42,0.06)] ring-1 ring-slate-200/70">
+                      <div className="flex h-[4.45rem] w-[4.45rem] items-center justify-center rounded-full border-[4px] border-sky-300/75 border-r-sky-100/80 border-b-sky-100/80 bg-white text-sky-700">
+                        <FileBadge2 className="h-5 w-5" />
+                      </div>
+                    </div>
+                    <p className="mt-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-400">Step 01</p>
+                    <p className="mt-1 text-[15px] font-semibold text-slate-900">CV</p>
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <div className="absolute left-[calc(50%+2.4rem)] top-[2.15rem] hidden h-px w-[calc(100%-4.8rem)] bg-gradient-to-r from-sky-100 via-slate-200/80 to-transparent md:block" />
+                  <div className="relative flex flex-col items-center text-center">
+                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white/95 shadow-[0_8px_22px_rgba(15,23,42,0.06)] ring-1 ring-slate-200/70">
+                      <div className="flex h-[4.45rem] w-[4.45rem] items-center justify-center rounded-full border-[4px] border-sky-300/75 border-r-sky-100/80 border-b-sky-100/80 bg-white text-sky-700">
+                        <NotepadText className="h-5 w-5" />
+                      </div>
+                    </div>
+                    <p className="mt-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-400">Step 02</p>
+                    <p className="mt-1 text-[15px] font-semibold text-slate-900">Motivationsschreiben</p>
+                  </div>
+                </div>
+
+                <div className="relative flex flex-col items-center text-center">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white/95 shadow-[0_8px_22px_rgba(15,23,42,0.06)] ring-1 ring-slate-200/70">
+                    <div className="flex h-[4.45rem] w-[4.45rem] items-center justify-center rounded-full border-[4px] border-sky-300/75 border-r-sky-100/80 border-b-sky-100/80 bg-white text-sky-700">
+                      <Mail className="h-5 w-5" />
+                    </div>
+                  </div>
+                  <p className="mt-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-400">Step 03</p>
+                  <p className="mt-1 text-[15px] font-semibold text-slate-900">E-Mail</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center">
-            <div className="inline-flex items-center rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition-colors group-hover:bg-slate-800">
-              Profil vervollständigen
-              <span className="ml-2 transition-transform group-hover:translate-x-0.5">→</span>
+          <div className="flex items-center xl:self-center">
+            <div className="rounded-[28px] border border-white/80 bg-white/55 p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] backdrop-blur-sm">
+              <div className="inline-flex min-w-[220px] items-center justify-center whitespace-nowrap rounded-full border border-slate-900/90 bg-slate-900 px-6 py-2 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(15,23,42,0.14)] transition-colors group-hover:bg-slate-800">
+              <span className="whitespace-nowrap">Workflow starten</span>
+                <span className="ml-2 text-white/80 transition-transform group-hover:translate-x-0.5">→</span>
+              </div>
             </div>
           </div>
         </div>
       </Link>
+
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-2">
+            <div className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-600">
+              EXTERNE STELLEN
+            </div>
+            <div className="space-y-1">
+              <p className="text-xl font-semibold tracking-tight text-slate-900">
+                Externe Stellen entdecken
+              </p>
+              <p className="max-w-3xl text-sm text-slate-600">
+                Finden Sie importierte Stellenangebote und bereiten Sie Ihre Bewerbung mit CV, Motivationsschreiben und E-Mail vor.
+              </p>
+            </div>
+          </div>
+          <Button asChild className="sm:shrink-0">
+            <Link href="/dashboard/doctor/external-offers">
+              Externe Stellen ansehen
+            </Link>
+          </Button>
+        </div>
+      </section>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between gap-4">

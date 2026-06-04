@@ -13,6 +13,10 @@ export async function renderCanonicalCvPhoto({
   photoPresentation,
   size = 1200
 }: RenderCanonicalCvPhotoInput) {
+  function clamp(value: number, min: number, max: number) {
+    return Math.min(Math.max(value, min), max);
+  }
+
   const metadata = await sharp(sourceBuffer).metadata();
 
   if (!metadata.width || !metadata.height) {
@@ -51,6 +55,25 @@ export async function renderCanonicalCvPhoto({
     );
   }
 
+  const maxExtractLeft = Math.max(paddedWidth - frameSize, 0);
+  const maxExtractTop = Math.max(paddedHeight - frameSize, 0);
+  const centeredExtractLeft = Math.round(maxExtractLeft / 2);
+  const centeredExtractTop = Math.round(maxExtractTop / 2);
+
+  let safeExtractLeft = clamp(extractLeft, 0, maxExtractLeft);
+  let safeExtractTop = clamp(extractTop, 0, maxExtractTop);
+
+  const hasValidExtractBounds =
+    safeExtractLeft >= 0 &&
+    safeExtractTop >= 0 &&
+    safeExtractLeft + frameSize <= paddedWidth &&
+    safeExtractTop + frameSize <= paddedHeight;
+
+  if (!hasValidExtractBounds) {
+    safeExtractLeft = centeredExtractLeft;
+    safeExtractTop = centeredExtractTop;
+  }
+
   const fittedImage = await sharp(sourceBuffer)
     .resize(renderedWidth, renderedHeight, { fit: "fill" })
     .ensureAlpha()
@@ -66,8 +89,8 @@ export async function renderCanonicalCvPhoto({
       background: { r: 255, g: 255, b: 255, alpha: 0 }
     })
     .extract({
-      left: extractLeft,
-      top: extractTop,
+      left: safeExtractLeft,
+      top: safeExtractTop,
       width: frameSize,
       height: frameSize
     })
@@ -96,7 +119,7 @@ export async function renderCanonicalCvPhoto({
       error instanceof Error ? error.message : "Unknown sharp composite failure.";
 
     throw new Error(
-      `Unable to finalize the prepared CV photo mask: ${message} (frame=${frameSize}x${frameSize}, rendered=${renderedWidth}x${renderedHeight}, extract=${extractLeft},${extractTop}).`
+      `Unable to finalize the prepared CV photo mask: ${message} (frame=${frameSize}x${frameSize}, rendered=${renderedWidth}x${renderedHeight}, extract=${safeExtractLeft},${safeExtractTop}).`
     );
   }
 }

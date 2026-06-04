@@ -17,14 +17,19 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
-  const user = await getCurrentUser("doctor");
+  const user = await getCurrentUser();
 
-  if (!user || user.role !== "doctor") {
+  if (!user) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
   const selectedTemplate = resolvePdfCvTemplate(request.nextUrl.searchParams.get("template"));
   const profile = await getCurrentDoctorProfile();
+
+  if (!profile) {
+    return new NextResponse("Unauthorized", { status: 401 });
+  }
+
   const layout = await getCurrentDoctorCvLayout(selectedTemplate);
   const cvModel = buildDoctorCvModel({
     profile,

@@ -60,8 +60,9 @@ export async function DashboardShell({
   children: ReactNode;
 }) {
   const user = await getCurrentUser(role);
+  const isAllowedRole = user?.role === role || (role === "doctor" && user?.role === "admin");
   if (!user) redirect("/");
-  if (user.role !== role) redirect("/dashboard");
+  if (!isAllowedRole) redirect("/dashboard");
   const doctorProfile = role === "doctor" ? await getCurrentDoctorProfile() : null;
   const doctorProfileImageUrl =
     role === "doctor" && doctorProfile?.profile_photo_path

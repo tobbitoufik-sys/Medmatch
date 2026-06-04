@@ -168,6 +168,11 @@ function parseCvPhotoPresentationFromFormData(formData: FormData, fallbackShape:
   }
 }
 
+function normalizeOptionalEnumValue(value: string | null | undefined) {
+  const normalized = value?.trim();
+  return normalized ? normalized : null;
+}
+
 async function uploadPreparedCvPhoto(params: {
   supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>;
   userId: string;
@@ -638,7 +643,16 @@ export async function updateDoctorProfileAction(_: ActionState, formData: FormDa
     years_experience: formData.get("years_experience"),
     is_public: formData.get("is_public") === "on"
   });
-  if (!parsed.success) return { success: false, message: parsed.error.issues[0]?.message || "Please review your profile information." };
+  if (!parsed.success) {
+    const firstIssue = parsed.error.issues[0];
+    const fieldPath = firstIssue?.path?.join(".");
+    return {
+      success: false,
+      message: fieldPath
+        ? `${fieldPath}: ${firstIssue.message}`
+        : firstIssue?.message || "Please review your profile information."
+    };
+  }
   if (!hasSupabaseEnv()) return mockSuccess("Demo mode: doctor profile form is ready. Connect Supabase to persist changes.");
 
   const supabase = await createServerSupabaseClient();
@@ -776,6 +790,7 @@ export async function updateDoctorProfileAction(_: ActionState, formData: FormDa
     education_from_date: (primaryEducation?.from_date ?? parsed.data.education_from_date) || null,
     education_to_date: (primaryEducation?.to_date ?? parsed.data.education_to_date) || null,
     license_type: parsed.data.license_type || "none",
+    current_position: normalizeOptionalEnumValue(parsed.data.current_position),
     license_since:
       parsed.data.license_type !== "none" && parsed.data.license_since
         ? parsed.data.license_since
@@ -976,6 +991,11 @@ export async function saveDoctorCvLayoutAction(input: {
   itemVisibility?: Record<string, boolean>;
   templateKey?: string;
   photoPresentation?: CvPhotoPresentation;
+  educationOrderIds?: string[];
+  trainingOrderIds?: string[];
+  languageOrderIds?: string[];
+  additionalSectionOrderIds?: string[];
+  customBlockEntryOrderIds?: string[];
 }) {
   if (!hasSupabaseEnv()) {
     return { success: true, message: "Demo mode: CV layout saved locally." };
@@ -1016,9 +1036,11 @@ export async function saveDoctorCvLayoutAction(input: {
     return { success: false, message: "Doctor profile not found." };
   }
 
+  const profileId = profile.id;
+
   const { error } = await supabase.from("doctor_cv_layouts").upsert(
     {
-      doctor_profile_id: profile.id,
+      doctor_profile_id: profileId,
       template_key: templateKey,
       section_order: sectionOrder,
       item_visibility: itemVisibility
@@ -1028,6 +1050,133 @@ export async function saveDoctorCvLayoutAction(input: {
 
   if (error) {
     return { success: false, message: error.message || "Unable to save your CV layout." };
+  }
+
+  async function persistSortOrder(
+    table:
+      | "doctor_educations"
+      | "doctor_trainings"
+      | "doctor_languages"
+      | "doctor_additional_sections",
+    ids: string[] | undefined
+  ) {
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return null;
+    }
+
+    const uniqueIds = Array.from(new Set(ids.filter(Boolean)));
+
+    if (!uniqueIds.length) {
+      return null;
+    }
+
+    const { data, error: selectError } = await supabase
+      .from(table)
+      .select("id")
+      .eq("doctor_profile_id", profileId)
+      .in("id", uniqueIds);
+
+    if (selectError) {
+      return selectError;
+    }
+
+    const validIds = new Set((data ?? []).map((item) => item.id));
+    const nextIds = uniqueIds.filter((id) => validIds.has(id));
+
+    const results = await Promise.all(
+      nextIds.map((id, index) =>
+        supabase.from(table).update({ sort_order: index }).eq("id", id).eq("doctor_profile_id", profileId)
+      )
+    );
+
+    return results.find((result) => result.error)?.error ?? null;
+  }
+
+  const educationOrderError = await persistSortOrder("doctor_educations", input.educationOrderIds);
+  if (educationOrderError) {
+    return { success: false, message: educationOrderError.message || "Unable to save education order." };
+  }
+
+  const trainingOrderError = await persistSortOrder("doctor_trainings", input.trainingOrderIds);
+  if (trainingOrderError) {
+    return { success: false, message: trainingOrderError.message || "Unable to save training order." };
+  }
+
+  const languageOrderError = await persistSortOrder("doctor_languages", input.languageOrderIds);
+  if (languageOrderError) {
+    return { success: false, message: languageOrderError.message || "Unable to save language order." };
+  }
+
+  const additionalSectionOrderError = await persistSortOrder(
+    "doctor_additional_sections",
+    input.additionalSectionOrderIds
+  );
+  if (additionalSectionOrderError) {
+    return {
+      success: false,
+      message: additionalSectionOrderError.message || "Unable to save additional section order."
+    };
+  }
+
+  if (Array.isArray(input.customBlockEntryOrderIds) && input.customBlockEntryOrderIds.length > 0) {
+    const { data: profileWithBlock, error: profileBlockError } = await supabase
+      .from("doctor_profiles")
+      .select("cv_custom_block")
+      .eq("id", profile.id)
+      .maybeSingle();
+
+    if (profileBlockError) {
+      return { success: false, message: profileBlockError.message || "Unable to load custom CV block." };
+    }
+
+    const currentBlock =
+      profileWithBlock?.cv_custom_block &&
+      typeof profileWithBlock.cv_custom_block === "object" &&
+      !Array.isArray(profileWithBlock.cv_custom_block)
+        ? (profileWithBlock.cv_custom_block as {
+            title?: string;
+            entries?: Array<{
+              id?: string;
+              content?: string;
+              description?: string | null;
+              from_date?: string | null;
+              to_date?: string | null;
+            }>;
+          })
+        : null;
+
+    if (currentBlock?.entries?.length) {
+      const entryMap = new Map(
+        currentBlock.entries
+          .filter((entry) => typeof entry?.id === "string" && entry.id)
+          .map((entry) => [entry.id as string, entry])
+      );
+
+      const reorderedEntries = input.customBlockEntryOrderIds
+        .map((id) => entryMap.get(id))
+        .filter((entry): entry is NonNullable<typeof currentBlock.entries>[number] => Boolean(entry));
+
+      const remainingEntries = currentBlock.entries.filter(
+        (entry) => !(typeof entry?.id === "string" && input.customBlockEntryOrderIds?.includes(entry.id))
+      );
+
+      const { error: customBlockUpdateError } = await supabase
+        .from("doctor_profiles")
+        .update({
+          cv_custom_block: {
+            ...currentBlock,
+            entries: [...reorderedEntries, ...remainingEntries]
+          }
+        })
+        .eq("id", profile.id);
+
+      if (customBlockUpdateError) {
+        return {
+          success: false,
+          message: customBlockUpdateError.message || "Unable to save custom block order."
+        };
+      }
+    }
   }
 
   revalidatePath("/dashboard/doctor/cv");
@@ -1161,19 +1310,10 @@ function parseOptionalCoverLetterField(value: string | null | undefined) {
 export async function generateDoctorCoverLetterAction(
   input: DoctorCoverLetterManualContext
 ): Promise<CoverLetterGenerationResult> {
-  const user = await getCurrentUser("doctor");
-
-  if (!user || user.role !== "doctor") {
-    return {
-      success: false,
-      message: "Sie muessen als Arzt angemeldet sein, um ein Motivationsschreiben zu erstellen.",
-      generatedLetter: ""
-    };
-  }
-
+  const user = await getCurrentUser();
   const profile = await getCurrentDoctorProfile();
 
-  if (!profile) {
+  if (!user || !profile) {
     return {
       success: false,
       message: "Bitte vervollstaendigen Sie zuerst Ihr Profil, bevor Sie ein Motivationsschreiben erstellen.",
@@ -1217,20 +1357,10 @@ export async function generateDoctorCoverLetterAction(
 export async function generateDoctorApplicationEmailAction(
   input: DoctorApplicationEmailManualContext
 ): Promise<ApplicationEmailGenerationResult> {
-  const user = await getCurrentUser("doctor");
-
-  if (!user || user.role !== "doctor") {
-    return {
-      success: false,
-      message: "Sie muessen als Arzt angemeldet sein, um eine Bewerbungs-E-Mail zu erstellen.",
-      subject: "",
-      body: ""
-    };
-  }
-
+  const user = await getCurrentUser();
   const profile = await getCurrentDoctorProfile();
 
-  if (!profile) {
+  if (!user || !profile) {
     return {
       success: false,
       message: "Bitte vervollstaendigen Sie zuerst Ihr Profil, bevor Sie eine Bewerbungs-E-Mail erstellen.",
@@ -1280,15 +1410,7 @@ export async function createDoctorApplicationEmailDraftAction(input: {
   motivationLetter?: string;
   recipientEmail?: string;
 }): Promise<GmailDraftCreationResult> {
-  const user = await getCurrentUser("doctor");
-
-  if (!user || user.role !== "doctor") {
-    return {
-      success: false,
-      message: "Sie muessen als Arzt angemeldet sein, um einen Gmail-Entwurf zu erstellen."
-    };
-  }
-
+  const user = await getCurrentUser();
   const subject = parseOptionalCoverLetterField(input.subject);
   const body = parseOptionalCoverLetterField(input.body);
   const motivationLetter = parseOptionalCoverLetterField(input.motivationLetter);
@@ -1318,7 +1440,7 @@ export async function createDoctorApplicationEmailDraftAction(input: {
   try {
     const profile = await getCurrentDoctorProfile();
 
-    if (!profile) {
+    if (!user || !profile) {
       return {
         success: false,
         message: "Bitte vervollstaendigen Sie zuerst Ihr Profil, bevor Sie einen Gmail-Entwurf erstellen."

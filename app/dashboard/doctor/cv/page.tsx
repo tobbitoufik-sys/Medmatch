@@ -1,4 +1,4 @@
-import { CvEditorClientShell } from "@/components/cv/CvEditorClientShell";
+import { CvEditorClientShellLoader } from "@/components/cv/CvEditorClientShellLoader";
 import { isCvTemplateKey, type CvTemplateKey } from "@/components/cv/template-registry";
 import { normalizeCvSectionOrder } from "@/lib/cv/constants";
 import { buildDoctorCvModel } from "@/lib/cv/build-doctor-cv-model";
@@ -58,7 +58,7 @@ export default async function DoctorCvPage({
   ) as string[];
 
   return (
-    <CvEditorClientShell
+    <CvEditorClientShellLoader
       cvModel={cvModel}
       experiences={profile?.experiences ?? []}
       initialItemVisibility={initialItemVisibility}

@@ -151,6 +151,7 @@ export function ApplicationEmailGenerator({
       ? "Gmail geoeffnet und vorbereitet."
       : "Gmail konnte derzeit nicht vorbereitet werden. Bitte versuchen Sie es erneut."
     : null;
+  const needsManualRecipientEmail = !recipientEmail.trim();
 
   return (
     <div className="space-y-6">
@@ -220,6 +221,10 @@ export function ApplicationEmailGenerator({
             {!isValidRecipientEmail(recipientEmail) ? (
               <p className="text-sm text-red-600">
                 Bitte geben Sie eine gueltige E-Mail-Adresse ein.
+              </p>
+            ) : needsManualRecipientEmail ? (
+              <p className="text-sm text-amber-700">
+                Fuer Gmail wird eine Empfaenger-E-Mail benoetigt. Bitte ergaenzen Sie diese manuell, falls sie im externen Angebot nicht enthalten war.
               </p>
             ) : null}
           </div>
@@ -356,12 +361,24 @@ export function ApplicationEmailGenerator({
           <button
             type="button"
             onClick={handleCreateDraft}
-            disabled={!gmailConnected || !emailSubject.trim() || !emailBody.trim() || isDraftPending}
+            disabled={
+              !gmailConnected ||
+              !emailSubject.trim() ||
+              !emailBody.trim() ||
+              !recipientEmail.trim() ||
+              !isValidRecipientEmail(recipientEmail) ||
+              isDraftPending
+            }
             className={gmailDraftButtonClassName}
           >
             {isDraftPending ? "Gmail wird vorbereitet..." : "Mit Gmail oeffnen"}
           </button>
         </div>
+        {!recipientEmail.trim() ? (
+          <p className="mt-3 text-sm text-amber-700">
+            Der Gmail-Schritt bleibt gesperrt, bis eine Empfaenger-E-Mail eingetragen ist.
+          </p>
+        ) : null}
       </section>
     </div>
   );

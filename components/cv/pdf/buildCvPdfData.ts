@@ -187,6 +187,10 @@ function normalizeDateLabel(dateLabel?: string | null) {
     return "heute";
   }
 
+  if (/^\d{2}\.\d{4}$/.test(trimmed)) {
+    return trimmed;
+  }
+
   return formatDateRange(trimmed);
 }
 

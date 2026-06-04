@@ -40,6 +40,16 @@ function formatDateRange(fromDate: string | null | undefined, toDate: string | n
   return "Datum nicht angegeben";
 }
 
+function formatSingleOrDateRange(fromDate: string | null | undefined, toDate: string | null | undefined) {
+  const fromLabel = formatMonthYear(fromDate);
+  const toLabel = formatMonthYear(toDate);
+
+  if (fromLabel && toLabel) return `${fromLabel} – ${toLabel}`;
+  if (fromLabel) return fromLabel;
+  if (toLabel) return toLabel;
+  return "Datum nicht angegeben";
+}
+
 function formatSinceDate(value: string | null | undefined) {
   const label = formatMonthYear(value);
   return label ? `seit ${label}` : null;
@@ -107,17 +117,12 @@ function getExperienceBullets(description: string | null | undefined) {
 
 
 function buildWorkExperience(
-  profile: DoctorProfile | null,
   experiences: NonNullable<DoctorProfile["experiences"]>
 ): CvWorkExperienceItem[] {
-  const sharedLocation = joinUniqueParts([profile?.city, profile?.country], ", ");
-
   return experiences.map((experience) => ({
     id: experience.id,
     title: cleanText(experience.title) || "Positionsbezeichnung",
-    organization_line:
-      joinUniqueParts([cleanText(experience.institution) || "Einrichtung", sharedLocation], " | ") ||
-      null,
+    organization_line: cleanText(experience.institution),
     date_label: formatDateRange(experience.from_date, experience.to_date),
     
     bullets: getExperienceBullets(experience.description)
@@ -128,7 +133,6 @@ function buildEducation(
   profile: DoctorProfile | null,
   educations: NonNullable<DoctorProfile["educations"]>
 ): CvEducationItem[] {
-  const locationMeta = joinUniqueParts([profile?.city, profile?.country], ", ");
   const items: CvEducationItem[] = educations.map((education) => ({
     id: education.id,
     title:
@@ -136,7 +140,7 @@ function buildEducation(
       cleanText(education.education_university) ||
       "Ausbildung",
     subtitle: cleanText(education.education_university),
-    meta: locationMeta || null,
+    meta: null,
     date_label: formatDateRange(education.from_date, education.to_date),
     item_type: "education" as const,
     issuer_line: null,
@@ -174,7 +178,7 @@ function buildTrainings(trainings: NonNullable<DoctorProfile["trainings"]>): CvT
       detail: joinUniqueParts([training.certificate_name, training.institution], " | ") || null,
       date_label:
         formatMonthYear(training.from_date) || formatMonthYear(training.to_date)
-          ? formatDateRange(training.from_date, training.to_date)
+          ? formatSingleOrDateRange(training.from_date, training.to_date)
           : null
     }))
     .filter((training) => Boolean(training.title));
@@ -282,7 +286,7 @@ function buildCustomBlock(profile: DoctorProfile | null) {
       description: cleanText(entry.description),
       date_label:
         formatMonthYear(entry.from_date) || formatMonthYear(entry.to_date)
-          ? formatDateRange(entry.from_date, entry.to_date)
+          ? formatSingleOrDateRange(entry.from_date, entry.to_date)
           : null
     }))
     .filter((entry) => Boolean(entry.content || entry.description || entry.date_label))
@@ -340,7 +344,7 @@ export function buildDoctorCvModel({
       items: personalInfoItems,
       address_line: joinUniqueParts([profile?.street, profile?.postal_code], ", ") || null
     },
-    workExperience: buildWorkExperience(profile, profile?.experiences ?? []),
+    workExperience: buildWorkExperience(profile?.experiences ?? []),
     education: buildEducation(profile, profile?.educations ?? []),
     qualifications: buildQualifications(profile),
     trainings: buildTrainings(profile?.trainings ?? []),

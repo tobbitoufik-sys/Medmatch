@@ -24,7 +24,8 @@ export function ServerForm({
   className,
   refreshOnSuccess = false,
   pendingLabel,
-  successRefreshDelayMs = 0
+  successRefreshDelayMs = 0,
+  submitDisabled = false
 }: {
   action: (state: ActionState, formData: FormData) => Promise<ActionState>;
   submitLabel: string;
@@ -33,6 +34,7 @@ export function ServerForm({
   refreshOnSuccess?: boolean;
   pendingLabel?: string;
   successRefreshDelayMs?: number;
+  submitDisabled?: boolean;
 }) {
   const router = useRouter();
   const [state, formAction, pending] = useActionState(action, initialState);
@@ -67,7 +69,7 @@ export function ServerForm({
         type="submit"
         formEncType="multipart/form-data"
         className="w-full sm:w-auto"
-        disabled={pending}
+        disabled={pending || submitDisabled}
       >
         {pending ? pendingLabel ?? "Please wait..." : submitLabel}
       </Button>

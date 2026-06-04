@@ -2,6 +2,13 @@ import { z } from "zod";
 import { jobOfferContractTypes } from "@/lib/job-offers";
 
 const optionalText = z.string().trim().optional().transform((value) => value ?? "");
+const optionalMinText = (min: number) =>
+  z
+    .string()
+    .trim()
+    .transform((value) => value || undefined)
+    .pipe(z.string().min(min).optional())
+    .transform((value) => value ?? "");
 const optionalDate = z.string().optional().transform((value) => value || "");
 const optionalYear = z.preprocess(
   (value) => (value === "" || value === null || value === undefined ? null : value),
@@ -24,7 +31,7 @@ export const doctorProfileSchema = z.object({
   postal_code: optionalText,
   profile_photo_path: optionalText,
   headline: optionalText,
-  specialty: z.string().min(2),
+  specialty: optionalMinText(2),
   city: z.string().min(2),
   country: z.string().min(2),
   professional_summary: optionalText,

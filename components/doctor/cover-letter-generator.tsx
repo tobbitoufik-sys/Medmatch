@@ -3,6 +3,8 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useMemo } from "react";
+import { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,6 +27,7 @@ const initialResult: CoverLetterGenerationResult = {
 
 export function CoverLetterGenerator() {
   const [isPending, startTransition] = useTransition();
+  const searchParams = useSearchParams();
   const [result, setResult] = useState<CoverLetterGenerationResult>(initialResult);
   const [copied, setCopied] = useState(false);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
@@ -36,6 +39,26 @@ export function CoverLetterGenerator() {
   const [salutation, setSalutation] = useState<"unknown" | "frau" | "herr">("unknown");
   const [motivationNotes, setMotivationNotes] = useState("");
   const [generatedLetter, setGeneratedLetter] = useState("");
+
+  useEffect(() => {
+    const nextHospitalName = searchParams.get("hospitalName") ?? "";
+    const nextRoleTitle = searchParams.get("roleTitle") ?? "";
+    const nextClinicAddress = searchParams.get("clinicAddress") ?? "";
+    const nextContactPerson = searchParams.get("contactPerson") ?? "";
+    const nextRecipientEmail = searchParams.get("recipientEmail") ?? "";
+    const nextSalutation = searchParams.get("salutation");
+    const nextMotivationNotes = searchParams.get("motivationNotes") ?? "";
+
+    setHospitalName(nextHospitalName);
+    setRoleTitle(nextRoleTitle);
+    setClinicAddress(nextClinicAddress);
+    setContactPerson(nextContactPerson);
+    setRecipientEmail(nextRecipientEmail);
+    setSalutation(
+      nextSalutation === "frau" || nextSalutation === "herr" ? nextSalutation : "unknown"
+    );
+    setMotivationNotes(nextMotivationNotes);
+  }, [searchParams]);
 
   const applicationEmailHref = useMemo(() => {
     const query: Record<string, string> = {};

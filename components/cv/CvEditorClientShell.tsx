@@ -127,6 +127,17 @@ function areRecordValuesEqual(
   return leftKeys.every((key) => left[key] === right[key]);
 }
 
+function areItemIdArraysEqual(
+  left: Array<{ id: string }>,
+  right: Array<{ id: string }>
+) {
+  if (left.length !== right.length) {
+    return false;
+  }
+
+  return left.every((item, index) => item.id === right[index]?.id);
+}
+
 function getContactIcon(kind: HeaderItem["kind"]) {
   if (kind === "phone") {
     return Phone;
@@ -204,6 +215,31 @@ export function CvEditorClientShell({
   const [draggedCustomBlockEntryId, setDraggedCustomBlockEntryId] = useState<string | null>(null);
   const [dropTargetCustomBlockEntryId, setDropTargetCustomBlockEntryId] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState("");
+
+  const coverLetterHref = useMemo(() => {
+    const query: Record<string, string> = {};
+
+    const hospitalName = searchParams.get("hospitalName")?.trim();
+    const roleTitle = searchParams.get("roleTitle")?.trim();
+    const clinicAddress = searchParams.get("clinicAddress")?.trim();
+    const contactPerson = searchParams.get("contactPerson")?.trim();
+    const recipientEmail = searchParams.get("recipientEmail")?.trim();
+    const salutation = searchParams.get("salutation")?.trim();
+    const motivationNotes = searchParams.get("motivationNotes")?.trim();
+
+    if (hospitalName) query.hospitalName = hospitalName;
+    if (roleTitle) query.roleTitle = roleTitle;
+    if (clinicAddress) query.clinicAddress = clinicAddress;
+    if (contactPerson) query.contactPerson = contactPerson;
+    if (recipientEmail) query.recipientEmail = recipientEmail;
+    if (salutation) query.salutation = salutation;
+    if (motivationNotes) query.motivationNotes = motivationNotes;
+
+    return {
+      pathname: "/dashboard/doctor/cover-letter",
+      query
+    };
+  }, [searchParams]);
 
   const availableSectionKeys = useMemo(() => {
     const keys: CvSectionKey[] = [];
@@ -312,7 +348,12 @@ export function CvEditorClientShell({
 
   const isDirty =
     !areSectionArraysEqual(sectionOrder, normalizedInitialEditorOrder) ||
-    !areRecordValuesEqual(itemVisibility, initialItemVisibility);
+    !areRecordValuesEqual(itemVisibility, initialItemVisibility) ||
+    !areItemIdArraysEqual(orderedEducation, cvModel.education) ||
+    !areItemIdArraysEqual(orderedTrainings, cvModel.trainings) ||
+    !areItemIdArraysEqual(orderedLanguages, cvModel.languages) ||
+    !areItemIdArraysEqual(orderedAdditionalSections, cvModel.additionalSections) ||
+    !areItemIdArraysEqual(orderedCustomBlockEntries, cvModel.customBlock?.entries ?? []);
 
   const headerItems = useMemo<HeaderItem[]>(() => {
     const phoneEntry = cvModel.personalInfo.items.find(
@@ -410,7 +451,12 @@ export function CvEditorClientShell({
       const result = await saveDoctorCvLayoutAction({
         sectionOrder,
         itemVisibility,
-        templateKey: selectedTemplate
+        templateKey: selectedTemplate,
+        educationOrderIds: orderedEducation.map((item) => item.id),
+        trainingOrderIds: orderedTrainings.map((item) => item.id),
+        languageOrderIds: orderedLanguages.map((item) => item.id),
+        additionalSectionOrderIds: orderedAdditionalSections.map((item) => item.id),
+        customBlockEntryOrderIds: orderedCustomBlockEntries.map((item) => item.id)
       });
 
       setStatusMessage(result.message);
@@ -935,7 +981,7 @@ export function CvEditorClientShell({
                     </p>
                   </div>
                   <Button asChild className="h-11 rounded-xl sm:shrink-0">
-                    <Link href="/dashboard/doctor/cover-letter">
+                    <Link href={coverLetterHref}>
                       Motivationsschreiben mit KI erstellen
                     </Link>
                   </Button>

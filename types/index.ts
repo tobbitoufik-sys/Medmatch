@@ -9,6 +9,7 @@ export type DoctorCurrentPosition =
 
 export type DoctorLicenseType = "approbation" | "berufserlaubnis" | "none";
 export type JobOfferContractType = "honorar" | "befristet" | "unbefristet";
+export type ExternalOfferSalutation = "herr" | "frau" | "unbekannt";
 export type DoctorLanguageCefrLevel = "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
 export type DoctorLanguageLabelLevel =
   | "Anfänger"
@@ -295,6 +296,28 @@ export type JobOffer = {
   created_at: string;
   updated_at: string;
   facility?: FacilityProfile;
+};
+
+export type ExternalJobOffer = {
+  id: string;
+  title: string;
+  hospital_name: string;
+  location: string | null;
+  clinic_address: string | null;
+  contact_person: string | null;
+  salutation: ExternalOfferSalutation;
+  contact_email: string | null;
+  contact_phone: string | null;
+  source_name: string | null;
+  source_url: string | null;
+  external_offer_id: string | null;
+  specialty: string | null;
+  contract_type: JobOfferContractType | null;
+  summary: string | null;
+  is_active: boolean;
+  imported_at: string | null;
+  created_at: string;
+  updated_at: string;
 };
 
 export type ContactRequest = {

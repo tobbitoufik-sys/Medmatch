@@ -33,6 +33,11 @@ export const dashboardNav: Record<UserRole, { href: Route; label: string }[]> = 
   ],
   admin: [
     { href: "/admin", label: "Overview" },
+    { href: "/admin/statistics" as Route, label: "Statistics" },
+    { href: "/admin/external-offers" as Route, label: "External offers" },
+    { href: "/admin/import-runs" as Route, label: "Import runs" },
+    { href: "/admin/import-monitor" as Route, label: "Import monitor" },
+    { href: "/admin/ai-queue" as Route, label: "AI refinement queue" },
     { href: "/admin/users", label: "Users" },
     { href: "/admin/profiles", label: "Profiles" },
     { href: "/admin/offers", label: "Offers" },
