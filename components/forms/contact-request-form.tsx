@@ -11,13 +11,13 @@ export function ContactRequestForm({
   relatedOfferId?: string;
 }) {
   return (
-    <ServerForm action={createContactRequestAction} submitLabel="Send request">
+    <ServerForm action={createContactRequestAction} submitLabel="Anfrage senden">
       <input type="hidden" name="receiver_user_id" value={receiverUserId} />
       {relatedOfferId ? <input type="hidden" name="related_offer_id" value={relatedOfferId} /> : null}
-      <Field label="Message">
+      <Field label="Nachricht">
         <Textarea
           name="message"
-          defaultValue="Hello, I would like to discuss this opportunity and confirm the expected hiring timeline."
+          defaultValue="Guten Tag, ich möchte diese Gelegenheit gerne besprechen und den weiteren Ablauf klären."
           required
         />
       </Field>

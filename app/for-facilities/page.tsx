@@ -11,24 +11,24 @@ export default function ForFacilitiesPage() {
       <section className="container py-20">
         <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="space-y-6">
-            <p className="text-sm uppercase tracking-[0.2em] text-primary">For facilities</p>
-            <h1 className="text-5xl font-semibold tracking-tight">Recruit doctors with a platform that feels serious, fast and easy to manage.</h1>
+            <p className="text-sm uppercase tracking-[0.2em] text-primary">Für Einrichtungen</p>
+            <h1 className="text-5xl font-semibold tracking-tight">Gewinnen Sie Ärzte mit einer Plattform, die professionell, schnell und übersichtlich ist.</h1>
             <p className="text-lg text-muted-foreground">
-              Present your organisation, publish roles, search the doctor directory and keep every initial conversation in one clean workflow.
+              Präsentieren Sie Ihre Einrichtung, veröffentlichen Sie Stellen, durchsuchen Sie Arztprofile und behalten Sie erste Kontakte in einem klaren Workflow.
             </p>
             <Button asChild size="lg">
-              <Link href="/register">Create a facility account</Link>
+              <Link href="/register">Einrichtungskonto erstellen</Link>
             </Button>
           </div>
           <Card>
             <CardHeader>
-              <CardTitle>What facilities can do</CardTitle>
+              <CardTitle>Was Einrichtungen mit MedMatch tun können</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-muted-foreground">
-              <p>Create a professional facility profile with organisation type, city, country, website and recruiter contact person.</p>
-              <p>Publish, update or pause opportunities from a dedicated dashboard.</p>
-              <p>Search doctor profiles with practical filters and start direct outreach.</p>
-              <p>Use the admin layer to moderate quality, verify profiles and manage trust on the platform.</p>
+              <p>Erstellen Sie ein professionelles Einrichtungsprofil mit Typ, Standort, Website und Ansprechpartner.</p>
+              <p>Veröffentlichen, aktualisieren oder pausieren Sie Stellenangebote direkt im Dashboard.</p>
+              <p>Finden Sie passende Arztprofile mit praktischen Filtern und starten Sie eine direkte Ansprache.</p>
+              <p>Nutzen Sie Moderation und Verifizierung, um Vertrauen und Qualität auf der Plattform zu sichern.</p>
             </CardContent>
           </Card>
         </div>

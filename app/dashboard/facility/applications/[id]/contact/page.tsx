@@ -57,13 +57,13 @@ export default async function FacilityApplicationContactPage({
     return (
       <DashboardShell
         role="facility"
-        title="Doctor conversation"
-        description="Discuss this application directly in a dedicated conversation."
+        title="Arztkonversation"
+        description="Besprechen Sie diese Bewerbung direkt in einer eigenen Konversation."
       >
         <EmptyState
-          title="Conversation not available yet"
-          description="The contact page route is working, but the conversation context could not be loaded for this application yet."
-          cta="Back to application"
+          title="Konversation noch nicht verfügbar"
+          description="Die Kontaktseite ist erreichbar, aber der Konversationskontext konnte für diese Bewerbung noch nicht geladen werden."
+          cta="Zurück zur Bewerbung"
           href={`/dashboard/facility/applications/${id}` as never}
         />
       </DashboardShell>
@@ -85,8 +85,8 @@ export default async function FacilityApplicationContactPage({
   return (
     <DashboardShell
       role="facility"
-      title={doctor?.full_name || "Doctor conversation"}
-      description="Discuss this application directly in a dedicated conversation."
+      title={doctor?.full_name || "Arztkonversation"}
+      description="Besprechen Sie diese Bewerbung direkt in einer eigenen Konversation."
     >
       <div className="grid gap-6">
         <MarkConversationRead
@@ -100,8 +100,8 @@ export default async function FacilityApplicationContactPage({
           <CardHeader className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="space-y-1">
-                <CardTitle>{doctor?.full_name || "Doctor"}</CardTitle>
-                <p className="text-sm text-muted-foreground">{offer?.title || "Application conversation"}</p>
+                <CardTitle>{doctor?.full_name || "Arzt"}</CardTitle>
+                <p className="text-sm text-muted-foreground">{offer?.title || "Bewerbungskonversation"}</p>
               </div>
               <Badge className={applicationStatusBadgeClass[visibleStatus]}>
                 {applicationStatusLabels[visibleStatus]}
@@ -114,8 +114,8 @@ export default async function FacilityApplicationContactPage({
           messages={messages ?? []}
           currentUserId={context.facilityUserId}
           doctorUserId={context.application.doctor_user_id}
-          doctorName={doctor?.full_name || "Doctor"}
-          facilityName={user.user_metadata.full_name || user.email || "Facility"}
+          doctorName={doctor?.full_name || "Arzt"}
+          facilityName={user.user_metadata.full_name || user.email || "Einrichtung"}
           conversationId={context.conversation.id}
           redirectPath={`/dashboard/facility/applications/${context.application.id}/contact`}
         />

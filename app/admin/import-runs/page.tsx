@@ -186,7 +186,7 @@ async function createOrUpdateRefinementQueueFromRawItem(
   rawItem: ImportItemRecord
 ) {
   if (!(rawItem.raw_text ?? "").trim()) {
-    throw new Error("Fuer diese URL wurde kein ausreichend lesbarer Rohtext gespeichert.");
+    throw new Error("Für diese URL wurde kein ausreichend lesbarer Rohtext gespeichert.");
   }
 
   const { data: queueEntry, error: queueCreateError } = await supabase
@@ -1054,7 +1054,7 @@ export default async function AdminImportRunsPage({
     <DashboardShell
       role="admin"
       title="Import runs"
-      description="Starten Sie URL-Imports fuer externe Stellen, sehen Sie Rohinhalte ein und halten Sie den Publishing-Katalog getrennt."
+      description="Starten Sie URL-Imports für externe Stellen, sehen Sie Rohinhalte ein und halten Sie den Publishing-Katalog getrennt."
     >
       <Card>
         <CardHeader>
@@ -1068,12 +1068,12 @@ export default async function AdminImportRunsPage({
           ) : null}
           {createStatus === "validation" ? (
             <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-              Bitte geben Sie eine gueltige URL fuer das externe Stellenangebot ein.
+              Bitte geben Sie eine gültige URL für das externe Stellenangebot ein.
             </div>
           ) : null}
           {createStatus === "error" ? (
             <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-              Der Importlauf konnte nicht abgeschlossen werden. Bitte pruefen Sie die URL, Weiterleitungen der Zielseite oder versuchen Sie es spaeter erneut.
+              Der Importlauf konnte nicht abgeschlossen werden. Bitte prüfen Sie die URL, Weiterleitungen der Zielseite oder versuchen Sie es später erneut.
             </div>
           ) : null}
           {batchStatus === "success" ? (
@@ -1083,7 +1083,7 @@ export default async function AdminImportRunsPage({
           ) : null}
           {batchStatus === "validation" ? (
             <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-              Bitte geben Sie eine gueltige Praktischarzt-Listing-URL ein.
+              Bitte geben Sie eine gültige Praktischarzt-Listing-URL ein.
             </div>
           ) : null}
           {batchStatus === "empty" ? (
@@ -1093,7 +1093,7 @@ export default async function AdminImportRunsPage({
           ) : null}
           {batchStatus === "error" ? (
             <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-              Der Praktischarzt-Testbatch konnte nicht vollstaendig abgeschlossen werden. Gefunden: {batchFound}. Versucht: {batchAttempted}. Erfolgreich importiert: {batchImported}. Fehlgeschlagen: {batchFailed}.
+              Der Praktischarzt-Testbatch konnte nicht vollständig abgeschlossen werden. Gefunden: {batchFound}. Versucht: {batchAttempted}. Erfolgreich importiert: {batchImported}. Fehlgeschlagen: {batchFailed}.
             </div>
           ) : null}
           {batchUrls.length ? (
@@ -1115,32 +1115,32 @@ export default async function AdminImportRunsPage({
           ) : null}
           {refineStatus === "noRawText" ? (
             <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-              Fuer diese URL wurde kein ausreichend lesbarer Rohtext gespeichert. Bitte pruefen Sie zuerst den Importlauf.
+              Für diese URL wurde kein ausreichend lesbarer Rohtext gespeichert. Bitte prüfen Sie zuerst den Importlauf.
             </div>
           ) : null}
           {refineStatus === "temporaryUnavailable" ? (
             <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-              Die KI-Aufbereitung ist voruebergehend nicht verfuegbar. Der Queue-Eintrag bleibt erhalten und kann spaeter erneut versucht werden.
+              Die KI-Aufbereitung ist vorübergehend nicht verfügbar. Der Queue-Eintrag bleibt erhalten und kann später erneut versucht werden.
             </div>
           ) : null}
           {refineStatus === "error" ? (
             <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-              Die KI-Aufbereitung konnte nicht abgeschlossen werden. Bitte pruefen Sie den Rohimport und versuchen Sie es erneut.
+              Die KI-Aufbereitung konnte nicht abgeschlossen werden. Bitte prüfen Sie den Rohimport und versuchen Sie es erneut.
             </div>
           ) : null}
           {deleteStatus === "success" ? (
             <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-              Importlauf und zugehoerige Roh-/Queue-Daten geloescht.
+              Importlauf und zugehörige Roh-/Queue-Daten gelöscht.
             </div>
           ) : null}
           {deleteStatus === "blockedPublished" ? (
             <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-              Dieser Importlauf ist noch mit einem veroeffentlichten externen Angebot verknuepft. Loeschen Sie zuerst das veroeffentlichte Angebot.
+              Dieser Importlauf ist noch mit einem veröffentlichten externen Angebot verknüpft. Löschen Sie zuerst das veröffentlichte Angebot.
             </div>
           ) : null}
           {deleteStatus === "error" ? (
             <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-              Der Importlauf konnte nicht geloescht werden.
+              Der Importlauf konnte nicht gelöscht werden.
             </div>
           ) : null}
 
@@ -1161,7 +1161,7 @@ export default async function AdminImportRunsPage({
           </form>
 
           <p className="text-sm text-muted-foreground">
-            Dieser Bereich speichert nur Rohimporte und Fehlerstaende. Veroeffentlichte externe Angebote bleiben weiterhin ausschliesslich im Bereich <span className="font-medium text-foreground">External offers</span>.
+            Dieser Bereich speichert nur Rohimporte und Fehlerstände. Veröffentlichte externe Angebote bleiben weiterhin ausschließlich im Bereich <span className="font-medium text-foreground">External offers</span>.
           </p>
         </CardContent>
       </Card>
@@ -1188,7 +1188,7 @@ export default async function AdminImportRunsPage({
           </form>
 
           <p className="text-sm text-muted-foreground">
-            Dieses Testwerkzeug ist strikt auf maximal <span className="font-medium text-foreground">5 Angebote</span> begrenzt und fuehrt keine automatische Veroeffentlichung aus.
+            Dieses Testwerkzeug ist strikt auf maximal <span className="font-medium text-foreground">5 Angebote</span> begrenzt und führt keine automatische Veröffentlichung aus.
           </p>
         </CardContent>
       </Card>
@@ -1206,7 +1206,7 @@ export default async function AdminImportRunsPage({
           ) : null}
           {scanStatus === "validation" ? (
             <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-              Bitte geben Sie eine gueltige Praktischarzt-Listing-URL fuer den Quellenscan ein.
+              Bitte geben Sie eine gültige Praktischarzt-Listing-URL für den Quellenscan ein.
               {scanListingUrl ? <span className="block mt-1 break-all">Eingegebene URL: {scanListingUrl}</span> : null}
             </div>
           ) : null}
@@ -1231,7 +1231,7 @@ export default async function AdminImportRunsPage({
               . Neu erkannt:
               <span className="ml-1 font-medium">{latestScheduledSourceScan.new_count}</span>.
               {latestScheduledSourceScan.new_count > 0 ? (
-                <span className="block mt-1">Es warten neue Angebote auf Ihre manuelle Uebernahme.</span>
+                <span className="block mt-1">Es warten neue Angebote auf Ihre manuelle Übernahme.</span>
               ) : null}
             </div>
           ) : null}
@@ -1249,7 +1249,7 @@ export default async function AdminImportRunsPage({
           ) : null}
           {scanImportStatus === "success" ? (
             <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-              Neue Praktischarzt-Angebote importiert. Verfuegbar: {scanImportAvailable}. Versucht: {scanImportAttempted}. Erfolgreich importiert: {scanImportImported}. Fehlgeschlagen: {scanImportFailed}.
+              Neue Praktischarzt-Angebote importiert. Verfügbar: {scanImportAvailable}. Versucht: {scanImportAttempted}. Erfolgreich importiert: {scanImportImported}. Fehlgeschlagen: {scanImportFailed}.
             </div>
           ) : null}
           {scanImportStatus === "empty" ? (
@@ -1259,58 +1259,58 @@ export default async function AdminImportRunsPage({
           ) : null}
           {scanImportStatus === "alreadyImported" ? (
             <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-              Die neu erkannten Praktischarzt-Angebote aus dem letzten Scan wurden bereits in die externe Import-Pipeline uebernommen.
+              Die neu erkannten Praktischarzt-Angebote aus dem letzten Scan wurden bereits in die externe Import-Pipeline übernommen.
             </div>
           ) : null}
           {scanImportStatus === "error" ? (
             <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-              Der Import neuer Praktischarzt-Angebote aus dem letzten Scan konnte nicht vollstaendig abgeschlossen werden. Verfuegbar: {scanImportAvailable}. Versucht: {scanImportAttempted}. Erfolgreich importiert: {scanImportImported}. Fehlgeschlagen: {scanImportFailed}.
+              Der Import neuer Praktischarzt-Angebote aus dem letzten Scan konnte nicht vollständig abgeschlossen werden. Verfügbar: {scanImportAvailable}. Versucht: {scanImportAttempted}. Erfolgreich importiert: {scanImportImported}. Fehlgeschlagen: {scanImportFailed}.
             </div>
           ) : null}
           {scanWorklistStatus === "deleteValidation" ? (
             <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-              Bitte waehlen Sie mindestens ein Praktischarzt-Angebot aus der letzten Scan-Liste aus.
+              Bitte wählen Sie mindestens ein Praktischarzt-Angebot aus der letzten Scan-Liste aus.
             </div>
           ) : null}
           {scanWorklistStatus === "deleteSuccess" ? (
             <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-              Auswahl verarbeitet: {scanWorklistSelected}. Passende Scan-Eintraege: {scanWorklistMatched}. Loeschbar: {scanWorklistDeletable}. Entfernt: {scanWorklistDeleted}. Bereits in die Pipeline uebernommene Eintraege blieben unberuehrt: {scanWorklistBlocked}.
+              Auswahl verarbeitet: {scanWorklistSelected}. Passende Scan-Einträge: {scanWorklistMatched}. Löschbar: {scanWorklistDeletable}. Entfernt: {scanWorklistDeleted}. Bereits in die Pipeline übernommene Einträge blieben unberührt: {scanWorklistBlocked}.
             </div>
           ) : null}
           {scanWorklistStatus === "deleteNoMatches" ? (
             <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-              Auswahl verarbeitet: {scanWorklistSelected}. Keiner der uebergebenen Eintraege konnte der aktuellen Praktischarzt-Scan-Liste zugeordnet werden.
+              Auswahl verarbeitet: {scanWorklistSelected}. Keiner der übergebenen Einträge konnte der aktuellen Praktischarzt-Scan-Liste zugeordnet werden.
             </div>
           ) : null}
           {scanWorklistStatus === "deleteBlocked" ? (
             <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-              Auswahl verarbeitet: {scanWorklistSelected}. Passende Scan-Eintraege: {scanWorklistMatched}. Nichts geloescht. Bereits in die Pipeline uebernommene Eintraege wurden aus Sicherheitsgruenden uebersprungen: {scanWorklistBlocked}.
+              Auswahl verarbeitet: {scanWorklistSelected}. Passende Scan-Einträge: {scanWorklistMatched}. Nichts gelöscht. Bereits in die Pipeline übernommene Einträge wurden aus Sicherheitsgründen übersprungen: {scanWorklistBlocked}.
             </div>
           ) : null}
           {scanWorklistStatus === "deleteNoRows" ? (
             <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-              Auswahl verarbeitet: {scanWorklistSelected}. Passende Scan-Eintraege: {scanWorklistMatched}. Als loeschbar erkannt: {scanWorklistDeletable}. Die Datenbank hat jedoch 0 Zeilen entfernt.
+              Auswahl verarbeitet: {scanWorklistSelected}. Passende Scan-Einträge: {scanWorklistMatched}. Als löschbar erkannt: {scanWorklistDeletable}. Die Datenbank hat jedoch 0 Zeilen entfernt.
             </div>
           ) : null}
           {scanWorklistStatus === "deleteError" ? (
             <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-              Die ausgewaehlten Praktischarzt-Eintraege konnten nicht geloescht werden.
+              Die ausgewählten Praktischarzt-Einträge konnten nicht gelöscht werden.
             </div>
           ) : null}
           {scanWorklistStatus === "rowImportValidation" ? (
             <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-              Fuer die direkte Uebernahme fehlt eine gueltige Praktischarzt-Detail-URL.
+              Für die direkte Übernahme fehlt eine gültige Praktischarzt-Detail-URL.
             </div>
           ) : null}
           {scanWorklistStatus === "rowAlreadyImported" ? (
             <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-              Dieses Praktischarzt-Angebot wurde bereits in die Pipeline uebernommen.
+              Dieses Praktischarzt-Angebot wurde bereits in die Pipeline übernommen.
               {scanWorklistUrl ? <span className="mt-1 block break-all">{scanWorklistUrl}</span> : null}
             </div>
           ) : null}
           {scanWorklistStatus === "rowImportError" ? (
             <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-              Das ausgewaehlte Praktischarzt-Angebot konnte nicht direkt in die Review-Pipeline uebernommen werden.
+              Das ausgewählte Praktischarzt-Angebot konnte nicht direkt in die Review-Pipeline übernommen werden.
               {scanWorklistUrl ? <span className="mt-1 block break-all">{scanWorklistUrl}</span> : null}
             </div>
           ) : null}
@@ -1345,7 +1345,7 @@ export default async function AdminImportRunsPage({
           </form>
 
           <p className="text-sm text-muted-foreground">
-            Dieser Quellenscan prueft aktuell maximal <span className="font-medium text-foreground">3 Listing-Seiten</span>, merkt sich bereits bekannte Detail-URLs und zeigt neue Angebote seit dem letzten Stand. Es gibt in diesem Schritt weder Auto-Import noch Auto-Veroeffentlichung.
+            Dieser Quellenscan prüft aktuell maximal <span className="font-medium text-foreground">3 Listing-Seiten</span>, merkt sich bereits bekannte Detail-URLs und zeigt neue Angebote seit dem letzten Stand. Es gibt in diesem Schritt weder Auto-Import noch Auto-Veröffentlichung.
           </p>
 
           {latestSourceScan ? (
@@ -1406,16 +1406,16 @@ export default async function AdminImportRunsPage({
                   <div>
                     <p className="text-sm font-medium text-slate-900">Worklist bereinigen</p>
                     <p className="mt-1 text-sm text-slate-600">
-                      Waehlen Sie unerwuenschte Eintraege aus dieser letzten Scan-Liste aus. Bereits in die Pipeline uebernommene Angebote werden aus Sicherheitsgruenden nicht geloescht.
+                      Wählen Sie unerwünschte Einträge aus dieser letzten Scan-Liste aus. Bereits in die Pipeline übernommene Angebote werden aus Sicherheitsgründen nicht gelöscht.
                     </p>
                   </div>
                   <ConfirmSubmitButton
                     type="submit"
                     variant="outline"
-                    confirmMessage="Die ausgewaehlten Praktischarzt-Eintraege wirklich aus dieser Scan-Worklist entfernen?"
+                    confirmMessage="Die ausgewählten Praktischarzt-Einträge wirklich aus dieser Scan-Worklist entfernen?"
                     disabled={!latestSourceScanImportableOffers.length}
                   >
-                    Ausgewaehlte loeschen
+                    Ausgewählte löschen
                   </ConfirmSubmitButton>
                 </div>
 
@@ -1468,7 +1468,7 @@ export default async function AdminImportRunsPage({
                                 ) : null}
                                 {isImported ? (
                                   <p className="mt-1 text-xs text-slate-500">
-                                    Bereits in der Pipeline. In dieser Scan-Worklist nicht loeschbar.
+                                    Bereits in der Pipeline. In dieser Scan-Worklist nicht löschbar.
                                   </p>
                                 ) : null}
                                 <p className="mt-1 break-all text-xs text-slate-500">{offer.url}</p>
@@ -1478,7 +1478,7 @@ export default async function AdminImportRunsPage({
                               {isImported ? (
                                 queueId ? (
                                   <Button asChild variant="outline" size="sm">
-                                    <Link href={`/admin/ai-queue/${queueId}`}>Review oeffnen</Link>
+                                    <Link href={`/admin/ai-queue/${queueId}`}>Review öffnen</Link>
                                   </Button>
                                 ) : (
                                   <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600">
@@ -1489,7 +1489,7 @@ export default async function AdminImportRunsPage({
                                 <form action={importSingleLatestPraktischarztOfferAction}>
                                   <input type="hidden" name="source_offer_url" value={offer.url} />
                                   <Button type="submit" variant="outline" size="sm">
-                                    In Review uebernehmen
+                                    In Review übernehmen
                                   </Button>
                                 </form>
                               )}
@@ -1571,10 +1571,10 @@ export default async function AdminImportRunsPage({
                               type="submit"
                               variant="ghost"
                               size="sm"
-                              confirmMessage="Diesen Importlauf inklusive Rohdaten und unveroeffentlichter Queue-Eintraege wirklich loeschen?"
+                              confirmMessage="Diesen Importlauf inklusive Rohdaten und unveröffentlichter Queue-Einträge wirklich löschen?"
                               className="text-rose-700 hover:bg-rose-50 hover:text-rose-800"
                             >
-                              Loeschen
+                              Löschen
                             </ConfirmSubmitButton>
                           </form>
                         </div>
@@ -1589,7 +1589,7 @@ export default async function AdminImportRunsPage({
             })
           ) : (
             <div className="rounded-2xl border border-dashed p-8 text-center text-sm text-muted-foreground">
-              Noch keine Importlaeufe verfuegbar.
+              Noch keine Importläufe verfügbar.
             </div>
           )}
         </CardContent>

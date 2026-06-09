@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { signInAction, signUpAction } from "@/lib/actions";
 import { ServerForm } from "@/components/forms/server-form";
 import { Field } from "@/components/forms/field";
@@ -6,12 +8,20 @@ import { Select } from "@/components/ui/select";
 
 export function SignInForm() {
   return (
-    <ServerForm action={signInAction} submitLabel="Log in">
-      <Field label="Email">
-        <Input name="email" type="email" placeholder="you@hospital.com" required />
+    <ServerForm
+      action={signInAction}
+      submitLabel="Einloggen"
+      submitAccessory={
+        <Link href="/forgot-password" className="inline-flex text-sm font-semibold text-primary">
+          Passwort vergessen?
+        </Link>
+      }
+    >
+      <Field label="E-Mail">
+        <Input name="email" type="email" placeholder="name@beispiel.de" required />
       </Field>
-      <Field label="Password">
-        <Input name="password" type="password" placeholder="Minimum 8 characters" required />
+      <Field label="Passwort">
+        <Input name="password" type="password" placeholder="Mindestens 8 Zeichen" required />
       </Field>
     </ServerForm>
   );
@@ -19,20 +29,20 @@ export function SignInForm() {
 
 export function SignUpForm() {
   return (
-    <ServerForm action={signUpAction} submitLabel="Create account">
-      <Field label="Full name">
-        <Input name="fullName" placeholder="Dr. Amelia Carter" required />
+    <ServerForm action={signUpAction} submitLabel="Konto erstellen">
+      <Field label="Vollständiger Name">
+        <Input name="fullName" placeholder="Dr. Amina Schneider" required />
       </Field>
-      <Field label="Email">
-        <Input name="email" type="email" placeholder="you@example.com" required />
+      <Field label="E-Mail">
+        <Input name="email" type="email" placeholder="name@beispiel.de" required />
       </Field>
-      <Field label="Password">
-        <Input name="password" type="password" placeholder="Create a secure password" required />
+      <Field label="Passwort">
+        <Input name="password" type="password" placeholder="Sicheres Passwort erstellen" required />
       </Field>
-      <Field label="Account type">
+      <Field label="Kontotyp">
         <Select name="role" defaultValue="doctor">
-          <option value="doctor">Doctor</option>
-          <option value="facility">Hospital / Clinic / Recruiter</option>
+          <option value="doctor">Arzt</option>
+          <option value="facility">Klinik / Praxis / Recruiter</option>
         </Select>
       </Field>
     </ServerForm>

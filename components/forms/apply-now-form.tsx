@@ -45,8 +45,8 @@ export function ApplyNowForm({
             state.success ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
           )}
         >
-          {state.message === "Application already submitted for this opportunity."
-            ? "Bewerbung erfolgreich eingereicht"
+          {state.message === "Bewerbung für dieses Stellenangebot bereits eingereicht."
+            ? "Bewerbung wurde bereits eingereicht"
             : state.message}
         </div>
       ) : null}

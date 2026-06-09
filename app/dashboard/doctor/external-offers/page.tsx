@@ -25,16 +25,16 @@ export default async function DoctorExternalOffersPage() {
     <DashboardShell
       role="doctor"
       title="Externe Stellen"
-      description="Hier finden Sie importierte Stellenangebote, die Sie mit dem unterstuetzten Ablauf aus CV, Motivationsschreiben und E-Mail vorbereiten koennen."
+      description="Hier finden Sie importierte Stellenangebote, die Sie mit dem unterstützten Ablauf aus CV, Motivationsschreiben und E-Mail vorbereiten können."
     >
       <section className="rounded-3xl border bg-white p-6 shadow-sm">
         <div className="space-y-2">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Externe Angebote</p>
           <h2 className="text-xl font-semibold tracking-tight text-slate-900">
-            Importierte Stellen fuer den begleiteten Bewerbungsablauf
+            Importierte Stellen für den begleiteten Bewerbungsablauf
           </h2>
           <p className="max-w-3xl text-sm text-slate-600">
-            Diese Angebote bleiben getrennt vom nativen MedMatch-Stellenworkflow und fuehren Sie durch den unterstuetzten Ablauf: CV, Motivationsschreiben und Bewerbungs-E-Mail.
+            Diese Angebote bleiben getrennt vom nativen MedMatch-Stellenworkflow und führen Sie durch den unterstützten Ablauf: CV, Motivationsschreiben und Bewerbungs-E-Mail.
           </p>
         </div>
       </section>
@@ -78,8 +78,8 @@ export default async function DoctorExternalOffersPage() {
         </section>
       ) : (
         <EmptyState
-          title="Noch keine externen Stellen verfuegbar."
-          description="Sobald externe Stellenangebote importiert werden, erscheinen sie hier in einer separaten Uebersicht."
+          title="Noch keine externen Stellen verfügbar."
+          description="Sobald externe Stellenangebote importiert werden, erscheinen sie hier in einer separaten Übersicht."
         />
       )}
     </DashboardShell>

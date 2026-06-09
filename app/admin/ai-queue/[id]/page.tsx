@@ -555,7 +555,7 @@ function formatContractType(value: RefinementEntry["contract_type"]) {
 }
 
 function getQualityBadgeClass(classification: ReturnType<typeof getExternalOfferQuality>["classification"]) {
-  if (classification === "Bereit zur Veroeffentlichung") {
+  if (classification === "Bereit zur Veröffentlichung") {
     return "bg-emerald-50 text-emerald-700";
   }
 
@@ -605,7 +605,7 @@ export default async function AdminAiQueueDetailPage({
     <DashboardShell
       role="admin"
       title="AI refinement queue"
-      description="Bearbeiten Sie einen reviewbaren Entwurf im Detail, bevor er separat in den veroeffentlichten externen Angebotskatalog uebernommen wird."
+      description="Bearbeiten Sie einen reviewbaren Entwurf im Detail, bevor er separat in den veröffentlichten externen Angebotskatalog übernommen wird."
     >
       <div className="space-y-6">
         <div className="flex flex-wrap gap-3">
@@ -613,7 +613,7 @@ export default async function AdminAiQueueDetailPage({
             href="/admin/ai-queue"
             className="inline-flex h-11 items-center justify-center rounded-full border bg-white px-5 text-sm font-semibold text-foreground transition hover:bg-secondary"
           >
-            Zurueck zur Queue
+            Zurück zur Queue
           </Link>
         </div>
 
@@ -634,7 +634,7 @@ export default async function AdminAiQueueDetailPage({
             ) : null}
             {saveStatus === "invalidEmail" ? (
               <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                Bitte geben Sie eine gueltige Kontakt-E-Mail-Adresse ein.
+                Bitte geben Sie eine gültige Kontakt-E-Mail-Adresse ein.
               </div>
             ) : null}
             {saveStatus === "error" ? (
@@ -644,17 +644,17 @@ export default async function AdminAiQueueDetailPage({
             ) : null}
             {publishStatus === "success" ? (
               <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-                Externes Stellenangebot veroeffentlicht.
+                Externes Stellenangebot veröffentlicht.
               </div>
             ) : null}
             {publishStatus === "validation" ? (
               <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                Fuer die Veroeffentlichung werden mindestens Titel und Krankenhaus aus der Review-Queue benoetigt.
+                Für die Veröffentlichung werden mindestens Titel und Krankenhaus aus der Review-Queue benötigt.
               </div>
             ) : null}
             {publishStatus === "error" ? (
               <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-                Das externe Stellenangebot konnte nicht veroeffentlicht werden.
+                Das externe Stellenangebot konnte nicht veröffentlicht werden.
               </div>
             ) : null}
             {retryStatus === "success" ? (
@@ -664,12 +664,12 @@ export default async function AdminAiQueueDetailPage({
             ) : null}
             {retryStatus === "noRawText" ? (
               <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                Es konnten keine zusaetzlichen expliziten Kontaktdaten gefunden werden.
+                Es konnten keine zusätzlichen expliziten Kontaktdaten gefunden werden.
               </div>
             ) : null}
             {retryStatus === "temporaryUnavailable" ? (
               <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                Gemini ist voruebergehend nicht verfuegbar. Der Queue-Eintrag bleibt erhalten und kann erneut versucht werden.
+                Gemini ist vorübergehend nicht verfügbar. Der Queue-Eintrag bleibt erhalten und kann erneut versucht werden.
               </div>
             ) : null}
             {retryStatus === "error" ? (
@@ -684,7 +684,7 @@ export default async function AdminAiQueueDetailPage({
             ) : null}
             {enrichmentStatus === "notFound" ? (
               <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                Auf den geprueften Klinikseiten wurden keine zusaetzlichen expliziten Kontaktdaten gefunden.
+                Auf den geprüften Klinikseiten wurden keine zusätzlichen expliziten Kontaktdaten gefunden.
               </div>
             ) : null}
             {enrichmentStatus === "error" ? (
@@ -694,12 +694,12 @@ export default async function AdminAiQueueDetailPage({
             ) : null}
             {deleteStatus === "blockedPublished" ? (
               <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                Veroeffentlichte Queue-Eintraege koennen hier nicht geloescht werden. Loeschen Sie zuerst das veroeffentlichte externe Angebot.
+                Veröffentlichte Queue-Einträge können hier nicht gelöscht werden. Löschen Sie zuerst das veröffentlichte externe Angebot.
               </div>
             ) : null}
             {deleteStatus === "error" ? (
               <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-                Der Queue-Eintrag konnte nicht geloescht werden.
+                Der Queue-Eintrag konnte nicht gelöscht werden.
               </div>
             ) : null}
 
@@ -717,7 +717,7 @@ export default async function AdminAiQueueDetailPage({
                     ) : null}
                     {entry.published_external_offer_id ? (
                       <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700">
-                        Veroeffentlicht
+                        Veröffentlicht
                       </span>
                     ) : null}
                   </div>
@@ -737,7 +737,7 @@ export default async function AdminAiQueueDetailPage({
                     <span
                       className={`rounded-full px-3 py-1 text-xs font-semibold ${getQualityBadgeClass(quality.classification)}`}
                     >
-                      Qualitaet {quality.score}/100
+                      Qualität {quality.score}/100
                     </span>
                     <span
                       className={`rounded-full px-3 py-1 text-xs ${getQualityBadgeClass(quality.classification)}`}
@@ -770,7 +770,7 @@ export default async function AdminAiQueueDetailPage({
 
                 {!entry.contact_email || !entry.clinic_address || entry.contact_phone ? (
                   <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-                    <p className="font-medium">Kontaktlage pruefen</p>
+                    <p className="font-medium">Kontaktlage prüfen</p>
                     <ul className="mt-2 space-y-1 text-amber-800">
                       {!entry.contact_email ? <li>Kontakt-E-Mail fehlt.</li> : null}
                       {!entry.clinic_address ? <li>Klinikadresse fehlt.</li> : null}
@@ -946,7 +946,7 @@ export default async function AdminAiQueueDetailPage({
                     <form action={publishRefinementEntryAction}>
                       <input type="hidden" name="refinement_id" value={entry.id} />
                       <Button type="submit" disabled={entry.refinement_status !== "succeeded"}>
-                        {entry.published_external_offer_id ? "Aktualisiert veroeffentlichen" : "Veroeffentlichen"}
+                        {entry.published_external_offer_id ? "Aktualisiert veröffentlichen" : "Veröffentlichen"}
                       </Button>
                     </form>
                     <form action={deleteRefinementEntryAction}>
@@ -954,10 +954,10 @@ export default async function AdminAiQueueDetailPage({
                       <ConfirmSubmitButton
                         type="submit"
                         variant="ghost"
-                        confirmMessage="Diesen Queue-Eintrag wirklich loeschen?"
+                        confirmMessage="Diesen Queue-Eintrag wirklich löschen?"
                         className="text-rose-700 hover:bg-rose-50 hover:text-rose-800"
                       >
-                        Loeschen
+                        Löschen
                       </ConfirmSubmitButton>
                     </form>
                   </div>

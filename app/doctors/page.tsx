@@ -26,21 +26,21 @@ export default async function DoctorsPage({
       <SiteHeader />
       <section className="container py-16">
         <div className="max-w-3xl space-y-4">
-          <p className="text-sm uppercase tracking-[0.2em] text-primary">Doctors</p>
-          <h1 className="text-5xl font-semibold tracking-tight">Browse a curated public directory of professional doctor profiles.</h1>
+          <p className="text-sm uppercase tracking-[0.2em] text-primary">Arztprofile</p>
+          <h1 className="text-5xl font-semibold tracking-tight">Durchsuchen Sie öffentliche Profile qualifizierter Ärzte.</h1>
           <p className="text-lg text-muted-foreground">
-            Only public profiles appear here, making the listing suitable for a premium healthcare marketplace.
+            Hier erscheinen nur freigegebene Profile, damit Einrichtungen schnell relevante Kandidaten finden.
           </p>
         </div>
         <div className="mt-10">
           <Filters
             fields={[
-              { name: "specialty", label: "Specialty", placeholder: "Radiology" },
-              { name: "city", label: "City", placeholder: "Berlin" },
-              { name: "country", label: "Country", placeholder: "Germany" },
-              { name: "contract_type", label: "Contract", placeholder: "Locum" },
-              { name: "availability", label: "Availability", placeholder: "Immediate" },
-              { name: "language", label: "Language", placeholder: "English" }
+              { name: "specialty", label: "Fachrichtung", placeholder: "Radiologie" },
+              { name: "city", label: "Stadt", placeholder: "Berlin" },
+              { name: "country", label: "Land", placeholder: "Deutschland" },
+              { name: "contract_type", label: "Vertrag", placeholder: "Honorar" },
+              { name: "availability", label: "Verfügbarkeit", placeholder: "Sofort" },
+              { name: "language", label: "Sprache", placeholder: "Deutsch" }
             ]}
           />
         </div>
@@ -73,8 +73,8 @@ export default async function DoctorsPage({
           ) : (
             <div className="lg:col-span-2">
               <EmptyState
-                title="No doctor profile matches these filters"
-                description="Try simplifying the search or connect Supabase and seed the platform with more demo profiles."
+                title="Kein Arztprofil passt zu diesen Filtern"
+                description="Vereinfachen Sie die Suche oder erweitern Sie die Filter, um mehr Profile zu sehen."
               />
             </div>
           )}

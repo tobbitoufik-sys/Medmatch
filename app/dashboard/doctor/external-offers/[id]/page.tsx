@@ -67,7 +67,7 @@ export default async function DoctorExternalOfferDetailPage({
     <DashboardShell
       role="doctor"
       title="Externes Stellenangebot"
-      description="Pruefen Sie importierte Stellendetails und starten Sie daraus den begleiteten Bewerbungsablauf."
+      description="Prüfen Sie importierte Stellendetails und starten Sie daraus den begleiteten Bewerbungsablauf."
     >
       <div className="space-y-6">
         <section className="rounded-3xl border bg-white p-6 shadow-sm">
@@ -98,7 +98,7 @@ export default async function DoctorExternalOfferDetailPage({
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold text-slate-900">Beschreibung</h3>
                 <p className="text-sm leading-6 text-slate-600">
-                  {offer.summary || "Zu diesem externen Stellenangebot wurde noch keine zusaetzliche Beschreibung hinterlegt."}
+                  {offer.summary || "Zu diesem externen Stellenangebot wurde noch keine zusätzliche Beschreibung hinterlegt."}
                 </p>
               </div>
 
@@ -154,15 +154,15 @@ export default async function DoctorExternalOfferDetailPage({
           <aside className="rounded-[1.75rem] border border-slate-200 bg-[linear-gradient(135deg,#f8fbfd_0%,#eef5f8_100%)] p-6 shadow-sm">
             <div className="space-y-3">
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-                NAECHSTER SCHRITT
+                NÄCHSTER SCHRITT
               </p>
               <h3 className="text-lg font-semibold text-slate-900">Bewerbung vorbereiten</h3>
               <p className="text-sm leading-6 text-slate-600">
-                Uebernehmen Sie Klinik-, Kontakt- und Bewerbungsdaten direkt in den begleiteten Ablauf aus Motivationsschreiben und Bewerbungs-E-Mail.
+                Übernehmen Sie Klinik-, Kontakt- und Bewerbungsdaten direkt in den begleiteten Ablauf aus Motivationsschreiben und Bewerbungs-E-Mail.
               </p>
               {!offer.contact_email ? (
                 <p className="text-sm leading-6 text-amber-700">
-                  Fuer diese externe Stelle wurde keine Kontakt-E-Mail gefunden. CV und Motivationsschreiben bleiben verfuegbar; die Empfaenger-E-Mail muss im E-Mail-Schritt manuell ergaenzt werden.
+                  Für diese externe Stelle wurde keine Kontakt-E-Mail gefunden. CV und Motivationsschreiben bleiben verfügbar; die Empfänger-E-Mail muss im E-Mail-Schritt manuell ergänzt werden.
                 </p>
               ) : null}
             </div>
@@ -178,7 +178,7 @@ export default async function DoctorExternalOfferDetailPage({
                 href="/dashboard/doctor/external-offers"
                 className="inline-flex h-11 items-center justify-center rounded-full border bg-white px-5 text-sm font-semibold text-foreground transition hover:bg-secondary"
               >
-                Zurueck zur Uebersicht
+                Zurück zur Übersicht
               </Link>
             </div>
           </aside>

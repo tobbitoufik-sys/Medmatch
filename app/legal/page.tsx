@@ -6,11 +6,11 @@ export default function LegalPage() {
     <div className="min-h-screen">
       <SiteHeader />
       <section className="container max-w-4xl py-20">
-        <h1 className="text-4xl font-semibold tracking-tight">Legal notice</h1>
+        <h1 className="text-4xl font-semibold tracking-tight">Impressum</h1>
         <div className="mt-8 space-y-6 text-muted-foreground">
-          <p>This template includes a placeholder legal notice for your MVP launch. Replace it with your final company details before going live.</p>
-          <p>MedMatch is a professional recruitment platform. It does not process patient records or provide medical advice.</p>
-          <p>Add your legal entity name, registration number, address, publication director and host information in this page before production launch.</p>
+          <p>Diese Seite ist für die rechtlichen Anbieterangaben von MedMatch vorgesehen und sollte vor dem Produktivbetrieb mit den finalen Unternehmensdaten ergänzt werden.</p>
+          <p>MedMatch ist eine professionelle Vermittlungsplattform für medizinische Karriere- und Recruiting-Prozesse. Die Plattform verarbeitet keine Patientenakten und ersetzt keine medizinische Beratung.</p>
+          <p>Ergänzen Sie hier Unternehmensname, Rechtsform, Anschrift, Vertretungsberechtigte, Registerangaben und Hosting-Informationen.</p>
         </div>
       </section>
       <SiteFooter />

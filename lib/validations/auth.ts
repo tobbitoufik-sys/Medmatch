@@ -1,14 +1,14 @@
 import { z } from "zod";
 
 export const signInSchema = z.object({
-  email: z.string().email("Please enter a valid email address."),
-  password: z.string().min(8, "Password must be at least 8 characters.")
+  email: z.string().email("Bitte geben Sie eine gültige E-Mail-Adresse ein."),
+  password: z.string().min(8, "Das Passwort muss mindestens 8 Zeichen lang sein.")
 });
 
 export const signUpSchema = signInSchema.extend({
-  fullName: z.string().min(2, "Please enter your full name."),
+  fullName: z.string().min(2, "Bitte geben Sie Ihren vollständigen Namen ein."),
   role: z.enum(["doctor", "facility"], {
-    required_error: "Please choose your account type."
+    required_error: "Bitte wählen Sie Ihren Kontotyp aus."
   })
 });
 

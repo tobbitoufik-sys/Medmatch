@@ -15,7 +15,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/data/repository";
 
 function formatDate(value: string) {
-  return new Intl.DateTimeFormat("en-GB", {
+  return new Intl.DateTimeFormat("de-DE", {
     year: "numeric",
     month: "short",
     day: "numeric"
@@ -90,12 +90,12 @@ export default async function FacilityApplicationsPage() {
             id: application.id,
             status: visibleStatus,
             created_at: application.created_at,
-            doctor_name: doctorMap.get(application.doctor_user_id) ?? "Doctor",
-            current_position: profile?.current_position || "Position not specified",
-            specialty: profile?.specialty || "Specialty not specified",
-            city: profile?.city || "City not specified",
-            country: profile?.country || "Country not specified",
-            offer_title: offerMap.get(application.offer_id) ?? "Opportunity",
+            doctor_name: doctorMap.get(application.doctor_user_id) ?? "Arzt",
+            current_position: profile?.current_position || "Position nicht angegeben",
+            specialty: profile?.specialty || "Fachrichtung nicht angegeben",
+            city: profile?.city || "Stadt nicht angegeben",
+            country: profile?.country || "Land nicht angegeben",
+            offer_title: offerMap.get(application.offer_id) ?? "Stellenangebot",
             offer_id: application.offer_id
           };
         });
@@ -106,8 +106,8 @@ export default async function FacilityApplicationsPage() {
   return (
     <DashboardShell
       role="facility"
-      title="Applications"
-      description="Review submitted doctor applications linked to your published opportunities."
+      title="Bewerbungen"
+      description="Prüfen Sie eingegangene Arztbewerbungen zu Ihren veröffentlichten Stellenangeboten."
     >
       {applications.length ? (
         <div className="grid gap-6">
@@ -132,19 +132,19 @@ export default async function FacilityApplicationsPage() {
                 <CardContent className="space-y-4 text-muted-foreground">
                   <div className="grid gap-3 md:grid-cols-2">
                     <div>
-                      <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Specialty</p>
+                      <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Fachrichtung</p>
                       <p className="mt-1 font-medium text-foreground">{application.specialty}</p>
                     </div>
                     <div>
-                      <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Location</p>
+                      <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Standort</p>
                       <p className="mt-1 font-medium text-foreground">{application.city}, {application.country}</p>
                     </div>
                     <div>
-                      <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Applied on</p>
+                      <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Beworben am</p>
                       <p className="mt-1 font-medium text-foreground">{formatDate(application.created_at)}</p>
                     </div>
                     <div>
-                      <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Related offer</p>
+                      <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Zugehörige Stelle</p>
                       <p className="mt-1 font-medium text-foreground">{application.offer_title}</p>
                     </div>
                   </div>
@@ -155,8 +155,8 @@ export default async function FacilityApplicationsPage() {
         </div>
       ) : (
         <EmptyState
-          title="No applications yet"
-          description="Doctor applications will appear here once candidates apply to your published offers."
+          title="Noch keine Bewerbungen"
+          description="Arztbewerbungen erscheinen hier, sobald Kandidaten sich auf Ihre Stellenangebote bewerben."
         />
       )}
     </DashboardShell>

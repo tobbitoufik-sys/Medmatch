@@ -21,17 +21,17 @@ function getWorkflowState(status: ApplicationStatus) {
     case "received":
       return {
         actions: ["in_review"] as ApplicationStatus[],
-        helperText: "Next step: Start review"
+        helperText: "Nächster Schritt: Prüfung starten"
       };
     case "in_review":
       return {
         actions: ["accepted", "rejected"] as ApplicationStatus[],
-        helperText: "Choose the next review outcome."
+        helperText: "Wählen Sie das nächste Ergebnis der Prüfung."
       };
     case "contacted":
       return {
         actions: ["accepted", "rejected"] as ApplicationStatus[],
-        helperText: "Choose the final outcome after contact."
+        helperText: "Wählen Sie das finale Ergebnis nach dem Kontakt."
       };
     case "accepted":
     case "rejected":
@@ -95,7 +95,7 @@ export function ApplicationStatusActions({
           <div>
             {requiresAgreement ? (
               <Button type="button" variant="secondary" onClick={() => setShowAgreement(true)}>
-                Contact doctor
+                Arzt kontaktieren
               </Button>
             ) : (
               <form action={insertContactEvent}>
@@ -103,7 +103,7 @@ export function ApplicationStatusActions({
                 <input type="hidden" name="contact_path" value={contactPath} />
                 <input type="hidden" name="contract_type" value={normalizedContractType} />
                 <Button type="submit" variant="secondary">
-                  Contact doctor
+                  Arzt kontaktieren
                 </Button>
               </form>
             )}
@@ -119,7 +119,7 @@ export function ApplicationStatusActions({
             ))}
           </div>
         ) : visibleStatus === "accepted" || visibleStatus === "rejected" ? (
-          <p className="text-sm text-muted-foreground">No further actions available for this application.</p>
+          <p className="text-sm text-muted-foreground">Keine weiteren Aktionen für diese Bewerbung verfügbar.</p>
         ) : null}
         </form>
       </div>
@@ -128,22 +128,22 @@ export function ApplicationStatusActions({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
           <div className="w-full max-w-lg rounded-[28px] border bg-white p-6 shadow-2xl">
             <div className="space-y-3">
-              <h3 className="text-xl font-semibold">Beta notice</h3>
+              <h3 className="text-xl font-semibold">Beta-Hinweis</h3>
               <p className="text-sm leading-6 text-muted-foreground">
-                This feature is currently in beta.
-                In the future, a commission may apply when a hire is made through the platform.
+                Diese Funktion befindet sich aktuell in der Beta-Phase.
+                Künftig kann eine Provision anfallen, wenn eine Einstellung über die Plattform zustande kommt.
               </p>
             </div>
             <div className="mt-6 flex flex-wrap justify-end gap-3">
               <Button type="button" variant="outline" onClick={() => setShowAgreement(false)}>
-                Cancel
+                Abbrechen
               </Button>
               <form action={insertContactEvent}>
                 <input type="hidden" name="application_id" value={applicationId} />
                 <input type="hidden" name="contact_path" value={contactPath} />
                 <input type="hidden" name="contract_type" value={normalizedContractType} />
                 <Button type="submit" variant="default">
-                  Accept & continue
+                  Akzeptieren und fortfahren
                 </Button>
               </form>
             </div>

@@ -24,8 +24,8 @@ export default async function FacilityContactsPage() {
   return (
     <DashboardShell
       role="facility"
-      title="Inbox"
-      description="Follow active doctor conversations from one clear inbox."
+      title="Postfach"
+      description="Verfolgen Sie aktive Arztkontakte in einem klaren Postfach."
     >
       {inbox.length ? (
         <div className="grid gap-4">
@@ -40,7 +40,7 @@ export default async function FacilityContactsPage() {
                     <div className="flex items-center gap-3">
                       <p className="font-semibold">{conversation.otherPartyLabel}</p>
                       {conversation.unread ? (
-                        <Badge className="bg-primary text-primary-foreground">New</Badge>
+                        <Badge className="bg-primary text-primary-foreground">Neu</Badge>
                       ) : null}
                     </div>
                     <p className="text-sm text-muted-foreground">{conversation.offerTitle}</p>
@@ -58,8 +58,8 @@ export default async function FacilityContactsPage() {
         </div>
       ) : (
         <EmptyState
-          title="No conversations yet"
-          description="Once you start contacting doctors, your application conversations will appear here."
+          title="Noch keine Konversationen"
+          description="Sobald Sie Ärzte kontaktieren, erscheinen Ihre Bewerbungskonversationen hier."
         />
       )}
     </DashboardShell>

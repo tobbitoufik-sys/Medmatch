@@ -1,6 +1,17 @@
 import Link from "next/link";
 import type { Route } from "next";
-import { FileBadge2, Mail, NotepadText } from "lucide-react";
+import {
+  BriefcaseBusiness,
+  ChevronRight,
+  ClipboardList,
+  FileBadge2,
+  Mail,
+  MapPin,
+  NotepadText,
+  PenLine,
+  Percent,
+  UserRound
+} from "lucide-react";
 
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { StatCard } from "@/components/dashboard/stat-card";
@@ -157,6 +168,43 @@ export default async function DoctorDashboardPage() {
     userFullName: user?.full_name,
     userEmail: user?.email
   });
+  const fullName = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") || user?.full_name || "MedMatch";
+  const profilePhotoUrl =
+    profile?.profile_photo_path && process.env.NEXT_PUBLIC_SUPABASE_URL
+      ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/doctor-profile-photos/${profile.profile_photo_path}`
+      : null;
+  const profileLocation = profile ? [profile.city, profile.country].filter(Boolean).join(", ") : "";
+  const profileRoleLine = profile?.specialty || profile?.current_position || profile?.headline || "";
+  const mobileStats = [
+    {
+      label: "Bewerbungen",
+      value: String(applicationsCount),
+      hint: `${activeApplicationsCount} aktiv`,
+      icon: ClipboardList,
+      href: "/dashboard/doctor/applications" as Route
+    },
+    {
+      label: "Postfach",
+      value: String(unreadConversations),
+      hint: "ungelesen",
+      icon: Mail,
+      href: "/dashboard/doctor/contacts" as Route
+    },
+    {
+      label: "Offene Stellen",
+      value: String(offers.length),
+      hint: "verfügbar",
+      icon: BriefcaseBusiness,
+      href: "/dashboard/doctor/opportunities" as Route
+    },
+    {
+      label: "Profil",
+      value: `${profileCompletion}%`,
+      hint: "vollständig",
+      icon: Percent,
+      href: "/dashboard/doctor/profile" as Route
+    }
+  ];
 
   return (
     <DashboardShell
@@ -164,6 +212,133 @@ export default async function DoctorDashboardPage() {
       title={greetingName ? `Hallo, ${greetingName}` : "Hallo"}
       description="Verwalten Sie Ihre Bewerbungen, Nachrichten und neue Möglichkeiten."
     >
+      <div className="space-y-5 md:hidden">
+        <section className="space-y-3">
+          <div>
+            <h1 className="text-[2rem] font-semibold leading-tight tracking-tight text-slate-950">
+              {greetingName ? `Hallo, ${greetingName}` : "Hallo"}
+            </h1>
+            <p className="mt-2 text-base leading-7 text-slate-600">
+              Verwalten Sie Ihre Bewerbungen, Nachrichten und neue Möglichkeiten.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 min-[420px]:grid-cols-4">
+            {mobileStats.map((stat) => {
+              const Icon = stat.icon;
+
+              return (
+                <Link
+                  key={stat.label}
+                  href={stat.href}
+                  className="min-h-[136px] rounded-2xl border border-slate-200 bg-white p-3 text-center shadow-sm"
+                >
+                  <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <span className="mt-3 block text-sm font-medium text-slate-600">{stat.label}</span>
+                  <span className="mt-1 block text-3xl font-semibold tracking-tight text-slate-950">{stat.value}</span>
+                  <span className="block text-xs text-slate-500">{stat.hint}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+
+        <Link
+          href="/dashboard/doctor/external-offers"
+          className="block rounded-3xl border border-primary/20 bg-[linear-gradient(135deg,#f8fbff_0%,#edf6ff_100%)] p-4 shadow-sm"
+        >
+          <div className="flex items-center gap-4">
+            <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-white text-primary shadow-sm">
+              <BriefcaseBusiness className="h-7 w-7" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-lg font-semibold leading-tight text-slate-950">Externe Stellen entdecken</p>
+              <p className="mt-1 text-sm leading-6 text-slate-600">
+                Finden Sie importierte Stellenangebote und bereiten Sie Ihre Bewerbung optimal vor.
+              </p>
+            </div>
+            <ChevronRight className="h-5 w-5 shrink-0 text-slate-900" />
+          </div>
+          <span className="mt-4 flex min-h-11 items-center justify-center rounded-2xl bg-primary px-4 text-sm font-semibold text-white">
+            Externe Stellen ansehen
+            <ChevronRight className="ml-2 h-4 w-4" />
+          </span>
+        </Link>
+
+        <Link href="/dashboard/doctor/cv" className="block rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="flex items-start gap-4">
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <FileBadge2 className="h-6 w-6" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-lg font-semibold text-slate-950">Bewerbung vorbereiten</p>
+              <p className="mt-1 text-sm leading-6 text-slate-600">
+                Erstellen Sie Ihre Bewerbung in 3 einfachen Schritten.
+              </p>
+            </div>
+            <ChevronRight className="h-5 w-5 shrink-0 text-slate-900" />
+          </div>
+          <div className="mt-5 grid grid-cols-3 items-start gap-2 text-center text-xs text-slate-600">
+            {[
+              { step: "1", label: "CV", icon: FileBadge2 },
+              { step: "2", label: "Motivationsschreiben", icon: NotepadText },
+              { step: "3", label: "E-Mail", icon: Mail }
+            ].map((item) => {
+              const StepIcon = item.icon;
+
+              return (
+                <div key={item.label} className="min-w-0">
+                  <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border bg-white text-primary shadow-sm">
+                    <StepIcon className="h-5 w-5" />
+                  </span>
+                  <span className="mx-auto -mt-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-white">
+                    {item.step}
+                  </span>
+                  <span className="mt-1 block truncate">{item.label}</span>
+                </div>
+              );
+            })}
+          </div>
+          <span className="mt-4 flex min-h-11 items-center justify-center rounded-2xl border border-primary px-4 text-sm font-semibold text-primary">
+            Workflow starten
+            <ChevronRight className="ml-2 h-4 w-4" />
+          </span>
+        </Link>
+
+        <section className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="flex items-center gap-4">
+            {profilePhotoUrl ? (
+              <img src={profilePhotoUrl} alt="Profilbild" className="h-20 w-20 rounded-full object-cover shadow-sm" />
+            ) : (
+              <span className="flex h-20 w-20 items-center justify-center rounded-full bg-slate-100 text-slate-500">
+                <UserRound className="h-8 w-8" />
+              </span>
+            )}
+            <div className="min-w-0 flex-1 space-y-1">
+              <p className="truncate text-lg font-semibold text-slate-950">{fullName}</p>
+              {profileLocation ? (
+                <p className="flex items-center gap-2 text-sm text-slate-600">
+                  <MapPin className="h-4 w-4 shrink-0" />
+                  <span className="truncate">{profileLocation}</span>
+                </p>
+              ) : null}
+              {profileRoleLine ? (
+                <p className="truncate text-sm text-slate-600">{profileRoleLine}</p>
+              ) : null}
+            </div>
+            <Button asChild variant="outline" className="min-h-11 shrink-0 rounded-2xl px-3">
+              <Link href="/dashboard/doctor/profile">
+                <PenLine className="mr-1 h-4 w-4" />
+                Profil
+              </Link>
+            </Button>
+          </div>
+        </section>
+      </div>
+
+      <div className="hidden md:contents">
       <div className="grid gap-6 md:grid-cols-3">
         <StatCard
           title="Bewerbungen"
@@ -374,6 +549,7 @@ export default async function DoctorDashboardPage() {
           </div>
         </CardContent>
       </Card>
+      </div>
     </DashboardShell>
   );
 }

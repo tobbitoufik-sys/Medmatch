@@ -10,8 +10,8 @@ export default async function FacilityDoctorsPage() {
   return (
     <DashboardShell
       role="facility"
-      title="Doctor search"
-      description="Browse public doctor profiles and start a direct outreach from the platform."
+      title="Arztsuche"
+      description="Durchsuchen Sie öffentliche Arztprofile und starten Sie direkt eine Kontaktanfrage."
     >
       <div className="grid gap-6">
         {doctors.map((doctor) => (
@@ -28,11 +28,11 @@ export default async function FacilityDoctorsPage() {
             <CardContent className="grid gap-6 lg:grid-cols-[1fr_360px]">
               <div className="space-y-3 text-muted-foreground">
                 <p>{doctor.bio}</p>
-                <p><span className="font-semibold text-foreground">Availability:</span> {doctor.availability}</p>
-                <p><span className="font-semibold text-foreground">Languages:</span> {doctor.languages.join(", ")}</p>
+                <p><span className="font-semibold text-foreground">Verfügbarkeit:</span> {doctor.availability}</p>
+                <p><span className="font-semibold text-foreground">Sprachen:</span> {doctor.languages.join(", ")}</p>
               </div>
               <div className="rounded-3xl border bg-secondary/40 p-5">
-                <p className="mb-4 text-sm font-semibold text-foreground">Send a direct contact request</p>
+                <p className="mb-4 text-sm font-semibold text-foreground">Direkte Kontaktanfrage senden</p>
                 <ContactRequestForm receiverUserId={doctor.user_id} />
               </div>
             </CardContent>

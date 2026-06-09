@@ -241,7 +241,7 @@ export default async function AdminExternalOffersPage({
           ) : null}
           {createStatus === "invalidEmail" ? (
             <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-              Bitte geben Sie eine gueltige Kontakt-E-Mail-Adresse ein.
+              Bitte geben Sie eine gültige Kontakt-E-Mail-Adresse ein.
             </div>
           ) : null}
           {createStatus === "error" ? (
@@ -251,12 +251,12 @@ export default async function AdminExternalOffersPage({
           ) : null}
           {deleteStatus === "success" ? (
             <div className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-              Externes Stellenangebot geloescht.
+              Externes Stellenangebot gelöscht.
             </div>
           ) : null}
           {deleteStatus === "error" ? (
             <div className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-              Das externe Stellenangebot konnte nicht geloescht werden.
+              Das externe Stellenangebot konnte nicht gelöscht werden.
             </div>
           ) : null}
 
@@ -337,7 +337,7 @@ export default async function AdminExternalOffersPage({
             </div>
             <label className="inline-flex items-center gap-2 text-sm text-muted-foreground md:col-span-2">
               <input type="checkbox" name="is_active" defaultChecked className="h-4 w-4 rounded border" />
-              Aktiv veroeffentlichen
+              Aktiv veröffentlichen
             </label>
             <div className="md:col-span-2">
               <Button type="submit">Externes Angebot speichern</Button>
@@ -477,10 +477,10 @@ export default async function AdminExternalOffersPage({
                       type="submit"
                       formAction={deleteExternalOfferAction}
                       variant="ghost"
-                      confirmMessage="Dieses veroeffentlichte externe Stellenangebot wirklich loeschen?"
+                      confirmMessage="Dieses veröffentlichte externe Stellenangebot wirklich löschen?"
                       className="text-rose-700 hover:bg-rose-50 hover:text-rose-800"
                     >
-                      Loeschen
+                      Löschen
                     </ConfirmSubmitButton>
                   </div>
                 </div>

@@ -7,7 +7,7 @@ const optionalMinText = (min: number) =>
     .string()
     .trim()
     .transform((value) => value || undefined)
-    .pipe(z.string().min(min).optional())
+    .pipe(z.string().min(min, `Bitte mindestens ${min} Zeichen eingeben.`).optional())
     .transform((value) => value ?? "");
 const optionalDate = z.string().optional().transform((value) => value || "");
 const optionalYear = z.preprocess(
@@ -22,8 +22,8 @@ const licenseTypeSchema = z
   .or(z.literal(""));
 
 export const doctorProfileSchema = z.object({
-  first_name: z.string().min(2),
-  last_name: z.string().min(2),
+  first_name: z.string().min(2, "Bitte mindestens 2 Zeichen eingeben."),
+  last_name: z.string().min(2, "Bitte mindestens 2 Zeichen eingeben."),
   date_of_birth: optionalDate,
   nationality: optionalText,
   phone: optionalText,
@@ -32,8 +32,8 @@ export const doctorProfileSchema = z.object({
   profile_photo_path: optionalText,
   headline: optionalText,
   specialty: optionalMinText(2),
-  city: z.string().min(2),
-  country: z.string().min(2),
+  city: z.string().min(2, "Bitte mindestens 2 Zeichen eingeben."),
+  country: z.string().min(2, "Bitte mindestens 2 Zeichen eingeben."),
   professional_summary: optionalText,
   languages: optionalText,
   years_experience: z.preprocess(
@@ -57,23 +57,23 @@ export const doctorProfileSchema = z.object({
 });
 
 export const facilityProfileSchema = z.object({
-  facility_name: z.string().min(2),
-  facility_type: z.string().min(2),
-  city: z.string().min(2),
-  country: z.string().min(2),
-  website: z.string().url().or(z.literal("")).default(""),
-  description: z.string().min(30).max(700),
-  contact_person_name: z.string().min(2)
+  facility_name: z.string().min(2, "Bitte mindestens 2 Zeichen eingeben."),
+  facility_type: z.string().min(2, "Bitte mindestens 2 Zeichen eingeben."),
+  city: z.string().min(2, "Bitte mindestens 2 Zeichen eingeben."),
+  country: z.string().min(2, "Bitte mindestens 2 Zeichen eingeben."),
+  website: z.string().url("Bitte geben Sie eine gültige URL ein.").or(z.literal("")).default(""),
+  description: z.string().min(30, "Bitte geben Sie eine aussagekräftige Beschreibung ein.").max(700, "Die Beschreibung darf maximal 700 Zeichen enthalten."),
+  contact_person_name: z.string().min(2, "Bitte mindestens 2 Zeichen eingeben.")
 });
 
 export const jobOfferSchema = z.object({
-  title: z.string().min(2),
-  specialty: z.string().min(2),
-  city: z.string().min(2),
-  country: z.string().min(2),
+  title: z.string().min(2, "Bitte mindestens 2 Zeichen eingeben."),
+  specialty: z.string().min(2, "Bitte mindestens 2 Zeichen eingeben."),
+  city: z.string().min(2, "Bitte mindestens 2 Zeichen eingeben."),
+  country: z.string().min(2, "Bitte mindestens 2 Zeichen eingeben."),
   contract_type: z.enum(jobOfferContractTypes),
-  description: z.string().min(30).max(1000),
-  requirements: z.string().min(20).max(800),
+  description: z.string().min(30, "Bitte beschreiben Sie die Stelle genauer.").max(1000, "Die Beschreibung darf maximal 1000 Zeichen enthalten."),
+  requirements: z.string().min(20, "Bitte ergänzen Sie die Anforderungen.").max(800, "Die Anforderungen dürfen maximal 800 Zeichen enthalten."),
   salary_range_optional: z.string().optional().default(""),
   status: z.enum(["draft", "published", "paused"]).default("draft")
 });
@@ -81,7 +81,7 @@ export const jobOfferSchema = z.object({
 export const contactRequestSchema = z.object({
   receiver_user_id: z.string().min(1),
   related_offer_id: z.string().optional(),
-  message: z.string().min(20).max(1000)
+  message: z.string().min(20, "Bitte geben Sie eine aussagekräftige Nachricht ein.").max(1000, "Die Nachricht darf maximal 1000 Zeichen enthalten.")
 });
 
 export type DoctorProfileValues = z.infer<typeof doctorProfileSchema>;

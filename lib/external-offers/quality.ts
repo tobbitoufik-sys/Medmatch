@@ -12,9 +12,9 @@ export type ExternalOfferQualityInput = {
 };
 
 export type ExternalOfferQualityClassification =
-  | "Bereit zur Veroeffentlichung"
+  | "Bereit zur Veröffentlichung"
   | "Review erforderlich"
-  | "Unvollstaendig";
+  | "Unvollständig";
 
 type ScorePart = {
   label: string;
@@ -81,9 +81,9 @@ export function getExternalOfferQuality(
     getSummaryPoints(input.summary) > 0;
   const hasContactChannel = hasText(input.contact_email) || hasText(input.contact_phone);
 
-  let classification: ExternalOfferQualityClassification = "Unvollstaendig";
+  let classification: ExternalOfferQualityClassification = "Unvollständig";
   if (score >= 80 && hasCoreData && hasContactChannel) {
-    classification = "Bereit zur Veroeffentlichung";
+    classification = "Bereit zur Veröffentlichung";
   } else if (score >= 50) {
     classification = "Review erforderlich";
   }

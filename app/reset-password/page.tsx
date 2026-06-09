@@ -1,11 +1,11 @@
-import Link from "next/link";
+import { Suspense } from "react";
 
+import { ResetPasswordForm } from "@/components/forms/reset-password-form";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
-import { SignInForm } from "@/components/forms/auth-forms";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function LoginPage() {
+export default function ResetPasswordPage() {
   return (
     <div className="min-h-screen">
       <SiteHeader />
@@ -13,16 +13,15 @@ export default function LoginPage() {
         <div className="mx-auto max-w-lg">
           <Card>
             <CardHeader>
-              <CardTitle className="text-3xl">Einloggen</CardTitle>
+              <CardTitle className="text-3xl">Neues Passwort</CardTitle>
               <CardDescription>
-                Melden Sie sich an, um Ihren MedMatch-Arbeitsbereich zu öffnen.
+                Legen Sie ein neues Passwort für Ihr MedMatch Konto fest.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <SignInForm />
-              <p className="text-sm text-muted-foreground">
-                Noch kein Konto? <Link href="/register" className="font-semibold text-primary">Jetzt registrieren</Link>
-              </p>
+            <CardContent>
+              <Suspense fallback={<p className="text-sm text-muted-foreground">Link wird geprüft...</p>}>
+                <ResetPasswordForm />
+              </Suspense>
             </CardContent>
           </Card>
         </div>

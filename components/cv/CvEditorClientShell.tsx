@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
-import { GripVertical, Home, Mail, MapPin, Phone } from "lucide-react";
+import { Check, ChevronRight, FileBadge2, GripVertical, Home, Mail, MapPin, NotepadText, Phone } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
@@ -12,6 +12,7 @@ import {
 import { CvEntryList } from "@/components/cv/cv-entry-list";
 import { CV_TEMPLATE_OPTIONS, type CvTemplateKey } from "@/components/cv/template-registry";
 import { WorkExperienceList } from "@/components/cv/work-experience-list";
+import { MobileDoctorChrome } from "@/components/layout/mobile-doctor-nav";
 import { Button } from "@/components/ui/button";
 import { saveDoctorCvLayoutAction } from "@/lib/actions";
 import { DEFAULT_CV_SECTION_ORDER, normalizeCvSectionOrder } from "@/lib/cv/constants";
@@ -71,7 +72,7 @@ const SECTION_DEFINITIONS: SectionDefinition[] = [
   },
   {
     key: "custom_block",
-    title: "Aus Profil uebernommen",
+    title: "Aus Profil übernommen",
     helper: "Dieser Zusatzblock wird im Profil gepflegt und unten im Lebenslauf angezeigt."
   }
 ];
@@ -748,7 +749,44 @@ export function CvEditorClientShell({
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#f3f6f8_0%,#fbfcfd_16%,#eef3f6_100%)]">
-      <main className="mx-auto w-full max-w-[1360px] px-4 py-8 sm:px-6 lg:px-10 lg:py-10">
+      <MobileDoctorChrome />
+      <main className="mx-auto w-full max-w-[1360px] px-4 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-6 sm:px-6 md:pb-8 md:pt-8 lg:px-10 lg:py-10">
+        <section className="mb-5 rounded-3xl border border-primary/20 bg-[linear-gradient(135deg,#f8fbff_0%,#edf6ff_100%)] p-4 shadow-sm md:hidden">
+          <div className="flex items-start gap-4">
+            <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-white text-primary shadow-sm">
+              <FileBadge2 className="h-7 w-7" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-2xl font-semibold leading-tight tracking-tight text-slate-950">
+                Bewerbung vorbereiten
+              </h1>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Erstellen Sie Ihre Bewerbung Schritt für Schritt mit CV, Motivationsschreiben und E-Mail.
+              </p>
+            </div>
+          </div>
+          <div className="mt-5 grid grid-cols-3 items-start gap-2 text-center text-xs text-slate-600">
+            {[
+              { step: "1", label: "CV", icon: FileBadge2, state: "Bereit" },
+              { step: "2", label: "Motivationsschreiben", icon: NotepadText, state: "In Vorbereitung" },
+              { step: "3", label: "E-Mail", icon: Mail, state: "Nächster Schritt" }
+            ].map((item) => {
+              const StepIcon = item.icon;
+
+              return (
+                <div key={item.label} className="min-w-0">
+                  <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border bg-white text-primary shadow-sm">
+                    <StepIcon className="h-5 w-5" />
+                  </span>
+                  <span className="mx-auto -mt-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-white">
+                    {item.step}
+                  </span>
+                  <span className="mt-1 block truncate">{item.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        </section>
         <div className="mb-4">
           <Button asChild variant="outline">
             <Link href="/dashboard/doctor">Zuruck zum Dashboard</Link>
@@ -906,7 +944,7 @@ export function CvEditorClientShell({
                               target="_blank"
                               rel="noreferrer"
                             >
-                              CV-Vorschau oeffnen
+                              CV-Vorschau öffnen
                             </Link>
                           </Button>
                         </div>
@@ -971,18 +1009,20 @@ export function CvEditorClientShell({
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="space-y-1">
                     <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-                      Naechster Schritt
+                      Nächster Schritt
                     </p>
                     <h3 className="text-lg font-semibold text-slate-900">
                       Motivationsschreiben aus Ihrem Profil erstellen
                     </h3>
                     <p className="text-sm text-slate-600">
-                      Nutzen Sie Ihren fertigen Lebenslauf als Grundlage fuer ein professionelles deutsches Motivationsschreiben.
+                      Nutzen Sie Ihren fertigen Lebenslauf als Grundlage für ein professionelles deutsches Motivationsschreiben.
                     </p>
                   </div>
                   <Button asChild className="h-11 rounded-xl sm:shrink-0">
                     <Link href={coverLetterHref}>
+                      <Check className="mr-2 h-4 w-4 md:hidden" />
                       Motivationsschreiben mit KI erstellen
+                      <ChevronRight className="ml-2 h-4 w-4 md:hidden" />
                     </Link>
                   </Button>
                 </div>

@@ -434,9 +434,9 @@ export function DoctorProfileForm({
         open={isCropModalOpen}
         value={activeCropState}
         errorMessage={cropError}
-        title="Profilfoto fuer den Lebenslauf bearbeiten"
+        title="Profilfoto für den Lebenslauf bearbeiten"
         description="Dieses Zuschnittsbild wird als kanonisches Lebenslauffoto in Editor, Vorschau und PDF verwendet."
-        saveLabel="Zuschnitt uebernehmen"
+        saveLabel="Zuschnitt übernehmen"
         onCancel={() => {
           setCropError(null);
           setIsCropModalOpen(false);
@@ -1316,7 +1316,7 @@ export function DoctorProfileForm({
             <div className="space-y-1">
               <h3 className="text-base font-semibold">Freier Lebenslaufblock</h3>
               <p className="text-sm text-muted-foreground">
-                Optionaler Zusatz am Ende des Lebenslaufs ohne automatische Abschnittsueberschrift.
+                Optionaler Zusatz am Ende des Lebenslaufs ohne automatische Abschnittsüberschrift.
               </p>
             </div>
             <Button

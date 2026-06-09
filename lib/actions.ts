@@ -1,6 +1,7 @@
 "use server";
 
 import { renderToBuffer } from "@react-pdf/renderer";
+import { headers } from "next/headers";
 import type { Route } from "next";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -67,6 +68,18 @@ export type GmailDraftCreationResult = {
   message: string;
   draftUrl?: string;
 };
+
+function getSiteUrlFromHeaders(headersList: Headers) {
+  const forwardedHost = headersList.get("x-forwarded-host");
+  const forwardedProto = headersList.get("x-forwarded-proto");
+  const host = forwardedHost ?? headersList.get("host");
+
+  if (!host) {
+    return process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  }
+
+  return `${forwardedProto ?? "http"}://${host}`;
+}
 
 type DoctorExperienceInput = {
   title: string;
@@ -192,7 +205,7 @@ async function uploadPreparedCvPhoto(params: {
     });
 
   if (error) {
-    throw new Error(error.message || "Unable to upload the prepared CV photo.");
+    throw new Error(error.message || "Das vorbereitete CV-Foto konnte nicht hochgeladen werden.");
   }
 
   return storagePath;
@@ -204,11 +217,11 @@ async function performApplicationStatusUpdate(formData: FormData): Promise<Actio
   const detailPath = formData.get("detail_path")?.toString().trim();
 
   if (!applicationId || !targetStatus) {
-    return { success: false, message: "Application update is missing required information." };
+    return { success: false, message: "Für die Aktualisierung der Bewerbung fehlen erforderliche Angaben." };
   }
 
   if (!hasSupabaseEnv()) {
-    return { success: true, message: "Application status updated successfully.", detailPath };
+  return { success: true, message: "Bewerbungsstatus erfolgreich aktualisiert.", detailPath };
   }
 
   const supabase = await createServerSupabaseClient();
@@ -236,7 +249,7 @@ async function performApplicationStatusUpdate(formData: FormData): Promise<Actio
     .maybeSingle();
 
   if (!application) {
-    return { success: false, message: "Application not found for this facility." };
+    return { success: false, message: "Bewerbung für diese Einrichtung nicht gefunden." };
   }
 
   const currentWorkflowStatus = getFacilityWorkflowStatus(application.status);
@@ -246,7 +259,7 @@ async function performApplicationStatusUpdate(formData: FormData): Promise<Actio
   if (!allowedTransitions.includes(targetStatus as never)) {
     return {
       success: false,
-      message: `Invalid status change. ${applicationStatusLabels[currentWorkflowStatus as keyof typeof applicationStatusLabels]} can only move to the next allowed step.`
+      message: `Ungültiger Statuswechsel. ${applicationStatusLabels[currentWorkflowStatus as keyof typeof applicationStatusLabels]} kann nur in den nächsten erlaubten Schritt wechseln.`
     };
   }
 
@@ -277,7 +290,7 @@ async function performApplicationStatusUpdate(formData: FormData): Promise<Actio
   if (!reloadedApplication || reloadedApplication.status !== targetStatus) {
     return {
       success: false,
-      message: "Unable to confirm the application status update."
+      message: "Die Aktualisierung des Bewerbungsstatus konnte nicht bestätigt werden."
     };
   }
 
@@ -467,7 +480,7 @@ function parseDoctorLanguages(formData: FormData): { items: DoctorLanguageInput[
       if (!hasAnyValue) continue;
 
       if (!languageName || !levelCefr || !levelLabel) {
-        return { items: [], error: "Please complete language, CEFR level, and display label for each language row." };
+        return { items: [], error: "Bitte ergänzen Sie Sprache, GER-Niveau und Anzeige-Label für jede Sprachzeile." };
       }
 
       if (
@@ -475,7 +488,7 @@ function parseDoctorLanguages(formData: FormData): { items: DoctorLanguageInput[
         !validCefrLevels.has(levelCefr) ||
         !validLabelLevels.has(levelLabel)
       ) {
-        return { items: [], error: "Please choose languages and proficiency levels from the provided lists." };
+        return { items: [], error: "Bitte wählen Sie Sprachen und Sprachniveaus aus den vorhandenen Listen." };
       }
 
       if (seenLanguages.has(languageName)) {
@@ -493,7 +506,7 @@ function parseDoctorLanguages(formData: FormData): { items: DoctorLanguageInput[
 
     return { items };
   } catch {
-    return { items: [], error: "Unable to read the language entries from the form." };
+    return { items: [], error: "Die Spracheinträge konnten nicht aus dem Formular gelesen werden." };
   }
 }
 
@@ -573,7 +586,7 @@ function parseDoctorCvCustomBlock(formData: FormData): DoctorCvCustomBlockInput 
 
 export async function signInAction(_: ActionState, formData: FormData) {
   const values = signInSchema.safeParse(Object.fromEntries(formData.entries()));
-  if (!values.success) return { success: false, message: values.error.issues[0]?.message || "Invalid credentials." };
+  if (!values.success) return { success: false, message: values.error.issues[0]?.message || "Ungültige Zugangsdaten." };
   if (!hasSupabaseEnv()) return mockSuccess("Demo mode: sign-in is ready once Supabase is connected.");
 
   const supabase = await createServerSupabaseClient();
@@ -599,9 +612,33 @@ export async function signInAction(_: ActionState, formData: FormData) {
   redirect("/dashboard");
 }
 
+export async function requestPasswordResetAction(_: ActionState, formData: FormData) {
+  const values = signInSchema.pick({ email: true }).safeParse(Object.fromEntries(formData.entries()));
+  if (!values.success) {
+    return { success: false, message: values.error.issues[0]?.message || "Bitte geben Sie eine gültige E-Mail-Adresse ein." };
+  }
+
+  if (!hasSupabaseEnv()) {
+    return mockSuccess("E-Mail versendet");
+  }
+
+  const headersList = await headers();
+  const redirectTo = new URL("/reset-password", getSiteUrlFromHeaders(headersList)).toString();
+  const supabase = await createServerSupabaseClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(values.data.email, {
+    redirectTo
+  });
+
+  if (error) {
+    return { success: false, message: error.message };
+  }
+
+  return { success: true, message: "E-Mail versendet" };
+}
+
 export async function signUpAction(_: ActionState, formData: FormData) {
   const values = signUpSchema.safeParse(Object.fromEntries(formData.entries()));
-  if (!values.success) return { success: false, message: values.error.issues[0]?.message || "Invalid registration details." };
+  if (!values.success) return { success: false, message: values.error.issues[0]?.message || "Ungültige Registrierungsdaten." };
   if (!hasSupabaseEnv()) return mockSuccess("Demo mode: registration flow is scaffolded and will work after Supabase setup.");
 
   const supabase = await createServerSupabaseClient();
@@ -650,7 +687,7 @@ export async function updateDoctorProfileAction(_: ActionState, formData: FormDa
       success: false,
       message: fieldPath
         ? `${fieldPath}: ${firstIssue.message}`
-        : firstIssue?.message || "Please review your profile information."
+        : firstIssue?.message || "Bitte prüfen Sie Ihre Profilangaben."
     };
   }
   if (!hasSupabaseEnv()) return mockSuccess("Demo mode: doctor profile form is ready. Connect Supabase to persist changes.");
@@ -679,7 +716,7 @@ export async function updateDoctorProfileAction(_: ActionState, formData: FormDa
     const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 
     if (!allowedTypes.has(uploadedProfilePhoto.type)) {
-      return { success: false, message: "Profile photo must be a JPG, PNG, or WEBP image." };
+      return { success: false, message: "Das Profilfoto muss eine JPG-, PNG- oder WEBP-Datei sein." };
     }
 
     const fileExtension = getFileExtension(uploadedProfilePhoto);
@@ -695,7 +732,7 @@ export async function updateDoctorProfileAction(_: ActionState, formData: FormDa
       });
 
     if (uploadError) {
-      return { success: false, message: uploadError.message || "Unable to upload the profile photo." };
+      return { success: false, message: uploadError.message || "Das Profilfoto konnte nicht hochgeladen werden." };
     }
 
     nextProfilePhotoPath = storagePath;
@@ -709,7 +746,7 @@ export async function updateDoctorProfileAction(_: ActionState, formData: FormDa
     if (downloadPhotoError) {
       return {
         success: false,
-        message: downloadPhotoError.message || "Unable to load the profile photo for cropping."
+        message: downloadPhotoError.message || "Das Profilfoto konnte nicht für den Zuschnitt geladen werden."
       };
     }
 
@@ -730,7 +767,7 @@ export async function updateDoctorProfileAction(_: ActionState, formData: FormDa
         message:
           error instanceof Error
             ? error.message
-            : "Unable to prepare the CV photo."
+            : "Das CV-Foto konnte nicht vorbereitet werden."
       };
     }
   }
@@ -741,7 +778,7 @@ export async function updateDoctorProfileAction(_: ActionState, formData: FormDa
       .remove([currentProfilePhotoPath]);
 
     if (removeOldPhotoError) {
-      return { success: false, message: removeOldPhotoError.message || "Unable to update the profile photo." };
+      return { success: false, message: removeOldPhotoError.message || "Das Profilfoto konnte nicht aktualisiert werden." };
     }
   }
 
@@ -755,7 +792,7 @@ export async function updateDoctorProfileAction(_: ActionState, formData: FormDa
         return {
           success: false,
           message:
-            removeOldPreparedPhotoError.message || "Unable to update the prepared CV photo."
+            removeOldPreparedPhotoError.message || "Das vorbereitete CV-Foto konnte nicht aktualisiert werden."
         };
       }
     }
@@ -811,7 +848,7 @@ export async function updateDoctorProfileAction(_: ActionState, formData: FormDa
     .single();
 
   if (profileError || !savedProfile) {
-    return { success: false, message: profileError?.message || "Unable to save your doctor profile." };
+    return { success: false, message: profileError?.message || "Ihr Arztprofil konnte nicht gespeichert werden." };
   }
 
   const { error: deleteLanguageError } = await supabase
@@ -931,7 +968,7 @@ export async function updateDoctorProfileAction(_: ActionState, formData: FormDa
   revalidatePath("/dashboard/doctor/cv/export/pdf");
   revalidatePath("/dashboard/doctor/profile");
   revalidatePath("/doctors");
-  return { success: true, message: "Doctor profile saved successfully." };
+  return { success: true, message: "Arztprofil erfolgreich gespeichert." };
 }
 
 export async function reorderDoctorExperiencesAction(experienceIds: string[]) {
@@ -954,7 +991,7 @@ export async function reorderDoctorExperiencesAction(experienceIds: string[]) {
     .maybeSingle();
 
   if (!profile) {
-    throw new Error("Doctor profile not found.");
+    throw new Error("Arztprofil nicht gefunden.");
   }
 
   const { data: existingExperiences } = await supabase
@@ -979,7 +1016,7 @@ export async function reorderDoctorExperiencesAction(experienceIds: string[]) {
   const failedUpdate = results.find((result) => result.error);
 
   if (failedUpdate?.error) {
-    throw new Error(failedUpdate.error.message || "Unable to save work experience order.");
+    throw new Error(failedUpdate.error.message || "Die Reihenfolge der Berufserfahrung konnte nicht gespeichert werden.");
   }
 
   revalidatePath("/dashboard/doctor/cv");
@@ -1033,7 +1070,7 @@ export async function saveDoctorCvLayoutAction(input: {
     .maybeSingle();
 
   if (!profile) {
-    return { success: false, message: "Doctor profile not found." };
+    return { success: false, message: "Arztprofil nicht gefunden." };
   }
 
   const profileId = profile.id;
@@ -1049,7 +1086,7 @@ export async function saveDoctorCvLayoutAction(input: {
   );
 
   if (error) {
-    return { success: false, message: error.message || "Unable to save your CV layout." };
+    return { success: false, message: error.message || "Das CV-Layout konnte nicht gespeichert werden." };
   }
 
   async function persistSortOrder(
@@ -1094,17 +1131,17 @@ export async function saveDoctorCvLayoutAction(input: {
 
   const educationOrderError = await persistSortOrder("doctor_educations", input.educationOrderIds);
   if (educationOrderError) {
-    return { success: false, message: educationOrderError.message || "Unable to save education order." };
+    return { success: false, message: educationOrderError.message || "Die Reihenfolge der Ausbildung konnte nicht gespeichert werden." };
   }
 
   const trainingOrderError = await persistSortOrder("doctor_trainings", input.trainingOrderIds);
   if (trainingOrderError) {
-    return { success: false, message: trainingOrderError.message || "Unable to save training order." };
+    return { success: false, message: trainingOrderError.message || "Die Reihenfolge der Fortbildungen konnte nicht gespeichert werden." };
   }
 
   const languageOrderError = await persistSortOrder("doctor_languages", input.languageOrderIds);
   if (languageOrderError) {
-    return { success: false, message: languageOrderError.message || "Unable to save language order." };
+    return { success: false, message: languageOrderError.message || "Die Reihenfolge der Sprachen konnte nicht gespeichert werden." };
   }
 
   const additionalSectionOrderError = await persistSortOrder(
@@ -1114,7 +1151,7 @@ export async function saveDoctorCvLayoutAction(input: {
   if (additionalSectionOrderError) {
     return {
       success: false,
-      message: additionalSectionOrderError.message || "Unable to save additional section order."
+      message: additionalSectionOrderError.message || "Die Reihenfolge der weiteren Angaben konnte nicht gespeichert werden."
     };
   }
 
@@ -1126,7 +1163,7 @@ export async function saveDoctorCvLayoutAction(input: {
       .maybeSingle();
 
     if (profileBlockError) {
-      return { success: false, message: profileBlockError.message || "Unable to load custom CV block." };
+      return { success: false, message: profileBlockError.message || "Der individuelle CV-Block konnte nicht geladen werden." };
     }
 
     const currentBlock =
@@ -1173,7 +1210,7 @@ export async function saveDoctorCvLayoutAction(input: {
       if (customBlockUpdateError) {
         return {
           success: false,
-          message: customBlockUpdateError.message || "Unable to save custom block order."
+          message: customBlockUpdateError.message || "Die Reihenfolge des individuellen Blocks konnte nicht gespeichert werden."
         };
       }
     }
@@ -1222,7 +1259,7 @@ export async function saveDoctorCvPhotoPresentationAction(input: {
     .maybeSingle();
 
   if (!profile) {
-    return { success: false, message: "Doctor profile not found." };
+    return { success: false, message: "Arztprofil nicht gefunden." };
   }
   if (!(profile as { profile_photo_path?: string | null }).profile_photo_path) {
     return { success: false, message: "No profile photo is available for cropping." };
@@ -1235,7 +1272,7 @@ export async function saveDoctorCvPhotoPresentationAction(input: {
   if (sourcePhotoError) {
     return {
       success: false,
-      message: sourcePhotoError.message || "Unable to load the profile photo for cropping."
+      message: sourcePhotoError.message || "Das Profilfoto konnte nicht für den Zuschnitt geladen werden."
     };
   }
 
@@ -1252,7 +1289,7 @@ export async function saveDoctorCvPhotoPresentationAction(input: {
     return {
       success: false,
       message:
-        error instanceof Error ? error.message : "Unable to save photo framing."
+        error instanceof Error ? error.message : "Der Fotoausschnitt konnte nicht gespeichert werden."
     };
   }
 
@@ -1280,7 +1317,7 @@ export async function saveDoctorCvPhotoPresentationAction(input: {
     return {
       success: false,
       message:
-        persistedProfileError?.message || "Saved photo framing could not be verified."
+        persistedProfileError?.message || "Der gespeicherte Fotoausschnitt konnte nicht verifiziert werden."
     };
   }
 
@@ -1316,7 +1353,7 @@ export async function generateDoctorCoverLetterAction(
   if (!user || !profile) {
     return {
       success: false,
-      message: "Bitte vervollstaendigen Sie zuerst Ihr Profil, bevor Sie ein Motivationsschreiben erstellen.",
+      message: "Bitte vervollständigen Sie zuerst Ihr Profil, bevor Sie ein Motivationsschreiben erstellen.",
       generatedLetter: ""
     };
   }
@@ -1363,7 +1400,7 @@ export async function generateDoctorApplicationEmailAction(
   if (!user || !profile) {
     return {
       success: false,
-      message: "Bitte vervollstaendigen Sie zuerst Ihr Profil, bevor Sie eine Bewerbungs-E-Mail erstellen.",
+      message: "Bitte vervollständigen Sie zuerst Ihr Profil, bevor Sie eine Bewerbungs-E-Mail erstellen.",
       subject: "",
       body: ""
     };
@@ -1426,14 +1463,14 @@ export async function createDoctorApplicationEmailDraftAction(input: {
   if (!motivationLetter) {
     return {
       success: false,
-      message: "Bitte erstellen Sie zuerst Ihr Motivationsschreiben erneut, bevor Sie einen Gmail-Entwurf mit Anhaengen erzeugen."
+      message: "Bitte erstellen Sie zuerst Ihr Motivationsschreiben erneut, bevor Sie einen Gmail-Entwurf mit Anhängen erzeugen."
     };
   }
 
   if (recipientEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipientEmail)) {
     return {
       success: false,
-      message: "Bitte geben Sie eine gueltige Empfaenger-E-Mail-Adresse ein."
+      message: "Bitte geben Sie eine gültige Empfänger-E-Mail-Adresse ein."
     };
   }
 
@@ -1443,7 +1480,7 @@ export async function createDoctorApplicationEmailDraftAction(input: {
     if (!user || !profile) {
       return {
         success: false,
-        message: "Bitte vervollstaendigen Sie zuerst Ihr Profil, bevor Sie einen Gmail-Entwurf erstellen."
+        message: "Bitte vervollständigen Sie zuerst Ihr Profil, bevor Sie einen Gmail-Entwurf erstellen."
       };
     }
 
@@ -1518,7 +1555,7 @@ export async function createDoctorApplicationEmailDraftAction(input: {
 
 export async function updateFacilityProfileAction(_: ActionState, formData: FormData) {
   const parsed = facilityProfileSchema.safeParse(Object.fromEntries(formData.entries()));
-  if (!parsed.success) return { success: false, message: parsed.error.issues[0]?.message || "Please review the facility profile." };
+  if (!parsed.success) return { success: false, message: parsed.error.issues[0]?.message || "Bitte prüfen Sie das Einrichtungsprofil." };
   if (!hasSupabaseEnv()) return mockSuccess("Demo mode: facility profile form is ready. Connect Supabase to persist changes.");
 
   const supabase = await createServerSupabaseClient();
@@ -1537,18 +1574,18 @@ export async function updateFacilityProfileAction(_: ActionState, formData: Form
   if (error || !data) {
     return {
       success: false,
-      message: error?.message || "Unable to save the facility profile. Please check RLS insert/select policies."
+      message: error?.message || "Das Einrichtungsprofil konnte nicht gespeichert werden. Bitte prüfen Sie die RLS-Regeln für Insert/Select."
     };
   }
 
   revalidatePath("/dashboard/facility");
   revalidatePath("/dashboard/facility/profile");
-  return { success: true, message: "Facility profile saved successfully." };
+  return { success: true, message: "Einrichtungsprofil erfolgreich gespeichert." };
 }
 
 export async function createOrUpdateOfferAction(_: ActionState, formData: FormData) {
   const parsed = jobOfferSchema.safeParse(Object.fromEntries(formData.entries()));
-  if (!parsed.success) return { success: false, message: parsed.error.issues[0]?.message || "Please review the offer details." };
+  if (!parsed.success) return { success: false, message: parsed.error.issues[0]?.message || "Bitte prüfen Sie die Angaben zum Stellenangebot." };
   if (!hasSupabaseEnv()) return mockSuccess("Demo mode: offer form is wired and ready once Supabase is connected.");
 
   const supabase = await createServerSupabaseClient();
@@ -1562,7 +1599,7 @@ export async function createOrUpdateOfferAction(_: ActionState, formData: FormDa
     .select("id")
     .eq("user_id", user.id)
     .single();
-  if (!facility) return { success: false, message: "Please complete the facility profile first." };
+  if (!facility) return { success: false, message: "Bitte vervollständigen Sie zuerst das Einrichtungsprofil." };
 
   const offerId = formData.get("offer_id")?.toString();
   const payload = {
@@ -1582,7 +1619,7 @@ export async function createOrUpdateOfferAction(_: ActionState, formData: FormDa
     if (error || !data) {
       return {
         success: false,
-        message: error?.message || "Unable to update the offer."
+        message: error?.message || "Das Stellenangebot konnte nicht aktualisiert werden."
       };
     }
   } else {
@@ -1595,19 +1632,19 @@ export async function createOrUpdateOfferAction(_: ActionState, formData: FormDa
     if (error || !data) {
       return {
         success: false,
-        message: error?.message || "Unable to create the offer."
+        message: error?.message || "Das Stellenangebot konnte nicht erstellt werden."
       };
     }
   }
 
   revalidatePath("/dashboard/facility/offers");
   revalidatePath("/opportunities");
-  return { success: true, message: "Offer saved successfully." };
+  return { success: true, message: "Stellenangebot erfolgreich gespeichert." };
 }
 
 export async function createContactRequestAction(_: ActionState, formData: FormData) {
   const parsed = contactRequestSchema.safeParse(Object.fromEntries(formData.entries()));
-  if (!parsed.success) return { success: false, message: parsed.error.issues[0]?.message || "Please enter a clear message." };
+  if (!parsed.success) return { success: false, message: parsed.error.issues[0]?.message || "Bitte geben Sie eine klare Nachricht ein." };
   if (!hasSupabaseEnv()) return mockSuccess("Demo mode: contact request flow is ready and will save after Supabase setup.");
 
   const supabase = await createServerSupabaseClient();
@@ -1629,18 +1666,18 @@ export async function createContactRequestAction(_: ActionState, formData: FormD
     .limit(1);
 
   if (error || !data?.[0]) {
-    return { success: false, message: error?.message || "Unable to send the contact request." };
+    return { success: false, message: error?.message || "Die Kontaktanfrage konnte nicht gesendet werden." };
   }
 
   revalidatePath("/dashboard/doctor/contacts");
   revalidatePath("/dashboard/facility/contacts");
-  return { success: true, message: "Contact request sent successfully." };
+  return { success: true, message: "Kontaktanfrage erfolgreich gesendet." };
 }
 
 export async function applyToOfferAction(_: ActionState, formData: FormData) {
   const offerId = formData.get("offer_id")?.toString().trim();
-  if (!offerId) return { success: false, message: "Offer not found." };
-  if (!hasSupabaseEnv()) return mockSuccess("Demo mode: application generated successfully.");
+  if (!offerId) return { success: false, message: "Stellenangebot nicht gefunden." };
+  if (!hasSupabaseEnv()) return mockSuccess("Demo-Modus: Bewerbung erfolgreich erstellt.");
 
   const supabase = await createServerSupabaseClient();
   const {
@@ -1656,7 +1693,7 @@ export async function applyToOfferAction(_: ActionState, formData: FormData) {
     .maybeSingle();
 
   if (!user || user.role !== "doctor") {
-    return { success: false, message: "Only doctor accounts can apply to opportunities." };
+    return { success: false, message: "Nur Arztkonten können sich auf Stellenangebote bewerben." };
   }
 
   const { data: profile } = await supabase
@@ -1666,7 +1703,7 @@ export async function applyToOfferAction(_: ActionState, formData: FormData) {
     .maybeSingle();
 
   if (!profile) {
-    return { success: false, message: "Please complete your doctor profile before applying." };
+    return { success: false, message: "Bitte vervollständigen Sie Ihr Arztprofil, bevor Sie sich bewerben." };
   }
 
   const { data: offer } = await supabase
@@ -1688,7 +1725,7 @@ export async function applyToOfferAction(_: ActionState, formData: FormData) {
     .maybeSingle();
 
   if (existingApplication) {
-    return { success: true, message: "Application already submitted for this opportunity." };
+    return { success: true, message: "Bewerbung für dieses Stellenangebot bereits eingereicht." };
   }
 
   const languages = Array.isArray(profile.languages) && profile.languages.length > 0
@@ -1726,13 +1763,13 @@ export async function applyToOfferAction(_: ActionState, formData: FormData) {
     .limit(1);
 
   if (error || !insertedApplications?.[0]) {
-    return { success: false, message: error?.message || "Unable to submit your application." };
+    return { success: false, message: error?.message || "Ihre Bewerbung konnte nicht eingereicht werden." };
   }
 
   revalidatePath("/dashboard/doctor/opportunities");
   revalidatePath(`/dashboard/doctor/opportunities/${offer.id}`);
   revalidatePath("/dashboard/doctor");
-  return { success: true, message: "Application submitted successfully." };
+  return { success: true, message: "Bewerbung erfolgreich eingereicht." };
 }
 
 export async function updateApplicationStatusAction(_: ActionState, formData: FormData) {
@@ -1755,7 +1792,7 @@ export async function sendApplicationMessageAction(formData: FormData) {
   const content = formData.get("content")?.toString().trim();
 
   if (!conversationId || !redirectPath || !content) {
-    throw new Error("Conversation id, redirect path, and message content are required.");
+    throw new Error("Konversations-ID, Rücksprungpfad und Nachrichteninhalt sind erforderlich.");
   }
 
   if (!hasSupabaseEnv()) {
@@ -1792,7 +1829,7 @@ export async function sendApplicationMessageAction(formData: FormData) {
     .limit(1);
 
   if (error || !insertedMessages?.[0]) {
-    throw new Error(error?.message || "Unable to send message.");
+    throw new Error(error?.message || "Nachricht konnte nicht gesendet werden.");
   }
 
   revalidatePath(redirectPath);
@@ -1805,7 +1842,7 @@ export async function insertContactEvent(formData: FormData) {
   const contractType = formData.get("contract_type")?.toString().trim() ?? "";
 
   if (!contactPath) {
-    throw new Error("Contact path is required.");
+    throw new Error("Kontaktpfad ist erforderlich.");
   }
 
   if (!hasSupabaseEnv() || !applicationId) {
@@ -1870,7 +1907,7 @@ export async function markApplicationHiredAction(formData: FormData) {
   const detailPath = formData.get("detail_path")?.toString().trim();
 
   if (!applicationId) {
-    throw new Error("Application id is required.");
+    throw new Error("Bewerbungs-ID ist erforderlich.");
   }
 
   if (!hasSupabaseEnv()) {
@@ -1904,7 +1941,7 @@ export async function markApplicationHiredAction(formData: FormData) {
     .maybeSingle();
 
   if (error || !updatedApplication) {
-    throw new Error(error?.message || "Unable to load this application.");
+    throw new Error(error?.message || "Diese Bewerbung konnte nicht geladen werden.");
   }
 
   const { count: contactEventsCount } = await supabase
@@ -1923,7 +1960,7 @@ export async function markApplicationHiredAction(formData: FormData) {
     .maybeSingle();
 
   if (updateError || !savedApplication || !savedApplication.hired) {
-    throw new Error(updateError?.message || "Unable to mark this application as hired.");
+    throw new Error(updateError?.message || "Diese Bewerbung konnte nicht als eingestellt markiert werden.");
   }
 
   revalidatePath("/dashboard/facility");

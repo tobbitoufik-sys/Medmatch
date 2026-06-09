@@ -42,7 +42,7 @@ async function updateOffer(formData: FormData) {
     .maybeSingle();
 
   if (error || !data) {
-    throw new Error(error?.message || "Unable to update the offer.");
+    throw new Error(error?.message || "Das Stellenangebot konnte nicht aktualisiert werden.");
   }
 
   revalidatePath("/dashboard/facility/offers");
@@ -65,7 +65,7 @@ async function deleteOffer(formData: FormData) {
     .maybeSingle();
 
   if (error || !data) {
-    throw new Error(error?.message || "Unable to delete the offer.");
+    throw new Error(error?.message || "Das Stellenangebot konnte nicht gelöscht werden.");
   }
 
   revalidatePath("/dashboard/facility/offers");
@@ -82,42 +82,42 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     .eq("id", id)
     .single();
 
-  if (!offer) return <div>No offer</div>;
+  if (!offer) return <div>Kein Stellenangebot gefunden</div>;
 
   return (
     <DashboardShell
       role="facility"
-      title="Edit offer"
-      description="Update the details of this role from your facility workspace."
+      title="Stellenangebot bearbeiten"
+      description="Aktualisieren Sie die Details dieser Position in Ihrem Einrichtungsbereich."
     >
       <Card className="mx-auto w-full max-w-4xl">
         <CardHeader>
-          <CardTitle>Edit offer</CardTitle>
+          <CardTitle>Stellenangebot bearbeiten</CardTitle>
         </CardHeader>
         <CardContent>
           <form action={updateOffer} className="space-y-6">
             <input type="hidden" name="id" value={offer.id} />
 
             <div className="grid gap-5 md:grid-cols-2">
-              <Field label="Title">
+              <Field label="Titel">
                 <Input name="title" defaultValue={offer.title} />
               </Field>
-              <Field label="Specialty">
+              <Field label="Fachrichtung">
                 <Input name="specialty" defaultValue={offer.specialty} />
               </Field>
             </div>
 
             <div className="grid gap-5 md:grid-cols-2">
-              <Field label="City">
+              <Field label="Stadt">
                 <Input name="city" defaultValue={offer.city} />
               </Field>
-              <Field label="Country">
+              <Field label="Land">
                 <Input name="country" defaultValue={offer.country} />
               </Field>
             </div>
 
             <div className="grid gap-5 md:grid-cols-2">
-              <Field label="Contract type">
+              <Field label="Vertragsart">
                 <Select
                   name="contract_type"
                   defaultValue={normalizeJobOfferContractType(offer.contract_type)}
@@ -129,7 +129,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                   ))}
                 </Select>
               </Field>
-              <Field label="Salary">
+              <Field label="Gehalt">
                 <Input name="salary_range_optional" defaultValue={offer.salary_range_optional ?? ""} />
               </Field>
             </div>
@@ -137,21 +137,21 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             <div className="grid gap-5 md:grid-cols-2">
               <Field label="Status">
                 <Select name="status" defaultValue={offer.status}>
-                  <option value="draft">Draft</option>
-                  <option value="published">Published</option>
+                  <option value="draft">Entwurf</option>
+                  <option value="published">Veröffentlicht</option>
                 </Select>
               </Field>
             </div>
 
-            <Field label="Description">
+            <Field label="Beschreibung">
               <Textarea name="description" defaultValue={offer.description} className="min-h-[180px]" />
             </Field>
 
-            <Field label="Requirements">
+            <Field label="Anforderungen">
               <Textarea name="requirements" defaultValue={offer.requirements} className="min-h-[180px]" />
             </Field>
 
-            <Button type="submit">Save</Button>
+            <Button type="submit">Speichern</Button>
           </form>
 
           <div className="mt-4">

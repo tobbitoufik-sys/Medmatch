@@ -64,7 +64,7 @@ export default async function AdminDashboardPage() {
     <DashboardShell
       role="admin"
       title="Admin Dashboard"
-      description="Zentrale MedMatch-Uebersicht fuer Plattformstatistiken, externe Stellen und die naechsten Import- und AI-Workflows."
+      description="Zentrale MedMatch-Übersicht für Plattformstatistiken, externe Stellen und die nächsten Import- und AI-Workflows."
     >
       {latestSourceScan ? (
         <Card
@@ -100,13 +100,13 @@ export default async function AdminDashboardPage() {
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-5">
         <StatCard title="Users" value={String(users.length)} hint="Registrierte Accounts auf MedMatch." />
-        <StatCard title="Generated CVs" value="-" hint="Fuer das Tracking vorbereitet." />
+        <StatCard title="Generated CVs" value="-" hint="Für das Tracking vorbereitet." />
         <StatCard
           title="Generated motivation letters"
           value="-"
-          hint="Fuer das Tracking vorbereitet."
+          hint="Für das Tracking vorbereitet."
         />
-        <StatCard title="Generated emails" value="-" hint="Fuer das Tracking vorbereitet." />
+        <StatCard title="Generated emails" value="-" hint="Für das Tracking vorbereitet." />
         <StatCard
           title="External offers"
           value={String(externalOffersCount)}
@@ -126,7 +126,7 @@ export default async function AdminDashboardPage() {
               value={String(facilities.length)}
               hint="Einrichtungsprofile auf der Plattform."
             />
-            <StatCard title="Offers" value={String(offers.length)} hint="Native veroeffentlichte Stellen." />
+            <StatCard title="Offers" value={String(offers.length)} hint="Native veröffentlichte Stellen." />
             <StatCard title="Contacts" value={String(contacts.length)} hint="Erfasste Kontaktanfragen." />
           </CardContent>
         </Card>
@@ -150,7 +150,7 @@ export default async function AdminDashboardPage() {
             </div>
             <div className="rounded-2xl border p-4">
               <p className="font-medium text-foreground">AI refinement queue</p>
-              <p>Ueberblick ueber spaetere AI-Aufbereitung und Review-Schritte.</p>
+              <p>Überblick über spätere AI-Aufbereitung und Review-Schritte.</p>
             </div>
           </CardContent>
         </Card>
@@ -159,7 +159,7 @@ export default async function AdminDashboardPage() {
       <StatCard
         title="Public doctor profiles"
         value={String(publicDoctorProfiles)}
-        hint="Profile im oeffentlichen Aerzteverzeichnis."
+        hint="Profile im öffentlichen Ärzteverzeichnis."
       />
     </DashboardShell>
   );

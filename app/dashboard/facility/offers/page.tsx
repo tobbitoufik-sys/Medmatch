@@ -33,23 +33,23 @@ export default async function FacilityOffersPage() {
   return (
     <DashboardShell
       role="facility"
-      title="Offers management"
-      description="Publish and maintain your open roles from one clean workspace."
+      title="Stellenangebote verwalten"
+      description="Veröffentlichen und pflegen Sie offene Positionen in einem klaren Arbeitsbereich."
     >
       <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
         <Card>
-          <CardHeader><CardTitle>Create a new offer</CardTitle></CardHeader>
+          <CardHeader><CardTitle>Neues Stellenangebot erstellen</CardTitle></CardHeader>
           <CardContent>
             <JobOfferForm />
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>Your current offers</CardTitle></CardHeader>
+          <CardHeader><CardTitle>Aktuelle Stellenangebote</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             {myOffers.map((offer) => (
               <FacilityOfferCard key={offer.id} offer={offer} />
             ))}
-            {!myOffers.length ? <p className="text-sm text-muted-foreground">No offers yet. Create your first role to start receiving interest.</p> : null}
+            {!myOffers.length ? <p className="text-sm text-muted-foreground">Noch keine Stellenangebote vorhanden. Erstellen Sie die erste Position, um Bewerbungen zu erhalten.</p> : null}
           </CardContent>
         </Card>
       </div>

@@ -10,17 +10,17 @@ export default function ContactPage() {
       <SiteHeader />
       <section className="container py-20">
         <div className="max-w-3xl space-y-4">
-          <p className="text-sm uppercase tracking-[0.2em] text-primary">Contact</p>
-          <h1 className="text-5xl font-semibold tracking-tight">A professional platform needs clear contact information.</h1>
+          <p className="text-sm uppercase tracking-[0.2em] text-primary">Kontakt</p>
+          <h1 className="text-5xl font-semibold tracking-tight">Kontakt zu MedMatch.</h1>
           <p className="text-lg text-muted-foreground">
-            Replace these default details with your company information after deployment.
+            Nutzen Sie diese Angaben für allgemeine Fragen zur Plattform, zu Profilen oder zu Stellenangeboten.
           </p>
         </div>
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {[
-            { icon: Mail, title: "Email", value: "hello@medmatch.example" },
-            { icon: Phone, title: "Phone", value: "+44 20 0000 0000" },
-            { icon: MapPin, title: "Address", value: "London, United Kingdom" }
+            { icon: Mail, title: "E-Mail", value: "kontakt@medmatch.example" },
+            { icon: Phone, title: "Telefon", value: "+49 30 00000000" },
+            { icon: MapPin, title: "Adresse", value: "Berlin, Deutschland" }
           ].map((item) => (
             <Card key={item.title}>
               <CardHeader>

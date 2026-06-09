@@ -25,19 +25,19 @@ export default async function OpportunitiesPage({
       <SiteHeader />
       <section className="container py-16">
         <div className="max-w-3xl space-y-4">
-          <p className="text-sm uppercase tracking-[0.2em] text-primary">Opportunities</p>
-          <h1 className="text-5xl font-semibold tracking-tight">Search healthcare roles with practical, lightweight filters.</h1>
+          <p className="text-sm uppercase tracking-[0.2em] text-primary">Stellenangebote</p>
+          <h1 className="text-5xl font-semibold tracking-tight">Finden Sie medizinische Stellen mit klaren Filtern.</h1>
           <p className="text-lg text-muted-foreground">
-            The MVP keeps job discovery intentionally simple and fast for professional users.
+            MedMatch macht die Suche nach passenden Angeboten schnell, übersichtlich und professionell.
           </p>
         </div>
         <div className="mt-10">
           <Filters
             fields={[
-              { name: "specialty", label: "Specialty", placeholder: "Cardiology" },
-              { name: "city", label: "City", placeholder: "Dubai" },
-              { name: "country", label: "Country", placeholder: "United Arab Emirates" },
-              { name: "contract_type", label: "Contract", placeholder: "unbefristet" }
+              { name: "specialty", label: "Fachrichtung", placeholder: "Kardiologie" },
+              { name: "city", label: "Stadt", placeholder: "Berlin" },
+              { name: "country", label: "Land", placeholder: "Deutschland" },
+              { name: "contract_type", label: "Vertrag", placeholder: "unbefristet" }
             ]}
           />
         </div>
@@ -50,7 +50,7 @@ export default async function OpportunitiesPage({
                     <div>
                       <CardTitle>{offer.title}</CardTitle>
                       <CardDescription>
-                        {offer.facility?.facility_name || "Healthcare facility"} • {offer.city}, {offer.country}
+                        {offer.facility?.facility_name || "Medizinische Einrichtung"} - {offer.city}, {offer.country}
                       </CardDescription>
                     </div>
                     <Badge>{getJobOfferContractTypeLabel(offer.contract_type)}</Badge>
@@ -68,8 +68,8 @@ export default async function OpportunitiesPage({
           ) : (
             <div className="lg:col-span-2">
               <EmptyState
-                title="No opportunity matches these filters yet"
-                description="Try broadening the specialty or location filters, or publish demo data through the Supabase seed."
+                title="Noch kein Stellenangebot passt zu diesen Filtern"
+                description="Erweitern Sie die Fachrichtung oder den Standort, um mehr passende Angebote zu sehen."
               />
             </div>
           )}

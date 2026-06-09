@@ -163,7 +163,7 @@ export function CoverLetterGenerator() {
             Das Schreiben wird aus Ihren vorhandenen Profildaten plus optionalem Bewerbungskontext erstellt.
           </p>
           <p className="text-sm text-slate-500">
-            Die KI darf keine Stationen, Abschluesse, Titel, Sprachlevel, Lizenzen oder Daten erfinden. Fehlende Angaben werden weggelassen oder vorsichtig formuliert.
+            Die KI darf keine Stationen, Abschlüsse, Titel, Sprachlevel, Lizenzen oder Daten erfinden. Fehlende Angaben werden weggelassen oder vorsichtig formuliert.
           </p>
         </div>
       </section>
@@ -317,7 +317,7 @@ export function CoverLetterGenerator() {
               Bewerbungs-E-Mail aus Ihrem Motivationsschreiben erstellen
             </h3>
             <p className="text-sm text-slate-600">
-              Nutzen Sie Ihr fertiges Motivationsschreiben als Grundlage fuer eine professionelle deutsche Bewerbungs-E-Mail.
+              Nutzen Sie Ihr fertiges Motivationsschreiben als Grundlage für eine professionelle deutsche Bewerbungs-E-Mail.
             </p>
           </div>
           <Link

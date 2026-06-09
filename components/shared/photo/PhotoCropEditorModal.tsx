@@ -36,7 +36,7 @@ export function PhotoCropEditorModal({
   errorMessage,
   title = "Foto bearbeiten",
   description = "Ziehen Sie das Bild im Rahmen und passen Sie den Zoom an.",
-  saveLabel = "Foto uebernehmen",
+  saveLabel = "Foto übernehmen",
   onCancel,
   onSave
 }: Props) {

@@ -4,43 +4,43 @@ import type { UserRole } from "@/types";
 export const siteConfig = {
   name: "MedMatch",
   description:
-    "Premium recruitment platform connecting doctors with hospitals and clinics."
+    "Premium-Plattform für die Vermittlung von Ärztinnen und Ärzten an Kliniken und Praxen."
 };
 
 export const navLinks: { href: Route; label: string }[] = [
-  { href: "/", label: "Home" },
-  { href: "/how-it-works", label: "How it works" },
-  { href: "/for-doctors", label: "For doctors" },
-  { href: "/for-facilities", label: "For facilities" },
-  { href: "/opportunities", label: "Opportunities" },
-  { href: "/doctors", label: "Doctors" },
-  { href: "/contact", label: "Contact" }
+  { href: "/", label: "Startseite" },
+  { href: "/how-it-works", label: "So funktioniert es" },
+  { href: "/for-doctors", label: "Für Ärzte" },
+  { href: "/for-facilities", label: "Für Einrichtungen" },
+  { href: "/opportunities", label: "Stellenangebote" },
+  { href: "/doctors", label: "Arztprofile" },
+  { href: "/contact", label: "Kontakt" }
 ];
 
 export const dashboardNav: Record<UserRole, { href: Route; label: string }[]> = {
   doctor: [
-    { href: "/dashboard/doctor", label: "Overview" },
-    { href: "/dashboard/doctor/profile", label: "Profile" },
-    { href: "/dashboard/doctor/opportunities", label: "Opportunities" },
-    { href: "/dashboard/doctor/contacts", label: "Inbox" }
+    { href: "/dashboard/doctor", label: "Übersicht" },
+    { href: "/dashboard/doctor/profile", label: "Profil" },
+    { href: "/dashboard/doctor/opportunities", label: "Stellenangebote" },
+    { href: "/dashboard/doctor/contacts", label: "Postfach" }
   ],
   facility: [
-    { href: "/dashboard/facility", label: "Overview" },
-    { href: "/dashboard/facility/profile", label: "Profile" },
-    { href: "/dashboard/facility/offers", label: "Offers" },
-    { href: "/dashboard/facility/doctors", label: "Find doctors" },
-    { href: "/dashboard/facility/contacts", label: "Inbox" }
+    { href: "/dashboard/facility", label: "Übersicht" },
+    { href: "/dashboard/facility/profile", label: "Profil" },
+    { href: "/dashboard/facility/offers", label: "Stellenangebote" },
+    { href: "/dashboard/facility/doctors", label: "Ärzte finden" },
+    { href: "/dashboard/facility/contacts", label: "Postfach" }
   ],
   admin: [
-    { href: "/admin", label: "Overview" },
-    { href: "/admin/statistics" as Route, label: "Statistics" },
-    { href: "/admin/external-offers" as Route, label: "External offers" },
-    { href: "/admin/import-runs" as Route, label: "Import runs" },
-    { href: "/admin/import-monitor" as Route, label: "Import monitor" },
-    { href: "/admin/ai-queue" as Route, label: "AI refinement queue" },
-    { href: "/admin/users", label: "Users" },
-    { href: "/admin/profiles", label: "Profiles" },
-    { href: "/admin/offers", label: "Offers" },
-    { href: "/admin/contacts", label: "Inbox" }
+    { href: "/admin", label: "Übersicht" },
+    { href: "/admin/statistics" as Route, label: "Statistiken" },
+    { href: "/admin/external-offers" as Route, label: "Externe Angebote" },
+    { href: "/admin/import-runs" as Route, label: "Importläufe" },
+    { href: "/admin/import-monitor" as Route, label: "Importmonitor" },
+    { href: "/admin/ai-queue" as Route, label: "KI-Review-Queue" },
+    { href: "/admin/users", label: "Nutzer" },
+    { href: "/admin/profiles", label: "Profile" },
+    { href: "/admin/offers", label: "Angebote" },
+    { href: "/admin/contacts", label: "Postfach" }
   ]
 };

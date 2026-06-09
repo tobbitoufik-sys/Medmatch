@@ -22,7 +22,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 function formatDate(value: string | null | undefined) {
   if (!value) return null;
 
-  return new Intl.DateTimeFormat("en-GB", {
+  return new Intl.DateTimeFormat("de-DE", {
     year: "numeric",
     month: "short",
     day: "numeric"
@@ -113,68 +113,68 @@ export default async function FacilityApplicationDetailsPage({
   return (
     <DashboardShell
       role="facility"
-      title={doctor?.full_name || "Application"}
-      description="Review the full details of a submitted doctor application."
+      title={doctor?.full_name || "Bewerbung"}
+      description="Prüfen Sie die vollständigen Details der eingegangenen Arztbewerbung."
     >
       <Card>
         <CardHeader className="space-y-4">
-          <CardTitle>Application details</CardTitle>
+          <CardTitle>Bewerbungsdetails</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Submitted {formatDate(application.created_at) ?? "Not available"}
+            Eingereicht am {formatDate(application.created_at) ?? "Nicht verfügbar"}
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-3">
-            <h2 className="text-lg font-semibold">Application status</h2>
+            <h2 className="text-lg font-semibold">Bewerbungsstatus</h2>
             <div className="flex flex-wrap items-center gap-3">
               <Badge className={applicationStatusBadgeClass[visibleStatus]}>
                 {applicationStatusLabels[visibleStatus]}
               </Badge>
               <Badge className={application.hired ? "bg-green-100 text-green-800" : "bg-secondary text-secondary-foreground"}>
-                {application.hired ? "Hired" : "Not hired"}
+                {application.hired ? "Eingestellt" : "Nicht eingestellt"}
               </Badge>
             </div>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="rounded-2xl border p-4">
-              <p className="text-sm text-muted-foreground">Doctor</p>
-              <p className="mt-2 font-medium">{doctor?.full_name || "Doctor"}</p>
+              <p className="text-sm text-muted-foreground">Arzt</p>
+              <p className="mt-2 font-medium">{doctor?.full_name || "Arzt"}</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                {profile?.current_position || "Position not specified"} | {profile?.specialty || "Specialty not specified"}
+                {profile?.current_position || "Position nicht angegeben"} | {profile?.specialty || "Fachrichtung nicht angegeben"}
               </p>
             </div>
             <div className="rounded-2xl border p-4">
-              <p className="text-sm text-muted-foreground">Location</p>
+              <p className="text-sm text-muted-foreground">Standort</p>
               <p className="mt-2 font-medium">
-                {profile?.city || "City not specified"}, {profile?.country || "Country not specified"}
+                {profile?.city || "Stadt nicht angegeben"}, {profile?.country || "Land nicht angegeben"}
               </p>
             </div>
             <div className="rounded-2xl border p-4">
-              <p className="text-sm text-muted-foreground">Offer</p>
-              <p className="mt-2 font-medium">{offer?.title || "Opportunity"}</p>
+              <p className="text-sm text-muted-foreground">Stellenangebot</p>
+              <p className="mt-2 font-medium">{offer?.title || "Stellenangebot"}</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                {offer?.specialty || "Specialty not specified"} | {offer?.contract_type ? getJobOfferContractTypeLabel(offer.contract_type) : "Contract not specified"}
+                {offer?.specialty || "Fachrichtung nicht angegeben"} | {offer?.contract_type ? getJobOfferContractTypeLabel(offer.contract_type) : "Vertrag nicht angegeben"}
               </p>
             </div>
             <div className="rounded-2xl border p-4">
-              <p className="text-sm text-muted-foreground">Offer location</p>
+              <p className="text-sm text-muted-foreground">Standort der Stelle</p>
               <p className="mt-2 font-medium">
-                {offer?.city || "City not specified"}, {offer?.country || "Country not specified"}
+                {offer?.city || "Stadt nicht angegeben"}, {offer?.country || "Land nicht angegeben"}
               </p>
             </div>
             <div className="rounded-2xl border p-4 md:col-span-2">
-              <p className="text-sm text-muted-foreground">Contact events</p>
+              <p className="text-sm text-muted-foreground">Kontaktereignisse</p>
               <ContactEventsCount applicationId={application.id} />
             </div>
           </div>
 
           <div className="space-y-3">
-            <h2 className="text-lg font-semibold">Workflow actions</h2>
+            <h2 className="text-lg font-semibold">Workflow-Aktionen</h2>
             {conversation ? (
               <Button asChild variant="secondary">
                 <Link href={`/dashboard/facility/applications/${application.id}/contact`}>
-                  Open conversation
+                  Konversation öffnen
                 </Link>
               </Button>
             ) : null}
@@ -189,13 +189,13 @@ export default async function FacilityApplicationDetailsPage({
               <form action={markApplicationHiredAction}>
                 <input type="hidden" name="application_id" value={application.id} />
                 <input type="hidden" name="detail_path" value={`/dashboard/facility/applications/${application.id}`} />
-                <Button type="submit" variant="outline">Mark as hired</Button>
+                <Button type="submit" variant="outline">Als eingestellt markieren</Button>
               </form>
             ) : null}
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-lg font-semibold">Generated candidature</h2>
+            <h2 className="text-lg font-semibold">Generierte Bewerbung</h2>
             <p className="whitespace-pre-wrap text-muted-foreground">{application.message}</p>
           </div>
         </CardContent>

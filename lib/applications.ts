@@ -21,12 +21,12 @@ export const applicationStatusTransitions: Record<ApplicationStatus, Application
 };
 
 export const applicationStatusLabels: Record<ApplicationStatus, string> = {
-  submitted: "Submitted",
-  received: "Received",
-  in_review: "In review",
-  contacted: "Contacted",
-  accepted: "Accepted",
-  rejected: "Rejected"
+  submitted: "Eingereicht",
+  received: "Eingegangen",
+  in_review: "In Prüfung",
+  contacted: "Kontaktiert",
+  accepted: "Angenommen",
+  rejected: "Abgelehnt"
 };
 
 export const applicationStatusBadgeClass: Record<ApplicationStatus, string> = {
@@ -39,12 +39,12 @@ export const applicationStatusBadgeClass: Record<ApplicationStatus, string> = {
 };
 
 export const applicationStatusActionLabels: Record<ApplicationStatus, string> = {
-  submitted: "Submitted",
-  received: "Mark as received",
-  in_review: "Start review",
-  contacted: "Contact doctor",
-  accepted: "Accept",
-  rejected: "Reject"
+  submitted: "Eingereicht",
+  received: "Als eingegangen markieren",
+  in_review: "Prüfung starten",
+  contacted: "Arzt kontaktieren",
+  accepted: "Annehmen",
+  rejected: "Ablehnen"
 };
 
 export function getFacilityVisibleApplicationStatus(rawStatus: ApplicationStatus): ApplicationStatus {

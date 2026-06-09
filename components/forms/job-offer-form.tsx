@@ -13,14 +13,14 @@ import {
 
 export function JobOfferForm({ offer }: { offer?: JobOffer }) {
   return (
-    <ServerForm action={createOrUpdateOfferAction} submitLabel={offer ? "Update offer" : "Create offer"}>
+    <ServerForm action={createOrUpdateOfferAction} submitLabel={offer ? "Stellenangebot aktualisieren" : "Stellenangebot erstellen"}>
       {offer ? <input type="hidden" name="offer_id" value={offer.id} /> : null}
       <div className="grid gap-5 md:grid-cols-2">
-        <Field label="Title"><Input name="title" defaultValue={offer?.title} required /></Field>
-        <Field label="Specialty"><Input name="specialty" defaultValue={offer?.specialty} required /></Field>
-        <Field label="City"><Input name="city" defaultValue={offer?.city} required /></Field>
-        <Field label="Country"><Input name="country" defaultValue={offer?.country} required /></Field>
-        <Field label="Contract type">
+        <Field label="Titel"><Input name="title" defaultValue={offer?.title} required /></Field>
+        <Field label="Fachrichtung"><Input name="specialty" defaultValue={offer?.specialty} required /></Field>
+        <Field label="Stadt"><Input name="city" defaultValue={offer?.city} required /></Field>
+        <Field label="Land"><Input name="country" defaultValue={offer?.country} required /></Field>
+        <Field label="Vertragsart">
           <Select
             name="contract_type"
             defaultValue={normalizeJobOfferContractType(offer?.contract_type)}
@@ -33,17 +33,17 @@ export function JobOfferForm({ offer }: { offer?: JobOffer }) {
             ))}
           </Select>
         </Field>
-        <Field label="Salary range (optional)"><Input name="salary_range_optional" defaultValue={offer?.salary_range_optional || ""} /></Field>
+        <Field label="Gehaltsrahmen (optional)"><Input name="salary_range_optional" defaultValue={offer?.salary_range_optional || ""} /></Field>
         <Field label="Status">
           <Select name="status" defaultValue={offer?.status || "draft"}>
-            <option value="draft">Draft</option>
-            <option value="published">Published</option>
-            <option value="paused">Paused</option>
+            <option value="draft">Entwurf</option>
+            <option value="published">Veröffentlicht</option>
+            <option value="paused">Pausiert</option>
           </Select>
         </Field>
       </div>
-      <Field label="Description"><Textarea name="description" defaultValue={offer?.description} required /></Field>
-      <Field label="Requirements"><Textarea name="requirements" defaultValue={offer?.requirements} required /></Field>
+      <Field label="Beschreibung"><Textarea name="description" defaultValue={offer?.description} required /></Field>
+      <Field label="Anforderungen"><Textarea name="requirements" defaultValue={offer?.requirements} required /></Field>
     </ServerForm>
   );
 }

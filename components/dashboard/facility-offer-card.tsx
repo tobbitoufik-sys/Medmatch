@@ -6,6 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import type { JobOffer } from "@/types";
 import { FacilityOfferEditLink } from "@/components/dashboard/facility-offer-edit-link";
 
+const offerStatusLabels: Record<string, string> = {
+  draft: "Entwurf",
+  published: "Veröffentlicht",
+  paused: "Pausiert"
+};
+
 export function FacilityOfferCard({ offer }: { offer: JobOffer }) {
   const router = useRouter();
   const href = `/dashboard/facility/offers/${offer.id}` as Route;
@@ -29,7 +35,7 @@ export function FacilityOfferCard({ offer }: { offer: JobOffer }) {
           <p className="text-sm text-muted-foreground">{offer.city}, {offer.country}</p>
         </div>
         <div className="flex items-center gap-2">
-          <Badge>{offer.status}</Badge>
+          <Badge>{offerStatusLabels[offer.status] ?? offer.status}</Badge>
           <FacilityOfferEditLink offerId={offer.id} />
         </div>
       </div>

@@ -180,22 +180,22 @@ export default async function AdminImportMonitorPage({
     <DashboardShell
       role="admin"
       title="Import monitor"
-      description="Kompakter Betriebsmonitor fuer importierte externe Stellen, Refinement-Status und Veroeffentlichungsstand."
+      description="Kompakter Betriebsmonitor für importierte externe Stellen, Refinement-Status und Veröffentlichungsstand."
     >
       <div className="space-y-6">
         {deleteStatus === "success" ? (
           <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-            Queue-Eintrag geloescht.
+            Queue-Eintrag gelöscht.
           </div>
         ) : null}
         {deleteStatus === "blockedPublished" ? (
           <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            Veroeffentlichte Queue-Eintraege koennen hier nicht geloescht werden. Loeschen Sie zuerst das veroeffentlichte externe Angebot.
+            Veröffentlichte Queue-Einträge können hier nicht gelöscht werden. Löschen Sie zuerst das veröffentlichte externe Angebot.
           </div>
         ) : null}
         {deleteStatus === "error" ? (
           <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-            Der Queue-Eintrag konnte nicht geloescht werden.
+            Der Queue-Eintrag konnte nicht gelöscht werden.
           </div>
         ) : null}
 
@@ -255,7 +255,7 @@ export default async function AdminImportMonitorPage({
 
               <div className="space-y-2">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
-                  Qualitaet
+                  Qualität
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {(["all", "80-100", "50-79", "0-49"] as const).map((qualityFilter) => {
@@ -327,10 +327,10 @@ export default async function AdminImportMonitorPage({
                         type="submit"
                         variant="ghost"
                         size="sm"
-                        confirmMessage="Diesen Queue-Eintrag wirklich loeschen?"
+                        confirmMessage="Diesen Queue-Eintrag wirklich löschen?"
                         className="text-rose-700 hover:bg-rose-50 hover:text-rose-800"
                       >
-                        Loeschen
+                        Löschen
                       </ConfirmSubmitButton>
                     </form>
                   </div>
@@ -338,7 +338,7 @@ export default async function AdminImportMonitorPage({
               </div>
             ) : (
               <div className="rounded-2xl border border-dashed p-8 text-center text-sm text-muted-foreground">
-                Noch keine importierten oder verfeinerten Angebote verfuegbar.
+                Noch keine importierten oder verfeinerten Angebote verfügbar.
               </div>
             )}
           </CardContent>

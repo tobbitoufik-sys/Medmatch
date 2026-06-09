@@ -668,7 +668,7 @@ export async function importExternalOfferByUrl(sourceUrl: string) {
       });
     } catch (error) {
       if (controller.signal.aborted) {
-        throw new Error("Der Import wurde wegen Zeitueberschreitung abgebrochen.");
+        throw new Error("Der Import wurde wegen Zeitüberschreitung abgebrochen.");
       }
 
       const message = error instanceof Error ? error.message : "Unbekannter Netzwerkfehler.";
@@ -707,12 +707,12 @@ export async function discoverPraktischarztOfferUrls(
   const normalizedListingUrl = normalizeImportUrl(listingUrl);
 
   if (!normalizedListingUrl) {
-    throw new Error("Bitte geben Sie eine gueltige Praktischarzt-Listing-URL ein.");
+    throw new Error("Bitte geben Sie eine gültige Praktischarzt-Listing-URL ein.");
   }
 
   const listingHostname = getHostnameFromUrl(normalizedListingUrl);
   if (!listingHostname || !listingHostname.endsWith("praktischarzt.de")) {
-    throw new Error("Die Batch-Erkennung ist in diesem Schritt nur fuer Praktischarzt aktiviert.");
+    throw new Error("Die Batch-Erkennung ist in diesem Schritt nur für Praktischarzt aktiviert.");
   }
 
   const controller = new AbortController();
@@ -731,7 +731,7 @@ export async function discoverPraktischarztOfferUrls(
       });
     } catch (error) {
       if (controller.signal.aborted) {
-        throw new Error("Die Praktischarzt-Liste konnte wegen Zeitueberschreitung nicht geladen werden.");
+        throw new Error("Die Praktischarzt-Liste konnte wegen Zeitüberschreitung nicht geladen werden.");
       }
 
       const message = error instanceof Error ? error.message : "Unbekannter Netzwerkfehler.";
@@ -815,7 +815,7 @@ export async function scanPraktischarztSourceOffers(options: {
 }) {
   const normalizedListingUrl = normalizeImportUrl(options.listingUrl);
   if (!normalizedListingUrl) {
-    throw new Error("Bitte geben Sie eine gueltige Praktischarzt-Listing-URL ein.");
+    throw new Error("Bitte geben Sie eine gültige Praktischarzt-Listing-URL ein.");
   }
 
   const safePageLimit = Math.max(1, Math.min(options.maxPages ?? 3, 3));

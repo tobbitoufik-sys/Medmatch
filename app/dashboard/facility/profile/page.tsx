@@ -10,11 +10,11 @@ export default async function FacilityProfilePage() {
   return (
     <DashboardShell
       role="facility"
-      title="Facility profile"
-      description="Present your organisation in a polished and credible way."
+      title="Einrichtungsprofil"
+      description="Präsentieren Sie Ihre Organisation professionell und vertrauenswürdig."
     >
       <Card>
-        <CardHeader><CardTitle>Edit facility profile</CardTitle></CardHeader>
+        <CardHeader><CardTitle>Einrichtungsprofil bearbeiten</CardTitle></CardHeader>
         <CardContent>
           <FacilityProfileForm profile={profile} />
         </CardContent>

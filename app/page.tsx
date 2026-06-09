@@ -22,25 +22,25 @@ export default async function HomePage() {
 
       <section className="container py-20">
         <SectionHeading
-          eyebrow="How it works"
-          title="A simple workflow for trusted healthcare hiring"
-          description="MedMatch keeps the MVP focused on the essentials: strong profiles, clear offers and fast professional introductions."
+          eyebrow="So funktioniert es"
+          title="Ein klarer Workflow für medizinische Vermittlung"
+          description="MedMatch konzentriert sich auf das Wesentliche: starke Profile, klare Stellenangebote und professionelle Kontakte."
         />
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {[
             {
-              title: "Create a professional presence",
-              text: "Doctors and facilities build structured profiles with specialties, locations, availability and clear context.",
+              title: "Professionell auftreten",
+              text: "Ärzte und Einrichtungen erstellen strukturierte Profile mit Fachrichtung, Standort, Verfügbarkeit und relevantem Kontext.",
               icon: ClipboardList
             },
             {
-              title: "Search with practical filters",
-              text: "Filter doctors or opportunities by specialty, location, contract type, availability and language.",
+              title: "Gezielt suchen",
+              text: "Filtern Sie Arztprofile oder Stellenangebote nach Fachrichtung, Standort, Vertragsart, Verfügbarkeit und Sprache.",
               icon: Sparkles
             },
             {
-              title: "Connect with confidence",
-              text: "Use contact requests to start recruitment conversations in a professional, trackable way.",
+              title: "Sicher Kontakt aufnehmen",
+              text: "Starten Sie Bewerbungs- und Recruiting-Gespräche professionell, nachvollziehbar und ohne unnötige Komplexität.",
               icon: ShieldCheck
             }
           ].map((item) => (
@@ -61,18 +61,18 @@ export default async function HomePage() {
         <div className="container grid gap-8 lg:grid-cols-2">
           <Card>
             <CardHeader>
-              <Badge>For doctors</Badge>
-              <CardTitle className="text-3xl">Present your experience the right way</CardTitle>
+              <Badge>Für Ärzte</Badge>
+              <CardTitle className="text-3xl">Berufserfahrung überzeugend darstellen</CardTitle>
               <CardDescription>
-                Build a profile that highlights specialty, languages, availability and career goals without dealing with unnecessary complexity.
+                Erstellen Sie ein Profil, das Fachrichtung, Sprachen, Verfügbarkeit und berufliche Ziele klar sichtbar macht.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {[
-                "Structured medical profile with clear professional information",
-                "Access to relevant opportunities from hospitals and clinics",
-                "Simple applications and contact requests",
-                "Profile visibility controls and verification readiness"
+                "Strukturiertes Arztprofil mit klaren beruflichen Angaben",
+                "Zugang zu passenden Stellenangeboten von Kliniken, Praxen und MVZ",
+                "Einfache Bewerbungen und Kontaktanfragen",
+                "Sichtbarkeitseinstellungen und vorbereitete Profilprüfung"
               ].map((item) => (
                 <div key={item} className="flex items-start gap-3">
                   <CheckCircle2 className="mt-0.5 h-5 w-5 text-primary" />
@@ -80,24 +80,24 @@ export default async function HomePage() {
                 </div>
               ))}
               <Button asChild className="mt-4">
-                <Link href="/for-doctors">Explore doctor experience</Link>
+                <Link href="/for-doctors">Bereich für Ärzte ansehen</Link>
               </Button>
             </CardContent>
           </Card>
           <Card>
             <CardHeader>
-              <Badge>For facilities</Badge>
-              <CardTitle className="text-3xl">Publish opportunities and source talent efficiently</CardTitle>
+              <Badge>Für Einrichtungen</Badge>
+              <CardTitle className="text-3xl">Stellenangebote veröffentlichen und passende Talente finden</CardTitle>
               <CardDescription>
-                Recruiters, clinics and hospitals can present their organisation, publish roles and start conversations quickly.
+                Kliniken, Praxen und Recruiter präsentieren ihre Einrichtung, veröffentlichen Rollen und starten schnell qualifizierte Gespräche.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {[
-                "Professional facility profile with verification support",
-                "Simple job posting workflow for urgent or permanent needs",
-                "Searchable doctor directory with useful filters",
-                "Admin moderation tools for a credible platform"
+                "Professionelles Einrichtungsprofil mit Verifizierungsmöglichkeit",
+                "Einfacher Workflow für dringende und dauerhafte Stellen",
+                "Durchsuchbares Arztverzeichnis mit praktischen Filtern",
+                "Moderation durch Admins für eine vertrauenswürdige Plattform"
               ].map((item) => (
                 <div key={item} className="flex items-start gap-3">
                   <CheckCircle2 className="mt-0.5 h-5 w-5 text-primary" />
@@ -105,7 +105,7 @@ export default async function HomePage() {
                 </div>
               ))}
               <Button asChild className="mt-4">
-                <Link href="/for-facilities">Explore facility experience</Link>
+                <Link href="/for-facilities">Bereich für Einrichtungen ansehen</Link>
               </Button>
             </CardContent>
           </Card>
@@ -114,9 +114,9 @@ export default async function HomePage() {
 
       <section className="container py-20">
         <SectionHeading
-          eyebrow="Featured opportunities"
-          title="Roles that feel credible from the first glance"
-          description="Clear, structured opportunities help doctors understand the role, the location and the expected profile quickly."
+          eyebrow="Ausgewählte Stellenangebote"
+          title="Stellen, die sofort nachvollziehbar sind"
+          description="Klare, strukturierte Angebote helfen Ärzten, Rolle, Standort und erwartetes Profil schnell einzuschätzen."
         />
         <div className="mt-12 grid gap-6 lg:grid-cols-2">
           {offers.slice(0, 4).map((offer) => (
@@ -126,7 +126,7 @@ export default async function HomePage() {
                   <div>
                     <CardTitle>{offer.title}</CardTitle>
                     <CardDescription>
-                      {offer.facility?.facility_name || "Healthcare facility"} • {offer.city}, {offer.country}
+                      {offer.facility?.facility_name || "Medizinische Einrichtung"} - {offer.city}, {offer.country}
                     </CardDescription>
                   </div>
                   <Badge>{getJobOfferContractTypeLabel(offer.contract_type)}</Badge>
@@ -137,7 +137,7 @@ export default async function HomePage() {
                 <div className="flex flex-wrap gap-2 text-xs">
                   <Badge className="bg-primary/10 text-primary">{offer.specialty}</Badge>
                   <Badge className="bg-secondary text-secondary-foreground">
-                    Published {formatDate(offer.published_at)}
+                    Veröffentlicht am {formatDate(offer.published_at)}
                   </Badge>
                 </div>
               </CardContent>
@@ -147,7 +147,7 @@ export default async function HomePage() {
         <div className="mt-10 text-center">
           <Button asChild size="lg">
             <Link href="/opportunities">
-              View all opportunities
+              Alle Stellenangebote ansehen
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
@@ -157,16 +157,16 @@ export default async function HomePage() {
       <section className="bg-primary py-20 text-primary-foreground">
         <div className="container flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
           <div className="max-w-3xl space-y-3">
-            <p className="text-sm uppercase tracking-[0.2em] text-primary-foreground/80">Launch-ready MVP</p>
+            <p className="text-sm uppercase tracking-[0.2em] text-primary-foreground/80">Bereit für den Einsatz</p>
             <h2 className="text-4xl font-semibold tracking-tight">
-              Start with a focused healthcare hiring platform that feels trustworthy from day one.
+              Starten Sie mit einer fokussierten Plattform, die vom ersten Tag an vertrauenswürdig wirkt.
             </h2>
             <p className="text-lg text-primary-foreground/80">
-              MedMatch is designed for a fast V0 launch, with room to grow into verification, document workflows and international expansion later.
+              MedMatch verbindet schlanke Prozesse mit Raum für Verifizierung, Dokumentenworkflows und spätere Erweiterungen.
             </p>
           </div>
           <Button asChild variant="secondary" size="lg">
-            <Link href="/register">Create your account</Link>
+            <Link href="/register">Konto erstellen</Link>
           </Button>
         </div>
       </section>

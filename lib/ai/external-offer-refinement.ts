@@ -27,7 +27,7 @@ const GEMINI_MODEL_ORDER = ["gemini-2.5-flash", "gemini-2.5-flash-lite"] as cons
 const GEMINI_RETRY_DELAYS_MS = [500, 1200] as const;
 const TEMPORARY_UNAVAILABLE_ERROR_CODE = "TEMPORARY_UNAVAILABLE";
 const GEMINI_OVERLOAD_MESSAGE =
-  "Die KI-Aufbereitung ist voruebergehend nicht verfuegbar. Bitte spaeter erneut versuchen.";
+  "Die KI-Aufbereitung ist vorübergehend nicht verfügbar. Bitte später erneut versuchen.";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));

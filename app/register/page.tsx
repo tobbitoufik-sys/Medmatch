@@ -13,15 +13,15 @@ export default function RegisterPage() {
         <div className="mx-auto max-w-xl">
           <Card>
             <CardHeader>
-              <CardTitle className="text-3xl">Create your MedMatch account</CardTitle>
+              <CardTitle className="text-3xl">MedMatch-Konto erstellen</CardTitle>
               <CardDescription>
-                Choose whether you are a doctor or a healthcare facility. The database structure is ready for role-based onboarding and dashboards.
+                Wählen Sie, ob Sie als Arzt oder als medizinische Einrichtung starten möchten.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <SignUpForm />
               <p className="text-sm text-muted-foreground">
-                Already have an account? <Link href="/login" className="font-semibold text-primary">Log in</Link>
+                Sie haben bereits ein Konto? <Link href="/login" className="font-semibold text-primary">Einloggen</Link>
               </p>
             </CardContent>
           </Card>

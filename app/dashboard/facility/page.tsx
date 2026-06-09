@@ -47,41 +47,41 @@ export default async function FacilityDashboardPage() {
   return (
     <DashboardShell
       role="facility"
-      title="Facility dashboard"
-      description="Manage your organisation profile, keep opportunities current and review incoming doctor interest."
+      title="Einrichtungsdashboard"
+      description="Verwalten Sie Ihr Einrichtungsprofil, halten Sie Stellenangebote aktuell und prüfen Sie eingehende Bewerbungen."
     >
       <div className="grid gap-6 md:grid-cols-3">
         <StatCard
-          title="Active offers"
+          title="Aktive Stellen"
           value={String(activeOffers)}
-          hint="Published opportunities linked to your facility."
+          hint="Veröffentlichte Stellenangebote Ihrer Einrichtung."
           href="/dashboard/facility/offers"
         />
         <StatCard
-          title="Inbound contacts"
+          title="Eingegangene Kontakte"
           value={String(inboundApplications)}
-          hint="Doctors who have contacted your team."
+          hint="Ärzte, die Ihr Team kontaktiert haben."
           href={"/dashboard/facility/applications" as Route}
         />
-        <StatCard title="Verification" value={profile?.verified ? "Verified" : "Pending"} hint="Admin can mark the facility as verified." />
+        <StatCard title="Verifizierung" value={profile?.verified ? "Geprüft" : "Ausstehend"} hint="Admins können die Einrichtung als geprüft markieren." />
       </div>
       <Card>
-        <CardHeader><CardTitle>Facility snapshot</CardTitle></CardHeader>
+        <CardHeader><CardTitle>Einrichtungsüberblick</CardTitle></CardHeader>
         <CardContent className="space-y-3 text-muted-foreground">
-          <p>{profile ? `${profile.facility_name} • ${profile.city}, ${profile.country}` : "No facility profile yet. Start by completing your organisation information."}</p>
-          <p>{profile?.description || "Add a clear description to reassure doctors and improve conversion."}</p>
+          <p>{profile ? `${profile.facility_name} - ${profile.city}, ${profile.country}` : "Noch kein Einrichtungsprofil vorhanden. Ergänzen Sie zuerst Ihre Organisationsdaten."}</p>
+          <p>{profile?.description || "Fügen Sie eine klare Beschreibung hinzu, um Vertrauen bei Ärzten aufzubauen."}</p>
         </CardContent>
       </Card>
       <Card>
-        <CardHeader><CardTitle>Inbox</CardTitle></CardHeader>
+        <CardHeader><CardTitle>Postfach</CardTitle></CardHeader>
         <CardContent className="space-y-4 text-muted-foreground">
           <p>
             {unreadConversations > 0
-              ? `You have ${unreadConversations} unread conversations`
-              : "View your conversations"}
+              ? `${unreadConversations} ungelesene Konversationen`
+              : "Konversationen ansehen"}
           </p>
           <Button asChild variant="secondary">
-            <Link href={"/dashboard/facility/contacts" as Route}>Open inbox</Link>
+            <Link href={"/dashboard/facility/contacts" as Route}>Postfach öffnen</Link>
           </Button>
         </CardContent>
       </Card>

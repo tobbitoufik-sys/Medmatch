@@ -123,7 +123,7 @@ export function ApplicationEmailGenerator({
     if (!isValidRecipientEmail(recipientEmail)) {
       setDraftResult({
         success: false,
-        message: "Bitte geben Sie eine gueltige Empfaenger-E-Mail-Adresse ein."
+        message: "Bitte geben Sie eine gültige Empfänger-E-Mail-Adresse ein."
       });
       return;
     }
@@ -220,11 +220,11 @@ export function ApplicationEmailGenerator({
             />
             {!isValidRecipientEmail(recipientEmail) ? (
               <p className="text-sm text-red-600">
-                Bitte geben Sie eine gueltige E-Mail-Adresse ein.
+                Bitte geben Sie eine gültige E-Mail-Adresse ein.
               </p>
             ) : needsManualRecipientEmail ? (
               <p className="text-sm text-amber-700">
-                Fuer Gmail wird eine Empfaenger-E-Mail benoetigt. Bitte ergaenzen Sie diese manuell, falls sie im externen Angebot nicht enthalten war.
+                Für Gmail wird eine Empfänger-E-Mail benötigt. Bitte ergänzen Sie diese manuell, falls sie im externen Angebot nicht enthalten war.
               </p>
             ) : null}
           </div>
@@ -353,7 +353,7 @@ export function ApplicationEmailGenerator({
             Bewerbung mit Gmail senden
           </h3>
           <p className="max-w-3xl text-sm leading-6 text-slate-600">
-            Oeffnen Sie Ihre fertige Bewerbungs-E-Mail in Gmail. Betreff, Text, Empfaenger sowie Lebenslauf und Motivationsschreiben sind bereits vorbereitet.
+            Öffnen Sie Ihre fertige Bewerbungs-E-Mail in Gmail. Betreff, Text, Empfänger sowie Lebenslauf und Motivationsschreiben sind bereits vorbereitet.
           </p>
         </div>
 
@@ -371,12 +371,12 @@ export function ApplicationEmailGenerator({
             }
             className={gmailDraftButtonClassName}
           >
-            {isDraftPending ? "Gmail wird vorbereitet..." : "Mit Gmail oeffnen"}
+            {isDraftPending ? "Gmail wird vorbereitet..." : "Mit Gmail öffnen"}
           </button>
         </div>
         {!recipientEmail.trim() ? (
           <p className="mt-3 text-sm text-amber-700">
-            Der Gmail-Schritt bleibt gesperrt, bis eine Empfaenger-E-Mail eingetragen ist.
+            Der Gmail-Schritt bleibt gesperrt, bis eine Empfänger-E-Mail eingetragen ist.
           </p>
         ) : null}
       </section>

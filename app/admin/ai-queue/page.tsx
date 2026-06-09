@@ -39,7 +39,7 @@ function formatContractType(value: RefinementEntry["contract_type"]) {
 }
 
 function getQualityBadgeClass(classification: ReturnType<typeof getExternalOfferQuality>["classification"]) {
-  if (classification === "Bereit zur Veroeffentlichung") {
+  if (classification === "Bereit zur Veröffentlichung") {
     return "bg-emerald-50 text-emerald-700";
   }
 
@@ -52,9 +52,9 @@ function getQualityBadgeClass(classification: ReturnType<typeof getExternalOffer
 
 function resolveQueueClassificationFilter(value: string | undefined): QueueClassificationFilter {
   if (
-    value === "Bereit zur Veroeffentlichung" ||
+    value === "Bereit zur Veröffentlichung" ||
     value === "Review erforderlich" ||
-    value === "Unvollstaendig"
+    value === "Unvollständig"
   ) {
     return value;
   }
@@ -139,7 +139,7 @@ export default async function AdminAiQueuePage({
     <DashboardShell
       role="admin"
       title="AI refinement queue"
-      description="Waehlen Sie einen reviewbaren Entwurf aus der Liste aus und oeffnen Sie ihn zur Bearbeitung auf einer eigenen Detailseite."
+      description="Wählen Sie einen reviewbaren Entwurf aus der Liste aus und öffnen Sie ihn zur Bearbeitung auf einer eigenen Detailseite."
     >
       <Card>
         <CardHeader>
@@ -152,7 +152,7 @@ export default async function AdminAiQueuePage({
                 Klassifikation
               </p>
               <div className="flex flex-wrap gap-2">
-                {(["all", "Bereit zur Veroeffentlichung", "Review erforderlich", "Unvollstaendig"] as const).map(
+                {(["all", "Bereit zur Veröffentlichung", "Review erforderlich", "Unvollständig"] as const).map(
                   (classification) => {
                     const active = selectedClassification === classification;
                     const label = classification === "all" ? "Alle" : classification;
@@ -211,17 +211,17 @@ export default async function AdminAiQueuePage({
 
           {deleteStatus === "success" ? (
             <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-              Queue-Eintrag geloescht.
+              Queue-Eintrag gelöscht.
             </div>
           ) : null}
           {deleteStatus === "blockedPublished" ? (
             <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-              Veroeffentlichte Queue-Eintraege koennen hier nicht geloescht werden. Loeschen Sie zuerst das veroeffentlichte externe Angebot.
+              Veröffentlichte Queue-Einträge können hier nicht gelöscht werden. Löschen Sie zuerst das veröffentlichte externe Angebot.
             </div>
           ) : null}
           {deleteStatus === "error" ? (
             <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-              Der Queue-Eintrag konnte nicht geloescht werden.
+              Der Queue-Eintrag konnte nicht gelöscht werden.
             </div>
           ) : null}
 
@@ -249,7 +249,7 @@ export default async function AdminAiQueuePage({
                         <span
                           className={`rounded-full px-3 py-1 text-xs font-semibold ${getQualityBadgeClass(quality.classification)}`}
                         >
-                          Qualitaet {quality.score}/100
+                          Qualität {quality.score}/100
                         </span>
                         <span
                           className={`rounded-full px-3 py-1 text-xs ${getQualityBadgeClass(quality.classification)}`}
@@ -258,7 +258,7 @@ export default async function AdminAiQueuePage({
                         </span>
                         {entry.published_external_offer_id ? (
                           <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700">
-                            Veroeffentlicht
+                            Veröffentlicht
                           </span>
                         ) : null}
                       </div>
@@ -283,13 +283,13 @@ export default async function AdminAiQueuePage({
                       </div>
 
                       <p className="line-clamp-2 text-sm text-slate-600">
-                        {entry.summary || entry.error_message || "Noch keine Zusammenfassung verfuegbar."}
+                        {entry.summary || entry.error_message || "Noch keine Zusammenfassung verfügbar."}
                       </p>
 
                       <p className="text-xs text-slate-500">
                         {quality.missing.length
                           ? `Fehlt noch: ${quality.missing.slice(0, 3).join(", ")}`
-                          : "Alle Kernfelder fuer die Review-Bewertung sind vorhanden."}
+                          : "Alle Kernfelder für die Review-Bewertung sind vorhanden."}
                       </p>
 
                       <div className="flex flex-col gap-2 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
@@ -307,10 +307,10 @@ export default async function AdminAiQueuePage({
                         type="submit"
                         variant="ghost"
                         size="sm"
-                        confirmMessage="Diesen Queue-Eintrag wirklich loeschen?"
+                        confirmMessage="Diesen Queue-Eintrag wirklich löschen?"
                         className="text-rose-700 hover:bg-rose-50 hover:text-rose-800"
                       >
-                        Loeschen
+                        Löschen
                       </ConfirmSubmitButton>
                     </form>
                   </div>

@@ -21,6 +21,7 @@ export function ServerForm({
   action,
   submitLabel,
   children,
+  submitAccessory,
   className,
   refreshOnSuccess = false,
   pendingLabel,
@@ -30,6 +31,7 @@ export function ServerForm({
   action: (state: ActionState, formData: FormData) => Promise<ActionState>;
   submitLabel: string;
   children: ReactNode;
+  submitAccessory?: ReactNode;
   className?: string;
   refreshOnSuccess?: boolean;
   pendingLabel?: string;
@@ -65,14 +67,28 @@ export function ServerForm({
           {state.message}
         </div>
       ) : null}
-      <Button
-        type="submit"
-        formEncType="multipart/form-data"
-        className="w-full sm:w-auto"
-        disabled={pending || submitDisabled}
-      >
-        {pending ? pendingLabel ?? "Please wait..." : submitLabel}
-      </Button>
+      {submitAccessory ? (
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>{submitAccessory}</div>
+          <Button
+            type="submit"
+            formEncType="multipart/form-data"
+            className="w-full sm:w-auto"
+            disabled={pending || submitDisabled}
+          >
+            {pending ? pendingLabel ?? "Bitte warten..." : submitLabel}
+          </Button>
+        </div>
+      ) : (
+        <Button
+          type="submit"
+          formEncType="multipart/form-data"
+          className="w-full sm:w-auto"
+          disabled={pending || submitDisabled}
+        >
+          {pending ? pendingLabel ?? "Bitte warten..." : submitLabel}
+        </Button>
+      )}
     </form>
   );
 }

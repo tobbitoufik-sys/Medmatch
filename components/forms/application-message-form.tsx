@@ -12,7 +12,7 @@ function SubmitButton({ disabled }: { disabled: boolean }) {
 
   return (
     <Button type="submit" disabled={pending || disabled} className="w-full shrink-0 sm:w-auto">
-      {pending ? "Sending..." : "Send"}
+      {pending ? "Wird gesendet..." : "Senden"}
     </Button>
   );
 }
@@ -46,7 +46,7 @@ export function ApplicationMessageForm({
       <input type="hidden" name="redirect_path" value={redirectPath} />
       <input type="hidden" name="content" value={trimmedContent} />
       <Textarea
-        placeholder="Type a message"
+        placeholder="Nachricht schreiben"
         required
         minLength={2}
         className="min-h-[56px] flex-1 resize-none rounded-3xl px-4 py-3"

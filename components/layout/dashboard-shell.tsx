@@ -7,24 +7,37 @@ import { dashboardNav } from "@/lib/site";
 import { getCurrentDoctorProfile, getCurrentUser } from "@/lib/data/repository";
 import { getUnreadConversationCount } from "@/lib/application-conversations";
 import { Logo } from "@/components/layout/logo";
+import { MobileDoctorChrome } from "@/components/layout/mobile-doctor-nav";
 import { SignOutButton } from "@/components/forms/sign-out-button";
 
 const navIcons = {
   Overview: LayoutGrid,
+  Übersicht: LayoutGrid,
   Profile: UserRound,
+  Profil: UserRound,
   Opportunities: BriefcaseBusiness,
+  Stellenangebote: BriefcaseBusiness,
   Offers: BriefcaseBusiness,
+  Angebote: BriefcaseBusiness,
+  "Externe Angebote": BriefcaseBusiness,
   "Find doctors": Search,
+  "Ärzte finden": Search,
   Inbox,
+  Postfach: Inbox,
   Users,
+  Nutzer: Users,
   Profiles: Building2
 } as const;
 
 const doctorNavLabels: Record<string, string> = {
+  Übersicht: "Übersicht",
   Overview: "Übersicht",
   Profile: "Profil",
+  Profil: "Profil",
   Opportunities: "Stellenangebote",
+  Stellenangebote: "Stellenangebote",
   Inbox: "Postfach",
+  Postfach: "Postfach",
   Applications: "Bewerbungen"
 };
 
@@ -80,8 +93,9 @@ export async function DashboardShell({
 
   return (
     <div className="min-h-screen bg-secondary/40">
+      {role === "doctor" ? <MobileDoctorChrome unreadCount={contactsUnreadCount} /> : null}
       <div className="container grid gap-8 py-8 lg:grid-cols-[260px_1fr]">
-        <aside className="surface h-fit p-5">
+        <aside className="surface hidden h-fit p-5 md:block">
           <div className="space-y-6">
             <Logo />
             <div className="rounded-3xl border border-border/60 bg-gradient-to-b from-background to-secondary/60 px-4 py-5 shadow-sm">
@@ -130,8 +144,8 @@ export async function DashboardShell({
             <SignOutButton />
           </div>
         </aside>
-        <main className="space-y-8">
-          <div className="space-y-3">
+        <main className="space-y-8 pb-[calc(6.75rem+env(safe-area-inset-bottom))] md:pb-0">
+          <div className="hidden space-y-3 md:block">
             <p className="text-sm uppercase tracking-[0.18em] text-primary">Arbeitsbereich</p>
             <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
             <p className="max-w-3xl text-muted-foreground">{description}</p>

@@ -5,7 +5,7 @@ export function SignOutButton() {
   return (
     <form action={signOutAction}>
       <Button type="submit" variant="outline" className="w-full">
-        Sign out
+        Abmelden
       </Button>
     </form>
   );
