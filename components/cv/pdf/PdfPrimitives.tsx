@@ -156,13 +156,27 @@ const styles = StyleSheet.create({
   },
   bulletList: {
     paddingTop: 4,
-    paddingLeft: 8
+    paddingLeft: 0,
+    flexDirection: "column"
   },
-  bullet: {
+  bulletItem: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginTop: 3,
+    marginBottom: 2
+  },
+  bulletMarker: {
+    width: 8,
     fontSize: 9.8,
-    lineHeight: 1.42,
-    color: "#314152",
-    marginTop: 3
+    lineHeight: 1.48,
+    color: "#314152"
+  },
+  bulletText: {
+    flex: 1,
+    minWidth: 0,
+    fontSize: 9.8,
+    lineHeight: 1.48,
+    color: "#314152"
   }
 });
 
@@ -228,6 +242,33 @@ function getAdaptiveSidebarNameSize(config: PdfTemplateConfig, fullName: string,
   }
 
   return baseSize;
+}
+
+function PdfBulletList({
+  bullets,
+  color,
+  itemKeyPrefix
+}: {
+  bullets?: string[];
+  color: string;
+  itemKeyPrefix: string;
+}) {
+  if (!bullets?.length) {
+    return null;
+  }
+
+  return (
+    <View style={styles.bulletList}>
+      {bullets.map((bullet, index) => (
+        <View key={`${itemKeyPrefix}-${index}-${bullet}`} style={styles.bulletItem}>
+          <Text style={[styles.bulletMarker, { color }]}>-</Text>
+          <Text style={[styles.bulletText, { color }]}>
+            {normalizePdfText(bullet)}
+          </Text>
+        </View>
+      ))}
+    </View>
+  );
 }
 
 function isSoftTimeline(config: PdfTemplateConfig) {
@@ -557,7 +598,7 @@ function PdfTimelineEntryRow({
         flexDirection: "row",
         marginBottom: 14
       }}
-      wrap={false}
+      minPresenceAhead={70}
     >
       <View style={{ width: 86, paddingRight: 10 }}>
         {entry.dateLabel || entry.sinceLabel ? (
@@ -652,21 +693,11 @@ function PdfTimelineEntryRow({
           </>
         )}
         {entry.bullets?.length ? (
-          <View style={{ paddingTop: 4 }}>
-            {entry.bullets.map((bullet) => (
-              <Text
-                key={`${entry.id}-${bullet}`}
-                style={{
-                  fontSize: 9.6,
-                  lineHeight: 1.42,
-                  color: "#4F4F4F",
-                  marginTop: 3
-                }}
-              >
-                - {normalizePdfText(bullet)}
-              </Text>
-            ))}
-          </View>
+          <PdfBulletList
+            bullets={entry.bullets}
+            color="#4F4F4F"
+            itemKeyPrefix={entry.id}
+          />
         ) : null}
       </View>
     </View>
@@ -686,7 +717,7 @@ function PdfTimelineSectionBlock({
 
   return (
     <View style={{ marginTop: 14 }}>
-      <View wrap={false}>
+      <View minPresenceAhead={86}>
         <View
           style={{
             marginBottom: 10,
@@ -744,11 +775,19 @@ function getPdfCompositionProps(
   minPresenceAhead?: number;
 } {
   if (!isSoftTimeline(config)) {
+    if (role === "keepWithHeader") {
+      return { minPresenceAhead: 90 };
+    }
+
+    if (role === "final") {
+      return { wrap: false, minPresenceAhead: 140 };
+    }
+
     return {};
   }
 
   if (role === "keepWithHeader") {
-    return { minPresenceAhead: 220 };
+    return { minPresenceAhead: 120 };
   }
 
   if (role === "atomic") {
@@ -756,7 +795,7 @@ function getPdfCompositionProps(
   }
 
   if (role === "final") {
-    return { wrap: false, minPresenceAhead: 320 };
+    return { wrap: false, minPresenceAhead: 160 };
   }
 
   return {};
@@ -784,14 +823,7 @@ function renderOrderedPdfSectionNode({
   data: CvPdfData;
   sectionKey: CvPdfMainSectionOrderKey;
 }) {
-  const compositionRole: PdfCompositionRole =
-    isSoftTimeline(config) &&
-    (sectionKey === "languages" ||
-      sectionKey === "fortbildungen" ||
-      sectionKey === "additionalSections" ||
-      sectionKey === "customBlock")
-      ? "atomic"
-      : "normal";
+  const compositionRole: PdfCompositionRole = "normal";
 
   if (sectionKey === "customBlock") {
     if (!data.customBlock) {
@@ -903,23 +935,13 @@ function renderSlateOrderedPdfSectionNode({
     return data.additionalSections.length ? (
       <View>
         {data.additionalSections.map((section) => (
-          <View key={section.id}>
+          <View key={section.id} minPresenceAhead={70}>
             <PdfSlateFreeTitle title={section.title} />
-            <View>
-              {section.bullets?.map((bullet) => (
-                <Text
-                  key={`${section.id}-${bullet}`}
-                  style={{
-                    fontSize: 9.6,
-                    lineHeight: 1.42,
-                    color: "#4F4F4F",
-                    marginTop: 3
-                  }}
-                >
-                  - {normalizePdfText(bullet)}
-                </Text>
-              ))}
-            </View>
+            <PdfBulletList
+              bullets={section.bullets}
+              color="#4F4F4F"
+              itemKeyPrefix={section.id}
+            />
           </View>
         ))}
       </View>
@@ -1063,31 +1085,35 @@ function PdfSlateSectionHeading({ title }: { title: string }) {
 
 function PdfSlateEntryRow({ entry }: { entry: CvPdfEntry }) {
   return (
-    <View style={{ flexDirection: "row", marginBottom: 14 }} wrap={false}>
-      <View style={{ width: 114, paddingRight: 16 }}>
-        {entry.sinceLabel || entry.dateLabel ? (
+    <View style={{ marginBottom: 14 }} minPresenceAhead={70}>
+      <View style={{ flexDirection: "row" }} wrap={false}>
+        <View style={{ width: 114, paddingRight: 16 }}>
+          {entry.sinceLabel || entry.dateLabel ? (
+            <Text
+              style={{
+                fontSize: 9.4,
+                lineHeight: 1.4,
+                color: "#6F6F6F"
+              }}
+            >
+              {normalizePdfText(entry.sinceLabel ?? entry.dateLabel ?? "")}
+            </Text>
+          ) : null}
+        </View>
+        <View style={{ flex: 1 }}>
           <Text
             style={{
-              fontSize: 9.4,
-              lineHeight: 1.4,
-              color: "#6F6F6F"
+              fontSize: 11,
+              fontWeight: 700,
+              lineHeight: 1.26,
+              color: "#222222"
             }}
           >
-            {normalizePdfText(entry.sinceLabel ?? entry.dateLabel ?? "")}
+            {normalizePdfText(entry.title)}
           </Text>
-        ) : null}
+        </View>
       </View>
-      <View style={{ flex: 1 }}>
-        <Text
-          style={{
-            fontSize: 11,
-            fontWeight: 700,
-            lineHeight: 1.26,
-            color: "#222222"
-          }}
-        >
-          {normalizePdfText(entry.title)}
-        </Text>
+      <View style={{ marginLeft: 114 }}>
         {entry.itemType === "medical_license" ? (
           <>
             {entry.issuerLine ? (
@@ -1132,21 +1158,11 @@ function PdfSlateEntryRow({ entry }: { entry: CvPdfEntry }) {
           </>
         )}
         {entry.bullets?.length ? (
-          <View style={{ paddingTop: 5 }}>
-            {entry.bullets.map((bullet) => (
-              <Text
-                key={`${entry.id}-${bullet}`}
-                style={{
-                  fontSize: 9.6,
-                  lineHeight: 1.42,
-                  color: "#4F4F4F",
-                  marginTop: 3.5
-                }}
-              >
-                - {normalizePdfText(bullet)}
-              </Text>
-            ))}
-          </View>
+          <PdfBulletList
+            bullets={entry.bullets}
+            color="#4F4F4F"
+            itemKeyPrefix={entry.id}
+          />
         ) : null}
       </View>
     </View>
@@ -1577,7 +1593,7 @@ export function PdfEntryRow({
     return (
       <View
         style={[styles.entry, { marginBottom: 14 }]}
-        wrap={false}
+        minPresenceAhead={74}
       >
         <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
           <View style={{ width: config.dateColumnWidth, paddingRight: 10 }}>
@@ -1647,16 +1663,11 @@ export function PdfEntryRow({
               </>
             )}
             {entry.bullets?.length ? (
-              <View style={styles.bulletList}>
-                {entry.bullets.map((bullet) => (
-                  <Text
-                    key={`${entry.id}-${bullet}`}
-                    style={[styles.bullet, { color: config.theme.bulletColor }]}
-                  >
-                    - {normalizePdfText(bullet)}
-                  </Text>
-                ))}
-              </View>
+              <PdfBulletList
+                bullets={entry.bullets}
+                color={config.theme.bulletColor}
+                itemKeyPrefix={entry.id}
+              />
             ) : null}
           </View>
         </View>
@@ -1667,9 +1678,9 @@ export function PdfEntryRow({
   return (
       <View
         style={[styles.entry, { marginBottom: getDensityValue(config, 10, 12) }]}
-        wrap={false}
+        minPresenceAhead={70}
       >
-        <View style={styles.entryHeader}>
+        <View style={styles.entryHeader} wrap={false}>
           <View style={styles.entryLeft}>
             <Text style={[styles.entryTitle, { color: config.theme.entryTitleColor }]}>
               {normalizePdfText(entry.title)}
@@ -1706,16 +1717,11 @@ export function PdfEntryRow({
               </>
             )}
             {entry.bullets?.length ? (
-              <View style={styles.bulletList}>
-                {entry.bullets.map((bullet) => (
-                  <Text
-                    key={`${entry.id}-${bullet}`}
-                    style={[styles.bullet, { color: config.theme.bulletColor }]}
-                  >
-                    - {normalizePdfText(bullet)}
-                  </Text>
-                ))}
-              </View>
+              <PdfBulletList
+                bullets={entry.bullets}
+                color={config.theme.bulletColor}
+                itemKeyPrefix={entry.id}
+              />
           ) : null}
         </View>
       ) : null}
@@ -1789,9 +1795,9 @@ export function PdfSectionBlock({
               }}
             />
           ) : null}
-          <View style={styles.entries}>
-            <PdfEntryRow config={config} entry={entries[0]} />
-          </View>
+        </View>
+        <View style={styles.entries}>
+          <PdfEntryRow config={config} entry={entries[0]} />
         </View>
         {entries.length > 1 ? (
           <View style={styles.entries}>
@@ -2118,7 +2124,9 @@ export function PdfPageShell({
             return sectionNode ? <View key={sectionKey}>{sectionNode}</View> : null;
           })}
 
-          <PdfSignatureFooter data={data} />
+          <PdfCompositionBlock config={config} role="final">
+            <PdfSignatureFooter data={data} />
+          </PdfCompositionBlock>
         </View>
       </Page>
     );
@@ -2126,15 +2134,6 @@ export function PdfPageShell({
 
   if (isSoftTimeline(config)) {
     const orderedKeys = data.mainSectionOrder;
-    const trailingSectionKey = orderedKeys.length ? orderedKeys[orderedKeys.length - 1] : null;
-    const leadingSectionKeys = trailingSectionKey ? orderedKeys.slice(0, -1) : [];
-    const trailingSectionNode = trailingSectionKey
-      ? renderOrderedPdfSectionNode({
-          config,
-          data,
-          sectionKey: trailingSectionKey
-        })
-      : null;
 
     return (
       <Page
@@ -2152,7 +2151,7 @@ export function PdfPageShell({
         >
           <PdfSoftTimelineTop config={config} data={data} />
 
-          {leadingSectionKeys.map((sectionKey) => {
+          {orderedKeys.map((sectionKey) => {
             const sectionNode = renderOrderedPdfSectionNode({
               config,
               data,
@@ -2163,7 +2162,6 @@ export function PdfPageShell({
           })}
 
           <PdfCompositionBlock config={config} role="final">
-            {trailingSectionNode ? <View>{trailingSectionNode}</View> : null}
             <PdfSignatureFooter data={data} />
           </PdfCompositionBlock>
         </View>
@@ -2209,7 +2207,9 @@ export function PdfPageShell({
             return sectionNode ? <View key={sectionKey}>{sectionNode}</View> : null;
           })}
 
-          <PdfSignatureFooter data={data} />
+          <PdfCompositionBlock config={config} role="final">
+            <PdfSignatureFooter data={data} />
+          </PdfCompositionBlock>
         </View>
       </View>
     </Page>
