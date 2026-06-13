@@ -120,7 +120,12 @@ export default async function AdminDashboardPage() {
             <CardTitle>Aktueller Plattformstatus</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-2">
-            <StatCard title="Doctors" value={String(doctors.length)} hint="Arztprofile auf der Plattform." />
+            <StatCard
+              title="Doctors"
+              value={String(doctors.length)}
+              hint="Arztprofile auf der Plattform."
+              href="/admin/users"
+            />
             <StatCard
               title="Facilities"
               value={String(facilities.length)}

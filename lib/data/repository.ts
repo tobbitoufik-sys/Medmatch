@@ -80,11 +80,66 @@ export async function getUsers() {
   if (!hasSupabaseEnv()) return demoUsers;
 
   const supabase = await createServerSupabaseClient();
-  const { data } = await supabase
-    .from("users")
-    .select("*")
-    .order("created_at", { ascending: false });
-  return (data as UserRecord[]) ?? [];
+  const [{ data: usersData }, { data: doctorProfilesData }, { data: facilityProfilesData }] =
+    await Promise.all([
+      supabase.from("users").select("*"),
+      supabase.from("doctor_profiles").select("user_id, first_name, last_name, created_at, updated_at"),
+      supabase
+        .from("facility_profiles")
+        .select("user_id, facility_name, contact_person_name, created_at, updated_at")
+    ]);
+
+  const usersById = new Map<string, UserRecord>();
+  const now = new Date().toISOString();
+
+  for (const user of ((usersData as UserRecord[] | null) ?? [])) {
+    usersById.set(user.id, user);
+  }
+
+  for (const profile of ((doctorProfilesData as Array<{
+    user_id: string;
+    first_name: string | null;
+    last_name: string | null;
+    created_at: string | null;
+    updated_at: string | null;
+  }> | null) ?? [])) {
+    if (!profile.user_id || usersById.has(profile.user_id)) continue;
+
+    const fullName = [profile.first_name, profile.last_name].filter(Boolean).join(" ").trim();
+    usersById.set(profile.user_id, {
+      id: profile.user_id,
+      email: "",
+      full_name: fullName || "Arztprofil",
+      role: "doctor",
+      created_at: profile.created_at ?? now,
+      updated_at: profile.updated_at ?? profile.created_at ?? now,
+      is_active: true
+    });
+  }
+
+  for (const profile of ((facilityProfilesData as Array<{
+    user_id: string;
+    facility_name: string | null;
+    contact_person_name: string | null;
+    created_at: string | null;
+    updated_at: string | null;
+  }> | null) ?? [])) {
+    if (!profile.user_id || usersById.has(profile.user_id)) continue;
+
+    usersById.set(profile.user_id, {
+      id: profile.user_id,
+      email: "",
+      full_name: profile.facility_name || profile.contact_person_name || "Einrichtungsprofil",
+      role: "facility",
+      created_at: profile.created_at ?? now,
+      updated_at: profile.updated_at ?? profile.created_at ?? now,
+      is_active: true
+    });
+  }
+
+  return Array.from(usersById.values()).sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
 }
 
 function filterDoctors(data: DoctorProfile[], filters?: Partial<Record<string, string>>) {

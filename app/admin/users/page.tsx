@@ -25,7 +25,7 @@ export default async function AdminUsersPage() {
           {users.map((user) => (
             <TR key={user.id}>
               <TD>{user.full_name}</TD>
-              <TD>{user.email}</TD>
+              <TD>{user.email || "Nicht verfügbar"}</TD>
               <TD><Badge>{user.role}</Badge></TD>
               <TD>{user.is_active ? "Active" : "Suspended"}</TD>
             </TR>
